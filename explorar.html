@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="light">
+<head>
+<base href="/">
+<script>(function(){try{if(localStorage.getItem('bz_premium_hint')==='1'){document.documentElement.setAttribute('data-premium','true');}}catch(e){}})();</script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00E043">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazares">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="preconnect" href="https://bazare-s.onrender.com">
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="dns-prefetch" href="https://res.cloudinary.com">
+<title>Descobrir — Bazares</title>
+<meta name="robots" content="index, follow">
+<meta name="description" content="Descobre os produtos, lojas e ofertas mais populares do momento no Bazares, o marketplace social de Moçambique.">
+<link rel="canonical" href="https://bazares.pages.dev/explorar.html">
+<meta property="og:site_name" content="Bazares">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Descobrir — Bazares">
+<meta property="og:description" content="Descobre os produtos, lojas e ofertas mais populares do momento no Bazares, o marketplace social de Moçambique.">
+<meta property="og:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<meta property="og:url" content="https://bazares.pages.dev/explorar.html">
+<meta property="og:locale" content="pt_MZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Descobrir — Bazares">
+<meta name="twitter:description" content="Descobre os produtos, lojas e ofertas mais populares do momento no Bazares, o marketplace social de Moçambique.">
+<meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=1788617999">
+<style>
+/* ── Secções com título + "Ver todas" (Histórias / Lojas em destaque /
+   Categorias), tal como no mockup do Descobrir. ─────────────────── */
+.exp-sec{margin-bottom:22px}
+.exp-sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 1px}
+.exp-sec-title{display:flex;align-items:center;gap:6px;font-family:var(--f-display);font-size:15px;font-weight:800;color:var(--text)}
+.exp-sec-title svg{color:var(--a-500)}
+.exp-sec-more{display:flex;align-items:center;gap:2px;font-size:12.5px;font-weight:700;color:var(--b-500);cursor:pointer;flex-shrink:0}
+
+/* ── Hero — carrossel único que junta os slides de marca ("Explora o
+   melhor do Bazares", "Vende mais", "Compra com confiança") e os
+   banners de "Ofertas por categoria" num só carrossel, com swipe
+   nativo (scroll-snap), avanço automático a cada 4s e indicadores. */
+.exp-hero-carousel{position:relative;border-radius:var(--rl);overflow:hidden;margin-bottom:10px;box-shadow:var(--sh0)}
+.exp-hero-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.exp-hero-track::-webkit-scrollbar{display:none}
+.exp-hero-slide{flex:0 0 100%;min-width:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.exp-hero-slide--txt{
+  display:flex;align-items:center;gap:16px;padding:22px 20px 30px;height:172px;box-sizing:border-box;
+  background:linear-gradient(155deg,var(--b-500) 0%,var(--b-700) 100%);position:relative;overflow:hidden;
+}
+.exp-hero-slide--txt::before{content:'';position:absolute;inset:0;background:var(--capulana-pattern);opacity:.35}
+.exp-hero-slide--txt::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 82% 15%,rgba(255,255,255,.14) 0%,transparent 60%)}
+.exp-hero-text{flex:1;min-width:0;position:relative;z-index:1}
+.exp-hero-text h1{font-family:var(--f-display);font-size:clamp(16px,4.6vw,19px);font-weight:800;line-height:1.15;color:#fff;letter-spacing:-.01em}
+.exp-hero-text h1 span{color:var(--b-400)}
+.exp-hero-text p{font-size:11.5px;color:rgba(255,255,255,.72);margin-top:5px;line-height:1.45}
+.exp-hero-btn{margin-top:10px;display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--b-700);border:none;
+  border-radius:var(--pill);padding:8px 16px;font-size:11.5px;font-weight:800;font-family:var(--f-body);cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.exp-hero-slide--txt .exp-hero-img{flex-shrink:0;width:32%;max-width:96px;aspect-ratio:1/1;border-radius:var(--rl);overflow:hidden;position:relative;z-index:1;
+  box-shadow:0 10px 26px rgba(0,0,0,.4)}
+.exp-hero-slide--txt .exp-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
+.exp-hero-slide--img{display:block;width:100%;height:130px;border:none;padding:0;cursor:pointer;position:relative;overflow:hidden;background:#0b1f14;background-size:cover;background-position:center}
+.exp-hero-slide--img::before{content:'';position:absolute;inset:-14px;z-index:0;background-image:inherit;background-size:cover;background-position:center;filter:blur(18px) brightness(.9) saturate(1.3);transform:scale(1.15)}
+.exp-hero-slide--img img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;display:block}
+.exp-hero-dots{display:flex;gap:5px;justify-content:center;margin-top:10px;margin-bottom:22px}
+.exp-hero-dots span{width:6px;height:6px;border-radius:50%;background:var(--brd2);transition:width .25s ease,background .25s ease;cursor:pointer}
+.exp-hero-dots span.on{width:16px;border-radius:3px;background:var(--b-500)}
+
+/* ── Lojas em destaque — cartões horizontais com logo, categoria,
+   avaliação, localização e botão de Seguir (largura e proporções a
+   bater com o mockup: avatar maior, botão Seguir a toda a largura). */
+.exp-store-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scroll-snap-type:x proximity}
+.exp-store-card{flex-shrink:0;width:calc(37.5% - 5px);min-width:129px;scroll-snap-align:start;background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);padding:12px;cursor:pointer;display:flex;flex-direction:column;transition:transform .12s ease,border-color .15s ease}
+.exp-store-card:active{transform:scale(.97);border-color:var(--b-200)}
+.exp-store-top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.exp-store-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-store-cat{font-size:10.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.exp-store-rating{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--t3);margin-bottom:5px}
+.exp-store-loc{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--t4);margin-bottom:10px}
+.exp-store-loc svg{flex-shrink:0}
+.exp-store-follow{margin-top:auto}
+.exp-store-card .btn-follow-off,.exp-store-card .btn-follow-on{display:block;width:100%;text-align:center;padding:7px 10px!important;font-size:11.5px}
+
+/* ── Categorias — reaproveita .cat-strip / .cat-chip já usados no
+   resto da app (ícone + rótulo, "Tudo" activo a verde). ─────────── */
+.exp-sort{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px}
+.exp-sort-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--pill);border:1.5px solid var(--brd);background:var(--surf);font-size:12.5px;font-weight:700;color:var(--t2);cursor:pointer}
+.exp-sort-btn.on{background:var(--g-green);border-color:transparent;color:#fff}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://bazares.pages.dev/index.html"}, {"@type": "ListItem", "position": 2, "name": "Descobrir", "item": "https://bazares.pages.dev/explorar.html"}]}</script>
+</head>
+<body>
+<header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
+<main id="main"><div id="view" class="pg-body"></div></main>
+<div id="modal-root"></div><div id="toast-root"></div>
+<script src="/js/config.js?v=1788617999"></script><script src="/js/seo.js?v=1788617999"></script><script src="/js/action-queue.js?v=1788617999"></script><script src="/js/api.js?v=1788617999"></script>
+  <script src="/js/core.js?v=1788617999"></script><script src="/js/runtime.js?v=1788617999"></script>
+  <script src="/js/offline-store.js?v=1788617999"></script>
+  <script src="/js/virtual-feed.js?v=1788617999"></script><script src="/js/app.js?v=1788617999"></script><script src="/js/mentions.js?v=1788617999"></script><script src="/js/install-prompt.js?v=1788617999"></script><script src="/js/push-notifications.js?v=1788617999"></script>
+<script>
+let _expSort = 'sales';
+let _expCat = '';
+let _expPage = 1;
+let _expMeta = {};
+
+initPage({ active:'explorar.html', onReady: async(user) => {
+  if(user) mountBottomNav('descobrir', user.role, 0);
+
+  const view = document.getElementById('view');
+  view.innerHTML = `
+    <div class="exp-hero-carousel" id="exp-hero-carousel">
+      <div class="exp-hero-track" id="exp-hero-track"></div>
+    </div>
+    <div class="exp-hero-dots" id="exp-hero-dots"></div>
+
+    <div class="exp-sec">
+      <div class="exp-sec-hd">
+        <div class="exp-sec-title">${icon('star',15,2)} Lojas em destaque</div>
+        <div class="exp-sec-more" onclick="go('bazars.html')">Ver todas <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div id="exp-bazars" class="exp-store-strip"><div style="padding:20px"><span class="spinner spinner-dark"></span></div></div>
+    </div>
+
+    <div class="exp-sec">
+      <div class="exp-sec-hd">
+        <div class="exp-sec-title">Categorias</div>
+        <div class="exp-sec-more" onclick="go('category.html')">Ver todas <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="cat-strip reveal" id="exp-cat-strip"></div>
+    </div>
+
+    <div class="exp-sort" id="exp-sort">
+      <button class="exp-sort-btn on" data-sort="sales" onclick="setExpSort('sales')">${icon('flame',14,2)} Em alta</button>
+      <button class="exp-sort-btn" data-sort="new" onclick="setExpSort('new')">${icon('sparkle',13,2)} Recentes</button>
+      <button class="exp-sort-btn" data-sort="rating" onclick="setExpSort('rating')">${icon('star',13,2)} Mais avaliados</button>
+    </div>
+
+    <div id="exp-grid" class="p-grid" style="margin-top:14px"><div style="text-align:center;padding:40px;grid-column:1/-1"><span class="spinner spinner-dark"></span></div></div>
+    <div id="exp-loadmore" style="text-align:center;padding:20px;min-height:1px"></div>
+  `;
+
+  renderCatStrip('exp-cat-strip', _expCat, cat=>{ _expCat = cat; loadExplore(1); });
+  loadExpBazars();
+  loadExplore(1);
+  initExpHeroCarousel();
+}});
+
+// ─── Carrossel do Hero — 3 slides de marca (Explora/Vende mais/Compra
+// com confiança) + 5 banners de "Ofertas por categoria" (Ofertas
+// gerais/Tecnologia/Casa e Jardim/Beleza/Desportos) = 8 slides ao
+// todo, todos no mesmo carrossel. Swipe nativo via scroll-snap,
+// avanço automático a cada 4s, indicadores sincronizados com a
+// posição real do scroll (funciona tanto no auto-avanço como no
+// swipe manual do utilizador). ──────────────────────────────────
+const EXP_HERO_SLIDES = [
+  { type:'txt', h1: 'Explora o melhor <span>do Bazares</span>', sub: 'Descobre lojas, produtos e novidades perto de ti.', img: 'img/hero-market.jpg', cta:'DESCOBRIR', cat:null },
+  { type:'txt', h1: 'Vende mais <span>com o teu bazar</span>', sub: 'Uma loja online completa para impulsionar as tuas vendas.', img: 'images/vantagens/01_vende_mais.png', cta:'COMEÇAR A VENDER', href:'my-bazar.html' },
+  { type:'txt', h1: 'Compra com <span>confiança</span>', sub: 'Compras seguras, vendedores verificados e entrega em todo o país.', img: 'images/vantagens/02_compra_confianca.png', cta:'COMPRAR AGORA', href:'products.html' },
+  { type:'img', img:'images/banners/ofertas.jpg', alt:'As melhores ofertas — até 30% OFF', cat:'' },
+  { type:'img', img:'images/banners/tecnologia.jpg', alt:'Tecnologia', cat:'Electrónicos' },
+  { type:'img', img:'images/banners/casa-jardim.jpg', alt:'Casa e Jardim', cat:'Casa e Jardim' },
+  { type:'img', img:'images/banners/beleza.jpg', alt:'Beleza', cat:'Saúde e Beleza' },
+  { type:'img', img:'images/banners/desportos.jpg', alt:'Desportos', cat:'Desporto' }
+];
+let _expHeroIdx = 0, _expHeroTimer = null;
+
+function _expHeroGo(idx){
+  const s = EXP_HERO_SLIDES[idx];
+  if(s.type==='img'){ setExpCatFromBanner(s.cat); }
+  else if(s.href){ go(s.href); }
+  else { document.getElementById('exp-grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+
+function initExpHeroCarousel(){
+  const track = document.getElementById('exp-hero-track');
+  const dotsEl = document.getElementById('exp-hero-dots');
+  if(!track || !dotsEl) return;
+  track.innerHTML = EXP_HERO_SLIDES.map((s,i) => s.type==='img' ? `
+    <button type="button" class="exp-hero-slide exp-hero-slide--img" style="background-image:url('${s.img}')" onclick="_expHeroGo(${i})"><img src="${s.img}" alt="${esc(s.alt||'')}" loading="lazy"></button>
+  ` : `
+    <div class="exp-hero-slide exp-hero-slide--txt">
+      <div class="exp-hero-text">
+        <h1>${s.h1}</h1>
+        <p>${s.sub}</p>
+        <button class="exp-hero-btn" onclick="_expHeroGo(${i})">${icon('send',14,2.4)} ${s.cta}</button>
+      </div>
+      <div class="exp-hero-img"><img src="${s.img}" alt="" loading="lazy"></div>
+    </div>
+  `).join('');
+  dotsEl.innerHTML = EXP_HERO_SLIDES.map((_,i) => `<span class="${i===0?'on':''}" onclick="_expHeroScrollTo(${i})"></span>`).join('');
+
+  const syncDots = () => {
+    const w = track.clientWidth || 1;
+    _expHeroIdx = Math.round(track.scrollLeft / w);
+    dotsEl.querySelectorAll('span').forEach((d,i) => d.classList.toggle('on', i === _expHeroIdx));
+  };
+  let scrollRaf = null;
+  track.addEventListener('scroll', () => {
+    if (scrollRaf) cancelAnimationFrame(scrollRaf);
+    scrollRaf = requestAnimationFrame(syncDots);
+  }, { passive:true });
+
+  const restartAutoplay = () => {
+    if (_expHeroTimer) clearInterval(_expHeroTimer);
+    _expHeroTimer = setInterval(() => {
+      const next = (_expHeroIdx + 1) % EXP_HERO_SLIDES.length;
+      track.scrollTo({ left: next * track.clientWidth, behavior:'smooth' });
+    }, 4000);
+  };
+  // Pausa o avanço automático enquanto o dedo está no ecrã (swipe manual)
+  // e retoma 4s depois de largar, para o gesto do utilizador nunca ser
+  // interrompido a meio por um avanço automático.
+  track.addEventListener('touchstart', () => { if (_expHeroTimer) clearInterval(_expHeroTimer); }, { passive:true });
+  track.addEventListener('touchend', restartAutoplay, { passive:true });
+  restartAutoplay();
+}
+
+window._expHeroScrollTo = function(i){
+  const track = document.getElementById('exp-hero-track');
+  if (track) track.scrollTo({ left: i * track.clientWidth, behavior:'smooth' });
+};
+
+function setExpSort(sort){
+  _expSort = sort;
+  document.querySelectorAll('#exp-sort .exp-sort-btn').forEach(b=>b.classList.toggle('on', b.dataset.sort===sort));
+  loadExplore(1);
+}
+
+// ─── Banners de categoria — clicar num banner filtra a grelha de
+// produtos por essa categoria (mesmo filtro dos chips de Categorias)
+// e desloca a página até à grelha, para o resultado ficar visível. ──
+function setExpCatFromBanner(cat){
+  _expCat = cat;
+  loadExplore(1);
+  document.getElementById('exp-grid')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── Lojas em destaque — cartões com logo, categoria, avaliação,
+// localização e botão de Seguir (reaproveita feedFollowBtnHtml/
+// feedToggleFollow, os mesmos usados no feed, para que o estado de
+// "A seguir" fique sempre sincronizado em toda a app). ─────────────
+async function loadExpBazars(){
+  const el = document.getElementById('exp-bazars');
+  try{
+    const r = await api.get('/bazars', { sort: 'rating', limit: 12 });
+    const bazars = r?.data?.bazars || [];
+    el.innerHTML = bazars.map(b=>{
+      const verified = !!(b.seller?.verifiedSeller || b.verified);
+      const rating = b.seller?.rating || 0;
+      const ratingCount = b.seller?.ratingCount || 0;
+      return `
+      <div class="exp-store-card" onclick="go('bazar.html',{id:'${escJsAttr(b.slug||b.id)}'})">
+        <div class="exp-store-top">
+          ${storeAvatar(b.name,42,bazarLogo(b),verified)}
+          <div style="min-width:0">
+            <div class="exp-store-name">${esc(b.name)}</div>
+            <div class="exp-store-cat">${esc(b.category||'Loja')}</div>
+          </div>
+        </div>
+        <div class="exp-store-rating">${stars(rating)} ${ratingCount ? rating.toFixed(1)+' ('+ratingCount+')' : 'Sem avaliações'}</div>
+        ${b.location ? `<div class="exp-store-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(b.location)}</div>` : ''}
+        <div class="exp-store-follow" onclick="event.stopPropagation()">${feedFollowBtnHtml(b.id, !!b.isFollowing)}</div>
+      </div>`;
+    }).join('') || `<div style="padding:20px;color:var(--t4);font-size:12.5px">Ainda sem lojas para mostrar.</div>`;
+  }catch{
+    el.innerHTML = '';
+  }
+}
+
+let _expIO = null, _expLoading = false;
+function _setupExpInfiniteScroll(){
+  const sentinel = document.getElementById('exp-loadmore');
+  if (!sentinel) return;
+  if (_expIO) _expIO.disconnect();
+  _expIO = new IntersectionObserver(entries=>{
+    if (entries[0].isIntersecting && !_expLoading && (!_expMeta.pages || _expMeta.page < _expMeta.pages)) loadExplore(_expPage+1);
+  }, { rootMargin: '600px 0px' });
+  _expIO.observe(sentinel);
+}
+
+async function loadExplore(page){
+  if (_expLoading) return;
+  _expLoading = true;
+  const grid = document.getElementById('exp-grid');
+  const loadmoreEl = document.getElementById('exp-loadmore');
+  if(page===1) grid.innerHTML = `<div style="text-align:center;padding:40px;grid-column:1/-1"><span class="spinner spinner-dark"></span></div>`;
+  else loadmoreEl.innerHTML = `<span class="spinner spinner-dark"></span>`;
+  try{
+    const r = await api.get('/products', { category: _expCat||undefined, sort: _expSort, page, limit: 24 });
+    const products = r?.data?.products || [];
+    _expMeta = r?.data?.meta || {};
+    if(page===1) grid.innerHTML = products.length ? '' : `<div class="empty" style="grid-column:1/-1"><h3>Sem resultados</h3><p>Experimenta outra categoria</p></div>`;
+    grid.insertAdjacentHTML('beforeend', products.map(productCard).join(''));
+    _expPage = page;
+    loadmoreEl.innerHTML = '';
+    _setupExpInfiniteScroll();
+  }catch(e){
+    if(page===1) grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>${esc(apiErrorMessage(e))}</h3></div>`;
+    else loadmoreEl.innerHTML = `<button type="button" class="btn btn-soft btn-sm" onclick="loadExplore(${page})">Tentar novamente</button>`;
+  } finally {
+    _expLoading = false;
+  }
+}
+</script>
+</body>
+</html>

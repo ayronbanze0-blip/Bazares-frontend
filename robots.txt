@@ -1,0 +1,44 @@
+# Bazares — robots.txt
+# Domínio actual: https://bazares.pages.dev
+# Ao migrar de domínio, actualiza a linha "Sitemap:" abaixo (e pede
+# ao Claude para actualizar sitemap.xml + as páginas na mesma vez).
+
+User-agent: *
+Allow: /
+
+# Páginas privadas / exigem sessão — não têm valor de pesquisa e só
+# gastariam orçamento de rastreio (já marcadas noindex no próprio
+# HTML; isto é reforço, não substitui os meta tags).
+Disallow: /admin.html
+Disallow: /admin-*.html
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /dashboard.html
+Disallow: /chat.html
+Disallow: /notifications.html
+Disallow: /settings.html
+Disallow: /wallet.html
+Disallow: /wallet-history.html
+Disallow: /finance.html
+Disallow: /favorites.html
+Disallow: /my-orders.html
+Disallow: /my-products.html
+Disallow: /my-bazar.html
+Disallow: /order-detail.html
+Disallow: /referrals.html
+Disallow: /meufeed.html
+Disallow: /anuncios.html
+Disallow: /anuncio.html
+Disallow: /newreels.html
+Disallow: /historia.html
+Disallow: /novoproduto.html
+Disallow: /home.html
+Disallow: /profile.html
+Disallow: /premium.html
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /forgot-password.html
+Disallow: /verify-email.html
+Disallow: /search.html
+
+Sitemap: https://bazares.pages.dev/sitemap.xml

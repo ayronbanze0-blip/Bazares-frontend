@@ -1,0 +1,16 @@
+# Bazares — cabeçalhos HTTP (Cloudflare Pages lê este ficheiro
+# automaticamente, sem configuração extra).
+#
+# CSP construída a partir de uma auditoria real de todos os domínios
+# externos que o frontend carrega (fontes, sockets, mapas, login
+# social, imagens, Sentry) — ver comentários por directiva. Se um dia
+# adicionares um novo serviço externo (novo SDK, novo CDN), o browser
+# vai bloquear silenciosamente até esse domínio ser acrescentado aqui;
+# a consola do browser mostra sempre qual foi bloqueado.
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(self), microphone=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.socket.io https://browser.sentry-cdn.com https://accounts.google.com https://appleid.cdn-apple.com https://connect.facebook.net https://unpkg.com https://www.gstatic.com; worker-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://api.qrserver.com https://tiles.openfreemap.org https://assets.openfreemap.com https://www.gstatic.com; media-src 'self' data: blob: https://res.cloudinary.com; connect-src 'self' https://api.bazares.co.mz https://bazare-s.onrender.com https://*.ingest.us.sentry.io https://nominatim.openstreetmap.org https://tiles.openfreemap.org https://assets.openfreemap.com wss://bazare-s.onrender.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com; frame-src https://accounts.google.com https://appleid.cdn-apple.com https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'

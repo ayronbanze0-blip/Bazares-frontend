@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="light">
+<head>
+<base href="/">
+<script>(function(){try{if(localStorage.getItem('bz_premium_hint')==='1'){document.documentElement.setAttribute('data-premium','true');}}catch(e){}})();</script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00E043">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazares">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="preconnect" href="https://bazare-s.onrender.com">
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="dns-prefetch" href="https://res.cloudinary.com">
+<title>Meus posts — Bazares</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Meus posts no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<link rel="canonical" href="https://bazares.pages.dev/anuncios.html">
+<meta property="og:site_name" content="Bazares">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Meus posts — Bazares">
+<meta property="og:description" content="Meus posts no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta property="og:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<meta property="og:url" content="https://bazares.pages.dev/anuncios.html">
+<meta property="og:locale" content="pt_MZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Meus posts — Bazares">
+<meta name="twitter:description" content="Meus posts no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=1788617999">
+</head>
+<body data-require-auth="1" data-roles="SELLER">
+<header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
+<main id="main"><div id="view" class="pg-body"></div></main>
+<div id="modal-root"></div><div id="toast-root"></div>
+<script src="/js/config.js?v=1788617999"></script><script src="/js/seo.js?v=1788617999"></script><script src="/js/action-queue.js?v=1788617999"></script><script src="/js/api.js?v=1788617999"></script>
+  <script src="/js/core.js?v=1788617999"></script><script src="/js/runtime.js?v=1788617999"></script>
+  <script src="/js/offline-store.js?v=1788617999"></script>
+  <script src="/js/virtual-feed.js?v=1788617999"></script><script src="/js/app.js?v=1788617999"></script><script src="/js/mentions.js?v=1788617999"></script><script src="/js/install-prompt.js?v=1788617999"></script><script src="/js/push-notifications.js?v=1788617999"></script>
+<script>
+let _annBazarId = null;
+let _annBazar = null;
+
+initPage({ active:'anuncios.html', requireAuth:true, roles:['SELLER'], onReady: async(user) => {
+  const view = document.getElementById('view');
+  view.innerHTML = `
+    <div class="pg-hero">
+      <div class="pg-hero-content" style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="section-pill">${icon('megaphone',16)} Feed</div>
+          <h1>Meus Posts</h1>
+          <p>O que já publicaste no feed — também aparece na Home dos teus seguidores</p>
+        </div>
+        <button class="btn btn-terra btn-sm" onclick="go('anuncio.html')">+ Novo post</button>
+      </div>
+    </div>
+    <div id="ann-list" style="display:flex;flex-direction:column;gap:16px;max-width:560px;margin:0 auto"></div>`;
+
+  document.getElementById('ann-list').addEventListener('scroll', Bazares.Utils.throttle(onCarouselScroll, 80), true);
+
+  let bazar = null;
+  try{ bazar = (await api.get('/bazars/me'))?.data?.bazar || null; }catch{}
+  if(!bazar){
+    document.getElementById('ann-list').innerHTML = `<div class="card" style="text-align:center;padding:36px">
+      <h3 style="margin-bottom:8px">Ainda sem Bazar</h3>
+      <p style="margin-bottom:20px">Cria o teu Bazar para começares a publicar posts.</p>
+      <button class="btn btn-primary" onclick="go('my-bazar.html')">Criar o meu Bazar</button>
+    </div>`;
+    return;
+  }
+  _annBazarId = bazar.id;
+  _annBazar = bazar;
+  window._myBazarId = bazar.id;
+  await loadAnnouncements();
+}});
+
+function announcementCardHtml(a){
+  const cardId = `feed-ANNOUNCEMENT-${a.id}`;
+  const images = a.images?.length ? a.images.map(i=>i.url||i) : (a.imageUrl ? [a.imageUrl] : []);
+  const liked = a.myReaction === 1;
+  const parsedAnn = parseQuickTags(a.text || '');
+  const caption = escWithMentions(parsedAnn.text);
+  const captionLong = caption.length > 140;
+  return `
+  <div class="card feed-card" id="${cardId}" style="padding:0;overflow:hidden">
+    <div class="fc-post-header" style="display:flex;align-items:center;gap:10px;padding:12px 14px">
+      ${storeAvatar(_annBazar.name, 34, bazarLogo(_annBazar))}
+      <div style="flex:1;min-width:0">
+        <strong style="font-size:13.5px">${esc(_annBazar.name)}</strong>
+        <div style="font-size:11px;color:var(--t4);display:flex;align-items:center;gap:6px;margin-top:2px">
+          <span class="fc-type-tag fc-type-tag--post">Post</span>
+          <span>${fmtDate(a.createdAt)}</span>
+        </div>
+      </div>
+      <button class="btn-kebab" title="Mais opções" onclick="openFeedKebab('ANNOUNCEMENT','${a.id}','${_annBazarId}')"><svg class="ico-inline" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+    </div>
+
+    ${quickTagBadgesHtml(parsedAnn.tags)}
+    ${images.length?`<div class="fc-carousel" data-heart-host="${cardId}" style="position:relative" ondblclick="doubleTapLike(this,'ANNOUNCEMENT','${a.id}',${liked})">${carouselHtml(images, '', images, cardId)}</div>`:''}
+
+    <div class="fc-caption-block" style="padding:12px 14px 2px">
+      <p id="${cardId}-caption" class="fc-caption${captionLong?' truncated':''}" style="font-size:13.5px;color:var(--t2);white-space:pre-wrap;margin:0">${caption}</p>
+      ${captionLong?`<button class="fc-caption-more" onclick="toggleCaption(this)">Ver mais</button>`:''}
+    </div>
+
+    <div style="display:flex;align-items:center;gap:4px;padding:10px 10px 2px;margin-top:6px">
+      <button class="btn-icon btn-sm feed-like-btn${liked?' liked':''}" data-like-btn="${cardId}" data-reaction="${a.myReaction||0}" onclick="reactFeed('ANNOUNCEMENT','${a.id}',1)">
+        <span data-like-ico="${cardId}" style="display:inline-flex">${reactionIconSvg(a.myReaction||0,19)}</span> <span data-like-count="${cardId}">${a.likeCount||''}</span>
+      </button>
+      <button class="btn-icon btn-sm" onclick="openCommentsModal('ANNOUNCEMENT','${a.id}',{isOwner:true})" aria-label="Comentários">
+        ${icon('chat',18,2)}
+      </button>
+      <button class="btn-icon btn-sm" style="margin-left:auto" onclick="openShareSheet('ANNOUNCEMENT','${a.id}')" aria-label="Partilhar">
+        ${icon('share',17,2)} <span data-share-count="${cardId}">${a.shareCount||''}</span>
+      </button>
+    </div>
+
+    <div id="${cardId}-preview" style="padding:6px 14px 4px;display:flex;flex-direction:column;gap:3px"></div>
+  </div>`;
+}
+
+async function loadAnnouncements(){
+  const list = document.getElementById('ann-list');
+  if(!list || !_annBazarId) return;
+  list.innerHTML = `<div style="text-align:center;padding:40px"><span class="spinner spinner-dark"></span></div>`;
+  try{
+    const r = await api.get(`/bazars/${_annBazarId}/announcements`, {limit:30});
+    const items = r?.data?.announcements || [];
+    list.innerHTML = items.length ? items.map(announcementCardHtml).join('') : `<div class="empty"><div class="empty-ico">${icon('megaphone',28)}</div><h3>Ainda sem posts</h3><p>Publica o teu primeiro post para apareceres no feed dos teus seguidores.</p><button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="go('anuncio.html')">+ Novo post</button></div>`;
+    loadCommentPreviews(items.map(a=>({ targetType:'ANNOUNCEMENT', targetId:a.id, commentCount:a.commentCount||0, isOwner:true })));
+  }catch(e){ list.innerHTML = `<div class="empty"><h3>${esc(apiErrorMessage(e))}</h3></div>`; }
+}
+</script></body></html>

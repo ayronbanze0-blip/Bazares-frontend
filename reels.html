@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="light">
+<head>
+<base href="/">
+<script>(function(){try{if(localStorage.getItem('bz_premium_hint')==='1'){document.documentElement.setAttribute('data-premium','true');}}catch(e){}})();</script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazares">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="preconnect" href="https://bazare-s.onrender.com">
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="dns-prefetch" href="https://res.cloudinary.com">
+<title>Reels — Bazares</title>
+<meta name="robots" content="index, follow">
+<meta name="description" content="Vê Reels de produtos e lojas do Bazares: descobre novidades e ofertas em formato de vídeo curto.">
+<link rel="canonical" href="https://bazares.pages.dev/reels.html">
+<meta property="og:site_name" content="Bazares">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Reels — Bazares">
+<meta property="og:description" content="Vê Reels de produtos e lojas do Bazares: descobre novidades e ofertas em formato de vídeo curto.">
+<meta property="og:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<meta property="og:url" content="https://bazares.pages.dev/reels.html">
+<meta property="og:locale" content="pt_MZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Reels — Bazares">
+<meta name="twitter:description" content="Vê Reels de produtos e lojas do Bazares: descobre novidades e ofertas em formato de vídeo curto.">
+<meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=1788617999">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://bazares.pages.dev/index.html"}, {"@type": "ListItem", "position": 2, "name": "Reels", "item": "https://bazares.pages.dev/reels.html"}]}</script>
+</head>
+<body>
+<header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
+<main id="main"><div id="view" class="pg-body" style="padding:0 !important;max-width:none;margin:0"></div></main>
+<div id="modal-root"></div><div id="toast-root"></div>
+<script src="/js/config.js?v=1788617999"></script><script src="/js/seo.js?v=1788617999"></script><script src="/js/action-queue.js?v=1788617999"></script><script src="/js/api.js?v=1788617999"></script>
+  <script src="/js/core.js?v=1788617999"></script><script src="/js/runtime.js?v=1788617999"></script>
+  <script src="/js/offline-store.js?v=1788617999"></script>
+  <script src="/js/virtual-feed.js?v=1788617999"></script><script src="/js/app.js?v=1788617999"></script><script src="/js/mentions.js?v=1788617999"></script><script src="/js/install-prompt.js?v=1788617999"></script><script src="/js/push-notifications.js?v=1788617999"></script>
+<script>
+let _reelPage = 1;
+let _reelMeta = {};
+let _reelLoading = false;
+let _reelItems = [];
+let _reelIndex = 0;
+let _reelViewportH = 0;
+let _reelLocked = false;
+let _reelScope = 'foryou'; // 'foryou' | 'following'
+
+initPage({ active:'reels.html', onReady: async(user) => {
+  document.body.classList.add('reels-fullscreen');
+  if(user) mountBottomNav('home', user.role, 0);
+
+  const view = document.getElementById('view');
+  view.innerHTML = `
+    <div class="reel-topbar">
+      <button class="reel-back-btn" onclick="history.length>1?history.back():go('home.html')" aria-label="Voltar"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 19"/></svg></button>
+      <div class="reel-tabs">
+        <button class="reel-tab-btn active" id="reel-tab-foryou" onclick="switchReelScope('foryou')">Para ti</button>
+        <button class="reel-tab-btn" id="reel-tab-following" onclick="switchReelScope('following')">A seguir</button>
+      </div>
+      ${user?.role==='SELLER'?`<button class="reel-back-btn" onclick="go('newreels.html')" aria-label="Criar Reel">${icon('plus',20,2.2)}</button>`:`<span style="width:38px"></span>`}
+    </div>
+    <div class="reel-scroll" id="reel-scroll">
+      <div class="reel-track" id="reel-track"><div style="height:100%;width:100%;display:flex;align-items:center;justify-content:center"><span class="spinner"></span></div></div>
+    </div>
+  `;
+  initReelPaging();
+  // Deep-link para um reel específico (?reel=ID&bazar=ID) — usado ao
+  // tocar num reel próprio no Meu Feed. Sem isto, a única forma de ver
+  // um reel era cair nele por acaso no feed algorítmico, impossível
+  // com 1000+ vídeos.
+  const _params = new URLSearchParams(location.search);
+  await loadReels(1, _params.get('reel'), _params.get('bazar'));
+}});
+
+// ─── Paginação "um gesto = um reel" ──────────────────────────────────
+// Nada de scroll nativo: a pista (#reel-track) é deslocada por JS com
+// translateY em px. Um toque/roda que ultrapasse o limiar avança
+// exactamente UM reel — mesmo com um "fling" rápido ou um trackpad que
+// dispare dezenas de eventos wheel numa única passagem de dedo.
+function initReelPaging(){
+  const scroll = document.getElementById('reel-scroll');
+  const track = document.getElementById('reel-track');
+  _reelViewportH = scroll.clientHeight;
+  window.addEventListener('resize', ()=>{ _reelViewportH = scroll.clientHeight; setReelIndex(_reelIndex, false); });
+
+  let startY = 0, dragY = 0, dragging = false;
+
+  scroll.addEventListener('touchstart', e=>{
+    if(e.touches.length!==1) return;
+    if(e.target.closest('.reel-progress')) return; // arrastar a barra de progresso não deve mexer no reel
+    startY = e.touches[0].clientY; dragY = 0; dragging = true;
+    track.classList.add('dragging');
+  }, { passive:true });
+
+  scroll.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    dragY = e.touches[0].clientY - startY;
+    // Resistência elástica nas pontas (primeiro/último reel)
+    const atStart = _reelIndex===0 && dragY>0;
+    const atEnd = _reelIndex>=_reelItems.length-1 && dragY<0;
+    const eff = (atStart||atEnd) ? dragY*0.35 : dragY;
+    track.style.transform = `translateY(${-_reelIndex*_reelViewportH + eff}px)`;
+  }, { passive:true });
+
+  scroll.addEventListener('touchend', ()=>{
+    if(!dragging) return;
+    dragging = false;
+    track.classList.remove('dragging');
+    const threshold = _reelViewportH * 0.16;
+    if(dragY <= -threshold) advanceReel(1);
+    else if(dragY >= threshold) advanceReel(-1);
+    // Arrasto pequeno a mais para mudar de reel — só reencaixa a
+    // posição, sem tocar na reprodução do vídeo (senão um simples
+    // toque para pausar era anulado por isto logo a seguir, dando
+    // o efeito de "reinicia e pára outra vez" ao fim de um instante).
+    else snapReelPosition();
+  });
+
+  // Trackpad/roda do rato (desktop) — um "lock" temporário evita que
+  // uma única passagem de dois dedos, que dispara vários eventos wheel,
+  // avance mais do que um reel de cada vez.
+  scroll.addEventListener('wheel', e=>{
+    e.preventDefault();
+    if(_reelLocked) return;
+    if(Math.abs(e.deltaY) < 12) return;
+    advanceReel(e.deltaY > 0 ? 1 : -1);
+  }, { passive:false });
+
+  // Setas do teclado — bónus de acessibilidade em desktop
+  document.addEventListener('keydown', e=>{
+    if(!document.body.classList.contains('reels-fullscreen')) return;
+    if(e.key==='ArrowDown'){ e.preventDefault(); advanceReel(1); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); advanceReel(-1); }
+  });
+}
+function advanceReel(dir){
+  const next = _reelIndex + dir;
+  if(next < 0 || next > _reelItems.length-1) { setReelIndex(_reelIndex); return; }
+  _reelLocked = true;
+  setReelIndex(next);
+  setTimeout(()=>{ _reelLocked = false; }, 380);
+  if(next >= _reelItems.length - 2 && (!_reelMeta.pages || _reelMeta.page < _reelMeta.pages)){
+    loadReels(_reelPage+1);
+  }
+}
+function setReelIndex(i, animate){
+  const track = document.getElementById('reel-track');
+  if(!track) return;
+  _reelIndex = Math.max(0, Math.min(i, Math.max(_reelItems.length-1,0)));
+  if(animate===false) track.classList.add('dragging'); // sem transição, reposiciona logo
+  track.style.transform = `translateY(${-_reelIndex*_reelViewportH}px)`;
+  if(animate===false) requestAnimationFrame(()=>track.classList.remove('dragging'));
+  syncReelVideos();
+}
+// Só reencaixa visualmente o slide actual, sem chamar syncReelVideos()
+// — usado quando um arrasto não chega a mudar de reel (ver touchend
+// acima), para nunca reiniciar/retomar um vídeo que o utilizador
+// pode ter pausado de propósito com um toque.
+function snapReelPosition(){
+  const track = document.getElementById('reel-track');
+  if(!track) return;
+  track.style.transform = `translateY(${-_reelIndex*_reelViewportH}px)`;
+}
+// Som ligado por padrão — se o browser bloquear o autoplay com som,
+// cai para mudo automaticamente e sincroniza o ícone. Só o vídeo do
+// slide visível toca (os outros ficam pausados e voltam ao início,
+// para não gastar dados/bateria à toa). Contamos a posição por slide
+// (não só entre os que têm vídeo), senão um slide de produto sem
+// vídeo desalinhava tudo o que vem a seguir.
+//
+// Cada <video> só ganha o seu "src" real (vindo de data-src) quando
+// entra na janela activa (slide actual + 1 vizinho de cada lado) —
+// antes disso fica com preload="none". Isto evita que a app tente
+// descarregar 10 vídeos em simultâneo ao abrir os Reels (a causa
+// principal da lentidão/pesadelo reportado); ao sair dessa janela,
+// larga-se o "src" de novo para libertar memória/decoder.
+let _reelMuted = false;
+function syncReelVideos(){
+  document.querySelectorAll('#reel-track .reel-slide').forEach((slide,i)=>{
+    const v = slide.querySelector('video');
+    if(!v) return;
+    const dist = Math.abs(i - _reelIndex);
+    if(i === _reelIndex){
+      if(!v.src && v.dataset.src){ v.preload = 'auto'; v.src = v.dataset.src; v.load(); }
+      v.muted = _reelMuted;
+      v.play().catch(()=>{
+        if(!v.muted){
+          v.muted = true;
+          _reelMuted = true;
+          document.querySelectorAll('.reel-mute-btn').forEach(b=>{ b.innerHTML = icon('volumeOff',18,2); });
+          v.play().catch(()=>{});
+        }
+      });
+    } else {
+      v.pause();
+      v.currentTime = 0;
+      if(dist <= 1){
+        // vizinho imediato — pré-carregado, para a transição ficar
+        // instantânea. `preload="none"` no HTML bloqueia o carregamento
+        // mesmo depois de se atribuir o "src" (o browser só respeita o
+        // atributo, não o facto de agora já haver ficheiro para buscar)
+        // — sem isto o vídeo só começava a chegar quando o slide já
+        // estava visível, obrigando a 2-3 gestos até haver imagem.
+        // `v.load()` força o início do download desde já.
+        if(!v.src && v.dataset.src){ v.preload = 'auto'; v.src = v.dataset.src; v.load(); }
+      } else if(v.src){
+        v.removeAttribute('src'); v.preload = 'none'; v.load(); // fora da janela — larga o vídeo
+      }
+    }
+  });
+}
+function toggleReelMute(btn){
+  _reelMuted = !_reelMuted;
+  document.querySelectorAll('#reel-track .reel-slide video').forEach((v,i)=>{
+    if(i === _reelIndex) v.muted = _reelMuted;
+  });
+  document.querySelectorAll('.reel-mute-btn').forEach(b=>{
+    b.innerHTML = icon(_reelMuted ? 'volumeOff' : 'volumeOn', 18, 2);
+  });
+}
+
+// ─── Toque único = pausa/retoma o vídeo · duplo toque = gosto ───────
+// Um único listener de clique não distingue por si só um toque de um
+// duplo-toque (o browser dispara 'click' nas duas situações antes de
+// qualquer 'dblclick'). Por isso usamos um pequeno temporizador: se um
+// segundo toque chegar dentro da janela, tratamos como duplo-toque
+// (gosto); senão, ao expirar, tratamos como toque único (pausa/play).
+let _reelTapTimer = null;
+function handleReelTap(ev, el, targetType, targetId, liked){
+  if(ev.target.closest('button,a')) return; // botões (like/comentar/comprar) tratam do seu próprio clique
+  if(_reelTapTimer){
+    clearTimeout(_reelTapTimer);
+    _reelTapTimer = null;
+    doubleTapLike(el, targetType, targetId, liked);
+  } else {
+    _reelTapTimer = setTimeout(()=>{
+      _reelTapTimer = null;
+      toggleReelPlayback(el);
+    }, 260);
+  }
+}
+function toggleReelPlayback(mediaEl){
+  const video = mediaEl.querySelector('video');
+  if(!video) return; // slides de produto (imagem) não têm vídeo para pausar
+  const cardId = mediaEl.dataset.heartHost;
+  const iconEl = document.getElementById(`tap-icon-${cardId}`);
+  if(video.paused){
+    video.play().catch(()=>{});
+    if(iconEl) iconEl.innerHTML = icon('play',26,2.2);
+  } else {
+    video.pause();
+    if(iconEl) iconEl.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`;
+  }
+  if(iconEl){
+    iconEl.classList.remove('show');
+    void iconEl.offsetWidth; // reinicia a animação mesmo em toques repetidos
+    iconEl.classList.add('show');
+  }
+}
+
+// ─── Barra de progresso do reel (arrastar para avançar/recuar) ──────
+// Liga-se uma vez por barra (marcada com data-bound), acompanha o
+// vídeo via 'timeupdate', e ao arrastar segue o dedo em tempo real
+// e só faz seek de facto (video.currentTime) durante o arrasto —
+// exactamente como no TikTok/Instagram.
+function initReelProgressBars(root){
+  root.querySelectorAll('.reel-progress').forEach(bar=>{
+    if(bar.dataset.bound) return;
+    bar.dataset.bound = '1';
+    const cardId = bar.dataset.host;
+    const slide = document.getElementById(cardId);
+    const video = slide?.querySelector('video');
+    const fill = bar.querySelector('.reel-progress-fill');
+    const thumb = bar.querySelector('.reel-progress-thumb');
+    if(!video || !fill || !thumb) return;
+    let dragging = false;
+    const paint = (pct) => { fill.style.width = `${pct}%`; thumb.style.left = `${pct}%`; };
+    video.addEventListener('timeupdate', () => {
+      if(dragging || !video.duration) return;
+      paint((video.currentTime / video.duration) * 100);
+    });
+    const pctFromEvent = (e) => {
+      const rect = bar.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      return Math.max(0, Math.min(1, x / rect.width));
+    };
+    bar.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      dragging = true;
+      bar.classList.add('active');
+      bar.setPointerCapture(e.pointerId);
+      paint(pctFromEvent(e) * 100);
+    });
+    bar.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      paint(pctFromEvent(e) * 100);
+    });
+    const finishDrag = (e) => {
+      if(!dragging) return;
+      dragging = false;
+      bar.classList.remove('active');
+      if(video.duration) video.currentTime = pctFromEvent(e) * video.duration;
+    };
+    bar.addEventListener('pointerup', finishDrag);
+    bar.addEventListener('pointercancel', () => { dragging = false; bar.classList.remove('active'); });
+  });
+}
+
+function reelSlideHtml(p){
+  const isReel = p._kind === 'reel';
+  const cardId = isReel ? `feed-REEL-${p.id}` : `feed-PRODUCT-${p.id}`;
+  const targetType = isReel ? 'REEL' : 'PRODUCT';
+  const liked = p.myReaction === 1;
+  const faved = !!(p.isFavorite || p.product?.isFavorite);
+  // Reels reais: link para o produto associado (se houver) ou para o bazar.
+  // Produtos "legacy": link direto para o produto, como sempre foi.
+  const infoTarget = isReel
+    ? (p.product ? `go('product.html',{id:'${escJsAttr(p.product.slug || p.product.id)}'})` : `go('bazar.html',{id:'${p.bazar?.id||''}'})`)
+    : `go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})`;
+  const mediaHtml = isReel
+    ? `<video class="reel-fg" data-src="${esc(cldVideo(p.videoUrl,1080))}" poster="${esc(cldVideoPoster(p.videoUrl,640))}" playsinline loop preload="none"></video>
+       <button type="button" class="reel-mute-btn" onclick="event.stopPropagation();toggleReelMute(this)" aria-label="Som">${icon(_reelMuted?'volumeOff':'volumeOn',18,2)}</button>`
+    : (p.images?.[0]?.url
+        ? `<img class="reel-bg" src="${esc(cldUrl(p.images[0].url,'w_640,e_blur:1200,q_auto:eco,f_auto,c_fill'))}" alt="" loading="lazy" aria-hidden="true">
+           <img class="reel-fg" src="${esc(cldUrl(p.images[0].url,'w_1080,dpr_auto,q_auto:best,f_auto,c_limit'))}" alt="${esc(p.name)}" loading="lazy">`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--g-400)">${icon('image',48,1.5)}</div>`);
+  const title = isReel ? (p.text || p.product?.name || '') : p.name;
+  const priceLine = isReel
+    ? (p.product?.price != null ? `<div style="font-size:15px;font-weight:800;color:var(--b-300)">${fmtMT(p.product.price)}</div>` : '')
+    : `<div style="font-size:15px;font-weight:800;color:var(--b-300)">${fmtMT(p.price)}</div>`;
+  const buyBtn = isReel
+    ? (p.product ? `<button class="reel-action-btn" onclick="go('product.html',{id:'${escJsAttr(p.product.slug || p.product.id)}'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="29" height="29">${ICONS.cart}</svg>Comprar</button>` : '')
+    : `<button class="reel-action-btn" onclick="go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="29" height="29">${ICONS.cart}</svg>Comprar</button>`;
+  return `
+  <div class="reel-slide" id="${cardId}">
+    <div class="reel-media" data-heart-host="${cardId}" onclick="handleReelTap(event,this,'${targetType}','${p.id}',${liked})">
+      ${mediaHtml}
+      <div class="reel-gradient"></div>
+      <div class="reel-tap-icon" id="tap-icon-${cardId}"></div>
+    </div>
+    <div class="reel-info" onclick="${infoTarget}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        ${storeAvatar(p.bazar?.name,30,bazarLogo(p.bazar))}
+        <strong style="font-size:13.5px">${esc(p.bazar?.name||'')}</strong>
+        ${(p.bazar?.id && p.bazar.id!==window._myBazarId) ? `
+        <button type="button" class="btn ${p.bazar.isFollowing?'btn-follow-on':'btn-follow-off'} btn-xs" id="ff-${p.bazar.id}"
+          onclick="event.stopPropagation();feedToggleFollow('${p.bazar.id}',this)"
+          style="border-radius:var(--pill);padding:5px 14px;${p.bazar.isFollowing?'':'color:#fff;border-color:rgba(255,255,255,.5)'}">
+          ${p.bazar.isFollowing?'A seguir':'Seguir'}
+        </button>` : ''}
+        ${(p.bazar?.id && p.bazar.id===window._myBazarId) ? `
+        <button type="button" class="btn-kebab btn-kebab--light" onclick="event.stopPropagation();openFeedKebab('${targetType}','${p.id}','${p.bazar.id}')" aria-label="Mais opcoes">
+          <svg class="ico-inline" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+        </button>` : (p.bazar?.id ? `
+        <button type="button" class="btn-kebab btn-kebab--light" onclick="event.stopPropagation();openFeedMoreMenu('${targetType}','${p.id}','${p.bazar.id}','${p.sellerId||''}',${!!p.bazar.isFollowing})" aria-label="Mais opcoes">
+          ${icon('more',18,2)}
+        </button>` : '')}
+      </div>
+      <div style="font-size:14.5px;font-weight:700;margin-bottom:2px">${esc(title)}</div>
+      ${priceLine}
+    </div>
+    <div class="reel-actions">
+      <button class="reel-action-btn${liked?' liked':''}" data-like-btn="${cardId}" data-reaction="${p.myReaction||0}" style="${p.myReaction?`color:${reactionMeta(p.myReaction)?.color||''}`:''}"
+        onpointerdown="reactionPressStart(event,'${cardId}','${targetType}','${p.id}')" onpointerup="reactionPressEnd()" onpointerleave="reactionPressEnd()" onpointercancel="reactionPressEnd()"
+        onclick="reactFeedTap(event,'${targetType}','${p.id}')">
+        <span data-like-ico="${cardId}" style="display:inline-flex">${reactionIconSvg(p.myReaction||0,31)}</span>
+        <span data-like-count="${cardId}">${p.likeCount||0}</span>
+      </button>
+      <button class="reel-action-btn" onclick="openCommentsModal('${targetType}','${p.id}',{isOwner:${p.bazar?.id===window._myBazarId}})" aria-label="Comentários">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">${ICONS.chat}</svg>
+        <span>${p.commentCount||0}</span>
+      </button>
+      <button class="reel-action-btn${faved?' faved':''}${(isReel && !p.product)?' reel-action-btn--disabled':''}" data-fav-btn="${cardId}"
+        onclick="${(isReel && !p.product) ? `event.stopPropagation();toast('Este reel não tem produto associado para guardar','info')` : `toggleReelFavorite('${isReel ? (p.product?.id||'') : p.id}',this)`}">
+        ${faved?`<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="29" height="29">${ICONS.bookmark}</svg>`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="29" height="29">${ICONS.bookmark}</svg>`}
+        Guardar
+      </button>
+      <button class="reel-action-btn" data-share-count="${cardId}-btn" onclick="openShareSheet('${targetType}','${p.id}',{title:${escJsonAttr(title||'')},slug:${escJsonAttr((isReel ? p.product?.slug : p.slug)||'')}})" aria-label="Partilhar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="29" height="29">${ICONS.share}</svg>
+        <span data-share-count="${cardId}">${p.shareCount||''}</span>
+      </button>
+      ${buyBtn}
+    </div>
+    ${isReel ? `<div class="reel-progress" data-host="${cardId}">
+      <div class="reel-progress-track">
+        <div class="reel-progress-fill"></div>
+        <div class="reel-progress-thumb"></div>
+      </div>
+    </div>` : ''}
+  </div>`;
+}
+// Favoritos — reaproveita o mesmo endpoint (POST /products/:id/favorite)
+// já usado em product.html e nos cartões de produto.
+async function toggleReelFavorite(productId, btn){
+  if(!Session.isLoggedIn()){ go('login.html'); return; }
+  btn.disabled = true;
+  try{
+    const res = await api.post(`/products/${productId}/favorite`);
+    const isFav = !!res?.data?.isFavorite;
+    btn.classList.toggle('faved', isFav);
+    btn.querySelector('svg').outerHTML = isFav
+      ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="25" height="25">${ICONS.bookmark}</svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="25" height="25">${ICONS.bookmark}</svg>`;
+    toast(isFav ? 'Guardado nos favoritos' : 'Removido dos favoritos', isFav?'ok':'info');
+  }catch(e){ toast(apiErrorMessage(e),'err'); }
+  finally{ btn.disabled = false; }
+}
+
+let _reelPinnedId = null; // reel apontado por deep-link — nunca duplicado se o feed algorítmico também o trouxer
+
+// Alterna entre "Para ti" (algorítmico) e "A seguir" (só lojas que
+// segues) — mesma convenção de scope já usada no feed da Home
+// (api.get('/feed',{scope})). Aqui filtra-se do lado do cliente pelo
+// bazar.isFollowing que cada reel/produto já traz consigo (o mesmo
+// campo que liga o botão "Seguir" nesta página), para funcionar já
+// mesmo que o endpoint /reels ainda não tenha um scope próprio no
+// backend.
+function switchReelScope(scope){
+  if(scope===_reelScope || _reelLoading) return;
+  _reelScope = scope;
+  document.getElementById('reel-tab-foryou')?.classList.toggle('active', scope==='foryou');
+  document.getElementById('reel-tab-following')?.classList.toggle('active', scope==='following');
+  _reelItems = [];
+  _reelIndex = 0;
+  _reelPinnedId = null;
+  const track = document.getElementById('reel-track');
+  if(track) track.innerHTML = `<div style="height:100%;width:100%;display:flex;align-items:center;justify-content:center"><span class="spinner"></span></div>`;
+  loadReels(1);
+}
+
+async function loadReels(page, pinnedReelId, pinnedBazarId){
+  if(_reelLoading) return;
+  _reelLoading = true;
+  const track = document.getElementById('reel-track');
+  const scope = _reelScope;
+  try{
+    // Se veio de um deep-link (Meu Feed → tocar num reel próprio), busca
+    // esse reel específico primeiro e mostra-o já no topo, em vez de
+    // depender de o encontrar por acaso no feed aleatório.
+    let pinned = null;
+    if(page===1 && pinnedReelId && pinnedBazarId){
+      _reelPinnedId = pinnedReelId;
+      try{
+        const [reelRes, bazarRes] = await Promise.all([
+          api.get(`/bazars/${pinnedBazarId}/reels/${pinnedReelId}`),
+          api.get(`/bazars/${pinnedBazarId}`)
+        ]);
+        const rl = reelRes?.data?.reel || reelRes?.data;
+        const bz = bazarRes?.data?.bazar;
+        if(rl) pinned = { ...rl, bazar: bz || rl.bazar, _kind: 'reel' };
+      }catch(e){ /* não conseguiu localizar — segue para o feed normal em vez de bloquear tudo */ }
+    }
+    const [reelsRes, productsRes] = await Promise.all([
+      api.get('/reels', { page, limit: 10, scope }).catch(()=>null),
+      api.get('/products', { sort: 'sales', page, limit: 10 }).catch(()=>null)
+    ]);
+    if(scope!==_reelScope) return; // trocou de separador enquanto isto carregava — descarta
+    let reels = (reelsRes?.data?.reels || []).filter(r=>r.id!==_reelPinnedId).map(r => ({ ...r, _kind: 'reel' }));
+    let products = (productsRes?.data?.products || []).map(p => ({ ...p, _kind: 'product' }));
+    if(scope==='following'){
+      reels = reels.filter(r=>r.bazar?.isFollowing);
+      products = products.filter(p=>p.bazar?.isFollowing);
+    }
+    _reelMeta = reelsRes?.data?.meta || productsRes?.data?.meta || {};
+    const items = (pinned ? [pinned] : []).concat(reels).concat(products); // reel apontado (se houver) primeiro, depois vídeos reais, depois produtos a preencher o resto
+    if(page===1 && !items.length){
+      track.innerHTML = scope==='following'
+        ? `<div style="height:100vh;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px;gap:12px">
+             <div>Ainda não vês nada aqui — segue lojas para veres os reels e produtos delas.</div>
+             <button class="btn btn-ghost btn-sm" onclick="switchReelScope('foryou')" style="color:#fff;border-color:rgba(255,255,255,.4)">Ver Para ti</button>
+           </div>`
+        : `<div style="height:100vh;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 20px">Ainda sem produtos para mostrar aqui.</div>`;
+      return;
+    }
+    _reelItems = page===1 ? items : _reelItems.concat(items);
+    if(page===1) track.innerHTML = '';
+    track.insertAdjacentHTML('beforeend', items.map(reelSlideHtml).join(''));
+    initReelProgressBars(track);
+    _reelPage = page;
+    if(page===1) setReelIndex(0, false);
+    else syncReelVideos();
+  }catch(e){
+    if(page===1) track.innerHTML = `<div style="height:100vh;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 20px">Não foi possível carregar. <button class="btn btn-ghost btn-sm" onclick="loadReels(1)">Tentar de novo</button></div>`;
+  } finally { _reelLoading = false; }
+}
+
+</script>
+</body>
+</html>

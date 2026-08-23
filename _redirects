@@ -1,0 +1,25 @@
+# Proxy (200 = reescreve sem mudar o URL na barra de endereço) para que
+# o sitemap e o robots.txt apareçam sob o domínio do site (bazares.co.mz),
+# e não sob o domínio da API (bazare-s.onrender.com) — o Google só confia
+# num sitemap que esteja no mesmo domínio que lista.
+/sitemap.xml  https://bazare-s.onrender.com/sitemap.xml  200
+/robots.txt   https://bazare-s.onrender.com/robots.txt   200
+
+# URLs amigáveis de loja (/bazar/nome-da-loja). Em condições normais quem
+# responde a isto é a Cloudflare Function functions/bazar/[slug].js (tem
+# prioridade sobre _redirects e já injecta as meta tags de SEO por loja).
+# Esta regra é só uma rede de segurança — cobre qualquer caso que a
+# Function não apanhe (ex.: um path com mais de um troço a seguir a
+# /bazar/) para nunca cair num 404 em vez de abrir a loja.
+/bazar/*  /bazar.html  200
+
+# Mesma ideia para URLs amigáveis de produto — agora em /product/nome-do-
+# produto (estilo dos grandes marketplaces). A Cloudflare Function
+# functions/product/[slug].js já trata o caso normal; isto é só a rede
+# de segurança.
+/product/*  /product.html  200
+
+# Rota antiga (/produto/nome-do-produto, antes desta mudança) — 301 para
+# a nova, para nenhum link já partilhado, indexado no Google, ou guardado
+# nos favoritos de alguém deixar de funcionar.
+/produto/*  /product/:splat  301
