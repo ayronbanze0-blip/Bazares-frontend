@@ -31,6 +31,15 @@ function truncate(str, max) {
   return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s;
 }
 
+// JSON.stringify() não escapa a sequência "</" — se qualquer campo do
+// produto (nome, descrição, etc.) contiver essa sequência em qualquer
+// sítio do texto, o browser lê-a como o fecho da tag <script> a meio,
+// partindo todo o HTML que vem a seguir (body, scripts, tudo). Isto
+// serializa para dentro de <script>, por isso passa sempre por aqui.
+function safeJsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
 export async function onRequestGet(context) {
   const { params, env, request } = context;
   const slug = params.slug;
@@ -74,6 +83,11 @@ export async function onRequestGet(context) {
     const fbHeaders = new Headers(assetResponse.headers);
     fbHeaders.delete('content-length');
     fbHeaders.delete('etag');
+    // Cache-Control herdado do ficheiro estático não faz sentido aqui —
+    // esta resposta é gerada por produto/pedido, não deve ficar presa em
+    // cache do browser/CDN (senão uma correcção de bug ou dado novo do
+    // produto não aparece até o cache expirar sozinho).
+    fbHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
     return new Response(html, {
       status: assetResponse.status,
       headers: fbHeaders
@@ -130,8 +144,8 @@ export async function onRequestGet(context) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(image)}">
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-<script>window.BAZARES_PRODUCT_ID=${JSON.stringify(product.slug || product.id)};</script>
+<script type="application/ld+json">${safeJsonForScript(jsonLd)}</script>
+<script>window.BAZARES_PRODUCT_ID=${safeJsonForScript(product.slug || product.id)};</script>
 `;
 
   // Substitui o <title> genérico do shell e injecta tudo antes de </head>.
@@ -146,6 +160,7 @@ export async function onRequestGet(context) {
   okHeaders.delete('content-length');
   okHeaders.delete('etag');
   okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
+  okHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
   return new Response(html, {
     status: 200,
     headers: okHeaders
