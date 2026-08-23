@@ -67,9 +67,16 @@ export async function onRequestGet(context) {
     html = html
       .replace(/<link rel="canonical"[^>]*>/i, `<link rel="canonical" href="${esc(fallbackCanonical)}">`)
       .replace(/<meta property="og:url"[^>]*>/i, `<meta property="og:url" content="${esc(fallbackCanonical)}">`);
+    // Content-Length/ETag da resposta original já não correspondem ao HTML
+    // modificado (tamanho mudou) — herdá-los faz o browser cortar a
+    // resposta no byte errado, resultando em tela branca. Remove os dois,
+    // deixando o runtime calcular o Content-Length certo sozinho.
+    const fbHeaders = new Headers(assetResponse.headers);
+    fbHeaders.delete('content-length');
+    fbHeaders.delete('etag');
     return new Response(html, {
       status: assetResponse.status,
-      headers: assetResponse.headers
+      headers: fbHeaders
     });
   }
 
@@ -132,8 +139,16 @@ export async function onRequestGet(context) {
     .replace(/<title>.*?<\/title>/i, '')
     .replace('</head>', `${injected}</head>`);
 
+  // Mesmo motivo do ramo acima: Content-Length/ETag originais não batem
+  // certo com o HTML já injectado — sem remover isto, o browser corta a
+  // resposta a meio e a página fica em branco.
+  const okHeaders = new Headers(assetResponse.headers);
+  okHeaders.delete('content-length');
+  okHeaders.delete('etag');
+  okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
   return new Response(html, {
     status: 200,
-    headers: { ...Object.fromEntries(assetResponse.headers), 'Content-Type': 'text/html;charset=UTF-8' }
+    headers: okHeaders
   });
 }
+
