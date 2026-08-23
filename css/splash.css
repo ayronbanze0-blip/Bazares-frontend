@@ -1,0 +1,580 @@
+/* ============================================================
+   BAZARES — Splash screen de abertura do app (v5, cartoon+)
+   Sequência (10s):
+     0.00s -> 4.05s  cesta ganha pernas e olhos → corre com linhas
+                      de velocidade → tropeça → roda no ar → cai
+                      (tremor de ecrã + estrelinhas a rodopiar)
+     4.05s -> 4.60s  a cesta transforma-se no ícone da app
+     4.60s -> 6.80s  "Bazares" escreve-se + slogan + chips de stats
+     7.40s -> 10.0s  spinner + "Loading"
+============================================================ */
+
+#bz-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #00B837 0%, #00E043 55%, #1FFF62 100%);
+  overflow: hidden;
+}
+
+/* Luz ambiente a derivar lentamente ao fundo — dá profundidade sem
+   distrair da animação principal */
+#bz-splash::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.14), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(255,255,255,.10), transparent 46%),
+    radial-gradient(circle at 92% 10%, rgba(251,191,36,.10), transparent 38%);
+  animation: bzAmbientDrift 9s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes bzAmbientDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-2.5%, 2%) scale(1.07); }
+}
+
+/* Vinheta subtil para concentrar o olhar no centro */
+#bz-splash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, transparent 52%, rgba(0,0,0,.20) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#bz-splash > * { position: relative; z-index: 1; }
+
+#bz-splash.bz-splash--hide {
+  animation: bzSplashFadeOut 0.6s cubic-bezier(.4,0,.2,1) forwards;
+  pointer-events: none;
+}
+
+@keyframes bzSplashFadeOut {
+  0%   { opacity: 1; filter: blur(0px); transform: scale(1); }
+  100% { opacity: 0; filter: blur(6px); transform: scale(1.035); visibility: hidden; }
+}
+
+/* ---------- Palco do mascote ---------- */
+.bz-splash-stage {
+  position: relative;
+  width: 260px;
+  height: 150px;
+  animation: bzStageShake 0.35s ease 3.85s;
+}
+@keyframes bzStageShake {
+  0%   { transform: translate(0, 0); }
+  15%  { transform: translate(-5px, 3px) rotate(-1deg); }
+  30%  { transform: translate(4px, -3px) rotate(1deg); }
+  45%  { transform: translate(-4px, 2px) rotate(-1deg); }
+  60%  { transform: translate(3px, -2px); }
+  75%  { transform: translate(-2px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Sombra de contacto no chão — acompanha a corrida e encolhe/alarga
+   consoante o salto, para dar peso real ao mascote */
+.bz-basket-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: 68px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,.30) 0%, rgba(0,0,0,0) 72%);
+  filter: blur(1px);
+  opacity: 0;
+  animation:
+    bzShadowSpawn 0.30s ease-out forwards,
+    bzShadowRun 2.80s cubic-bezier(.4,.05,.3,1) 0.30s forwards,
+    bzShadowTrip 0.95s cubic-bezier(.5,.05,.6,1) 3.10s forwards,
+    bzShadowVanish 0.25s ease-in 4.05s forwards;
+}
+@keyframes bzShadowSpawn {
+  0%   { opacity: 0; transform: translateX(calc(-50% - 300px)) scaleX(.4); }
+  100% { opacity: .55; transform: translateX(calc(-50% - 300px)) scaleX(1); }
+}
+@keyframes bzShadowRun {
+  0%   { transform: translateX(calc(-50% - 300px)) scaleX(1); }
+  12%  { transform: translateX(calc(-50% - 245px)) scaleX(.65); }
+  24%  { transform: translateX(calc(-50% - 190px)) scaleX(1.1); }
+  36%  { transform: translateX(calc(-50% - 140px)) scaleX(.65); }
+  48%  { transform: translateX(calc(-50% - 95px))  scaleX(1.1); }
+  60%  { transform: translateX(calc(-50% - 55px))  scaleX(.65); }
+  72%  { transform: translateX(calc(-50% - 15px))  scaleX(1.1); }
+  86%  { transform: translateX(calc(-50% + 14px))  scaleX(.75); }
+  100% { transform: translateX(calc(-50% + 24px))  scaleX(1); }
+}
+@keyframes bzShadowTrip {
+  0%   { opacity: .55; transform: translateX(calc(-50% + 24px)) scaleX(1); }
+  45%  { opacity: .18; transform: translateX(calc(-50% + 40px)) scaleX(.45); }
+  100% { opacity: .5;  transform: translateX(calc(-50% + 44px)) scaleX(1.35); }
+}
+@keyframes bzShadowVanish { to { opacity: 0; } }
+
+.bz-basket-rig {
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  width: 104px;
+  height: 84px;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation:
+    bzSpawn 0.30s ease-out forwards,
+    bzRunPath 2.80s cubic-bezier(.4,.05,.3,1) 0.30s forwards,
+    bzTripFall 0.95s cubic-bezier(.5,.05,.6,1) 3.10s forwards,
+    bzVanish 0.25s ease-in 4.05s forwards;
+}
+
+@keyframes bzSpawn {
+  0%   { opacity: 0; transform: translateX(calc(-50% - 300px)) scale(.45); }
+  100% { opacity: 1; transform: translateX(calc(-50% - 300px)) scale(1); }
+}
+
+/* Corrida: mais saltitos, mais exagerados, ritmo mais lento */
+@keyframes bzRunPath {
+  0%   { transform: translateX(calc(-50% - 300px)) translateY(0px)   rotate(0deg); }
+  12%  { transform: translateX(calc(-50% - 245px)) translateY(-22px) rotate(-6deg); }
+  24%  { transform: translateX(calc(-50% - 190px)) translateY(2px)   rotate(4deg); }
+  36%  { transform: translateX(calc(-50% - 140px)) translateY(-24px) rotate(-7deg); }
+  48%  { transform: translateX(calc(-50% - 95px))  translateY(2px)   rotate(4deg); }
+  60%  { transform: translateX(calc(-50% - 55px))  translateY(-20px) rotate(-6deg); }
+  72%  { transform: translateX(calc(-50% - 15px))  translateY(2px)   rotate(4deg); }
+  86%  { transform: translateX(calc(-50% + 14px))  translateY(-16px) rotate(-4deg); }
+  100% { transform: translateX(calc(-50% + 24px))  translateY(0px)   rotate(6deg); }
+}
+
+/* Tropeço + volta no ar + queda em "splat" — bem mais cartoon */
+@keyframes bzTripFall {
+  0%   { transform: translateX(calc(-50% + 24px)) translateY(0px)   rotate(6deg)   scale(1, 1); }
+  15%  { transform: translateX(calc(-50% + 30px)) translateY(-6px)  rotate(16deg)  scale(1.05, .92); }
+  45%  { transform: translateX(calc(-50% + 40px)) translateY(-26px) rotate(230deg) scale(.95, 1.05); }
+  75%  { transform: translateX(calc(-50% + 46px)) translateY(6px)   rotate(430deg) scale(1, 1); }
+  90%  { transform: translateX(calc(-50% + 44px)) translateY(22px)  rotate(462deg) scale(1.22, .7); }
+  100% { transform: translateX(calc(-50% + 44px)) translateY(16px)  rotate(450deg) scale(1.05, .92); }
+}
+
+@keyframes bzVanish {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Corpo com squash-stretch de corrida cartoon (mais exagerado) */
+.bz-basket {
+  position: absolute;
+  top: 0; left: 0;
+  width: 104px;
+  height: 60px;
+  animation: bzSquash 0.28s ease-in-out infinite;
+  animation-delay: 0.30s;
+}
+@keyframes bzSquash {
+  0%, 100% { transform: scale(1, 1); }
+  50%      { transform: scale(0.88, 1.14); }
+}
+
+.bz-basket-body {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  width: 84px;
+  height: 42px;
+  background: #FFFFFF;
+  clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+  box-shadow: inset 0 -6px 0 rgba(21,128,61,.14);
+}
+.bz-basket-body::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 36%;
+  height: 2px;
+  background: rgba(21,128,61,.3);
+}
+
+.bz-basket-handle {
+  position: absolute;
+  top: -24px;
+  left: 24px;
+  width: 56px;
+  height: 36px;
+  border: 8px solid #FFFFFF;
+  border-bottom: none;
+  border-radius: 56px 56px 0 0;
+}
+
+/* ---------- Olhos cartoon (mais expressivos) ---------- */
+.bz-eyes {
+  position: absolute;
+  top: 6px;
+  left: 30px;
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+.bz-eye {
+  width: 17px;
+  height: 17px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  border: 2px solid #026E26;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bzBlink 2.6s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+.bz-pupil {
+  width: 7px;
+  height: 7px;
+  background: #026E26;
+  border-radius: 50%;
+  animation: bzLook 2.80s ease-in-out 0.30s forwards;
+}
+@keyframes bzLook {
+  0%   { transform: translateX(-1px); }
+  85%  { transform: translateX(2px); }
+  100% { transform: translateX(2px) scale(1.9); }
+}
+@keyframes bzBlink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  92%           { transform: scaleY(0.1); }
+}
+
+.bz-eyes::before,
+.bz-eyes::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 15px;
+  height: 3px;
+  background: #026E26;
+  border-radius: 2px;
+  opacity: 0;
+  animation: bzBrowShock 0.3s ease-out 3.10s forwards;
+}
+.bz-eyes::before { left: -2px; transform: rotate(22deg); }
+.bz-eyes::after   { left: 22px; transform: rotate(-22deg); }
+@keyframes bzBrowShock { to { opacity: 1; } }
+
+/* ---------- Pernas cartoon (estilo Nintendo, com sapatos) ---------- */
+.bz-leg {
+  position: absolute;
+  bottom: -26px;
+  width: 11px;
+  height: 26px;
+  background: #FFC120;
+  border-radius: 6px;
+  transform-origin: top center;
+  animation: bzLegRun 0.28s ease-in-out infinite;
+}
+.bz-leg--l { left: 28px; animation-delay: 0s; }
+.bz-leg--r { left: 66px; animation-delay: 0.14s; }
+.bz-leg::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: -4px;
+  width: 19px;
+  height: 10px;
+  background: #026E26;
+  border-radius: 8px 8px 6px 6px;
+}
+@keyframes bzLegRun {
+  0%, 100% { transform: rotate(48deg); }
+  50%      { transform: rotate(-48deg); }
+}
+
+/* Linhas de velocidade atrás da cesta enquanto corre */
+.bz-speedline {
+  position: absolute;
+  top: 30%;
+  left: -4px;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.5);
+  opacity: 0;
+  animation: bzSpeedline 2.80s ease-out 0.30s forwards;
+}
+.bz-speedline:nth-child(2) { top: 48%; left: -14px; width: 16px; animation-delay: 0.45s; }
+.bz-speedline:nth-child(3) { top: 62%; left: -24px; width: 12px; animation-delay: 0.60s; }
+@keyframes bzSpeedline {
+  0%, 8%  { opacity: 0; transform: translateX(0); }
+  14%     { opacity: .9; }
+  40%     { opacity: 0; transform: translateX(-30px); }
+  100%    { opacity: 0; }
+}
+
+/* Poeirinha ao correr (nuvem maior e mais viva) */
+.bz-dust {
+  position: absolute;
+  bottom: -20px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.55);
+  opacity: 0;
+  animation: bzDust 2.80s ease-out 0.30s forwards;
+}
+.bz-dust:nth-child(5) { left: -20px; animation-delay: 0.60s; width: 8px; height: 8px; }
+.bz-dust:nth-child(6) { left: -32px; animation-delay: 0.95s; width: 6px; height: 6px; }
+@keyframes bzDust {
+  0%   { opacity: 0; transform: scale(.4); }
+  4%   { opacity: .85; }
+  70%  { opacity: 0; transform: scale(1.8) translateY(4px); }
+  100% { opacity: 0; }
+}
+
+/* Estrelinhas tontas a rodopiar à volta da cabeça na queda */
+.bz-stars {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+}
+.bz-stars span {
+  position: absolute;
+  font-size: 18px;
+  color: #FFF7D6;
+  opacity: 0;
+  animation: bzStarOrbit 0.9s ease-out 3.80s forwards;
+}
+.bz-stars span:nth-child(1) { animation-delay: 3.80s; }
+.bz-stars span:nth-child(2) { animation-delay: 3.88s; font-size: 14px; }
+.bz-stars span:nth-child(3) { animation-delay: 3.96s; font-size: 11px; }
+@keyframes bzStarOrbit {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.3) rotate(0deg); }
+  20%  { opacity: 1; transform: translate(22px, -14px) scale(1.1) rotate(80deg); }
+  50%  { opacity: 1; transform: translate(0, -26px) scale(1) rotate(220deg); }
+  80%  { opacity: 1; transform: translate(-22px, -14px) scale(.9) rotate(340deg); }
+  100% { opacity: 0; transform: translate(0, -6px) scale(.6) rotate(400deg); }
+}
+
+/* Onda de impacto no chão (duplo anel para mais impacto) */
+.bz-impact {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) scale(0);
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.8);
+  opacity: 0;
+  animation: bzImpact 0.5s ease-out 3.85s forwards;
+}
+.bz-impact--2 {
+  border-color: rgba(255,255,255,.45);
+  animation: bzImpact 0.6s ease-out 3.95s forwards;
+}
+@keyframes bzImpact {
+  0%   { transform: translateX(-50%) scale(0); opacity: 1; }
+  100% { transform: translateX(-50%) scale(8); opacity: 0; }
+}
+
+/* ---------- Ícone (a cesta "transforma-se" nele ao aterrar) ---------- */
+.bz-icon-glow {
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  transform: translate(-50%, 10px) scale(.3);
+  background: radial-gradient(circle, rgba(251,191,36,.85) 0%, rgba(251,191,36,0) 70%);
+  filter: blur(3px);
+  opacity: 0;
+  animation: bzIconGlow 0.75s ease-out 4.05s forwards;
+}
+@keyframes bzIconGlow {
+  0%   { opacity: 0;  transform: translate(-50%, 10px) scale(.3); }
+  35%  { opacity: .9; transform: translate(-50%, -4px) scale(1.7); }
+  100% { opacity: 0;  transform: translate(-50%, 0) scale(2.4); }
+}
+
+.bz-icon {
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  overflow: hidden;
+  transform: translateX(-50%) translateY(10px) scale(.4) rotate(-10deg);
+  opacity: 0;
+  box-shadow: 0 14px 34px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.14);
+  animation: bzIconIn 0.55s cubic-bezier(.34,1.56,.64,1) 4.05s forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.bz-icon-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@keyframes bzIconIn {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(10px) scale(.4) rotate(-10deg); }
+  55%  { opacity: 1; transform: translateX(-50%) translateY(-6px) scale(1.12) rotate(4deg); }
+  75%  { transform: translateX(-50%) translateY(2px) scale(.96) rotate(-2deg); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1) rotate(0deg); }
+}
+
+/* ---------- Texto "Bazares" (escreve-se letra a letra) ---------- */
+.bz-wordmark {
+  margin-top: 26px;
+  display: flex;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  letter-spacing: .5px;
+}
+.bz-wordmark span {
+  opacity: 0;
+  display: inline-block;
+  transform: translateY(24px) scale(.4);
+  animation: bzLetterPop 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+  color: #FFFFFF;
+  text-shadow: 0 3px 14px rgba(0,0,0,.18);
+}
+.bz-wordmark span.bz-gold { color: #FFC120; }
+
+.bz-wordmark span:nth-child(1) { animation-delay: 4.60s; }
+.bz-wordmark span:nth-child(2) { animation-delay: 4.70s; }
+.bz-wordmark span:nth-child(3) { animation-delay: 4.80s; }
+.bz-wordmark span:nth-child(4) { animation-delay: 4.90s; }
+.bz-wordmark span:nth-child(5) { animation-delay: 5.00s; }
+.bz-wordmark span:nth-child(6) { animation-delay: 5.12s; }
+.bz-wordmark span:nth-child(7) { animation-delay: 5.24s; }
+
+@keyframes bzLetterPop {
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.12); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Slogan ---------- */
+.bz-slogan {
+  margin-top: 10px;
+  max-width: 260px;
+  text-align: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.92);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: bzSloganIn 0.5s ease 5.95s forwards;
+}
+@keyframes bzSloganIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Chips de estatísticas reais ---------- */
+.bz-stats {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  animation: bzStatsIn 0.4s cubic-bezier(.34,1.56,.64,1) 6.35s forwards;
+}
+@keyframes bzStatsIn {
+  0%   { opacity: 0; transform: translateY(10px) scale(.85); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.bz-stat-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Sora', system-ui, sans-serif;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.28);
+}
+.bz-stat-chip b {
+  color: #FFC120;
+  font-size: 15px;
+  font-weight: 800;
+}
+.bz-stat-chip span {
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: .9;
+}
+.bz-stats.bz-stats--empty { display: none; }
+
+/* ---------- Spinner + "Loading" ---------- */
+.bz-loading {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: bzLoadingIn 0.35s ease 7.40s forwards;
+}
+@keyframes bzLoadingIn { to { opacity: 1; } }
+
+.bz-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.25);
+  border-top-color: #FFC120;
+  border-right-color: rgba(251,191,36,.55);
+  animation: bzSpin 0.85s cubic-bezier(.45,.05,.55,.95) infinite;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.15));
+}
+@keyframes bzSpin { to { transform: rotate(360deg); } }
+
+.bz-loading-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: rgba(255,255,255,.85);
+  text-transform: uppercase;
+}
+.bz-loading-label::after {
+  content: "...";
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+  overflow: hidden;
+  vertical-align: bottom;
+  animation: bzDots 1.3s steps(4, end) infinite;
+}
+@keyframes bzDots {
+  0%   { width: 0; }
+  100% { width: 1.2em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bz-splash::before, #bz-splash::after { animation: none !important; }
+  .bz-splash-stage, .bz-basket-rig, .bz-leg, .bz-dust, .bz-speedline,
+  .bz-impact, .bz-impact--2, .bz-stars span, .bz-icon, .bz-icon-glow,
+  .bz-basket-shadow, .bz-wordmark span, .bz-slogan, .bz-stats, .bz-loading,
+  .bz-spinner, .bz-pupil, .bz-eye, .bz-loading-label::after {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .bz-basket-rig, .bz-basket-shadow, .bz-icon-glow { display: none; }
+  .bz-loading-label::after { content: ""; }
+}
