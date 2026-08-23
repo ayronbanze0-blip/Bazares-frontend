@@ -20,6 +20,12 @@ function truncate(str, max) {
   return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s;
 }
 
+// Ver comentário equivalente em functions/product/[slug].js — mesmo
+// risco de "</" partir a tag <script> a meio.
+function safeJsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
 export async function onRequestGet(context) {
   const { params, env, request } = context;
   const slug = params.slug;
@@ -51,6 +57,7 @@ export async function onRequestGet(context) {
     const fbHeaders = new Headers(assetResponse.headers);
     fbHeaders.delete('content-length');
     fbHeaders.delete('etag');
+    fbHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
     return new Response(html, { status: assetResponse.status, headers: fbHeaders });
   }
 
@@ -90,8 +97,8 @@ export async function onRequestGet(context) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(image)}">
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-<script>window.BAZARES_BAZAR_ID=${JSON.stringify(bazar.slug || bazar.id)};</script>
+<script type="application/ld+json">${safeJsonForScript(jsonLd)}</script>
+<script>window.BAZARES_BAZAR_ID=${safeJsonForScript(bazar.slug || bazar.id)};</script>
 `;
 
   html = html.replace(/<title>.*?<\/title>/i, '').replace('</head>', `${injected}</head>`);
@@ -100,6 +107,7 @@ export async function onRequestGet(context) {
   okHeaders.delete('content-length');
   okHeaders.delete('etag');
   okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
+  okHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
   return new Response(html, {
     status: 200,
     headers: okHeaders
