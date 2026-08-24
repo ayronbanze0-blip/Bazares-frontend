@@ -31,9 +31,16 @@ export async function onRequestGet(context) {
   const slug = params.slug;
   const pageUrl = new URL(request.url);
 
+  // Nunca passar o `request` original para env.ASSETS.fetch — headers
+  // condicionais (If-None-Match) do browser podiam causar um 304 sem
+  // corpo, deixando a página vazia.
   const assetUrl = new URL('/bazar.html', pageUrl.origin);
-  const assetResponse = await env.ASSETS.fetch(new Request(assetUrl, request));
+  const assetResponse = await env.ASSETS.fetch(assetUrl);
   let html = await assetResponse.text();
+
+  if (!html || !html.includes('</head>')) {
+    return env.ASSETS.fetch(assetUrl);
+  }
 
   let bazar = null;
   try {
