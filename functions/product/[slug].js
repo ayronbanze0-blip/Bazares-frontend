@@ -83,6 +83,11 @@ export async function onRequestGet(context) {
     const fbHeaders = new Headers(assetResponse.headers);
     fbHeaders.delete('content-length');
     fbHeaders.delete('etag');
+    // O ficheiro estático é servido comprimido (Content-Encoding: br/gzip),
+    // mas o corpo que devolvemos aqui (html, já modificado) é texto simples
+    // — sem isto, o browser tenta descomprimir texto simples como se fosse
+    // Brotli/gzip, falha, e a página fica praticamente vazia.
+    fbHeaders.delete('content-encoding');
     // Cache-Control herdado do ficheiro estático não faz sentido aqui —
     // esta resposta é gerada por produto/pedido, não deve ficar presa em
     // cache do browser/CDN (senão uma correcção de bug ou dado novo do
@@ -159,6 +164,9 @@ export async function onRequestGet(context) {
   const okHeaders = new Headers(assetResponse.headers);
   okHeaders.delete('content-length');
   okHeaders.delete('etag');
+  // Mesmo motivo do ramo acima — o corpo devolvido aqui não está
+  // comprimido, o header herdado do ficheiro estático dizia que estava.
+  okHeaders.delete('content-encoding');
   okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
   okHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
   return new Response(html, {
