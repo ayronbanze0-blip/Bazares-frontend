@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788617999">
+<link rel="stylesheet" href="/css/style.css?v=1788700000">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://bazares.pages.dev/index.html"}, {"@type": "ListItem", "position": 2, "name": "Produtos", "item": "https://bazares.pages.dev/products.html"}]}</script>
 </head>
 <body>
@@ -116,10 +116,10 @@
   <div id="pp-sentinel" style="text-align:center;padding:24px;grid-column:1/-1;min-height:1px"></div>
 </div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788617999"></script><script src="/js/seo.js?v=1788617999"></script><script src="/js/action-queue.js?v=1788617999"></script><script src="/js/api.js?v=1788617999"></script>
-  <script src="/js/core.js?v=1788617999"></script><script src="/js/runtime.js?v=1788617999"></script>
-  <script src="/js/offline-store.js?v=1788617999"></script>
-  <script src="/js/virtual-feed.js?v=1788617999"></script><script src="/js/app.js?v=1788617999"></script><script src="/js/mentions.js?v=1788617999"></script><script src="/js/install-prompt.js?v=1788617999"></script><script src="/js/push-notifications.js?v=1788617999"></script>
+<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788700000"></script>
+  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
+  <script src="/js/offline-store.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 function _totalLabel(meta,filtered){
   if(!meta?.total) return '';
@@ -253,7 +253,7 @@ initPage({ active:'products.html', onReady: async()=>{
   document.getElementById('psort').addEventListener('change',async e=>{
     if(e.target.value==='distance' && !_myLoc){
       try{
-        await Bazares.Utils.loadScriptOnce('/js/maps.js?v=1788617999');
+        await Bazares.Utils.loadScriptOnce('/js/maps.js?v=1788700000');
         _myLoc=await getBrowserLocation();
       }
       catch(err){

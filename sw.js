@@ -76,7 +76,13 @@
 // rondas — alinhadas as duas agora, para nunca mais haver este desfasamento
 // silencioso). Aproveitado para tirar o sufixo "-debug" do nome da cache,
 // que já não correspondia a nada (o debug que o justificava foi removido).
-const CACHE_NAME = "bazares-v41";
+// v42: subiu a versão do cache — nenhum JS partilhado mudou desta vez,
+// mas várias apps instaladas ficaram presas num estado misto depois dos
+// últimos deploys (ecrã "Algo correu mal a carregar a app" a aparecer em
+// interações normais, ex: "Ver mais" numa legenda). Sobe-se na mesma para
+// forçar todos os dispositivos já instalados a largar a cache antiga e
+// buscar tudo de novo, por segurança — mesmo raciocínio da v3.
+const CACHE_NAME = "bazares-v42";
 
 const APP_SHELL = [
   "/", "/index.html", "/home.html", "/notifications.html", "/dashboard.html", "/products.html", "/product.html",
@@ -89,9 +95,9 @@ const APP_SHELL = [
   "/admin-products.html", "/admin-finance.html", "/admin-wallet.html",
   "/admin-reports.html", "/admin-logs.html", "/admin-broadcast.html",
   "/admin-denuncias.html",
-  "/css/style.css?v=1788617999", "/css/splash.css?v=1788617999",
-  "/js/config.js?v=1788617999", "/js/seo.js?v=1788617999", "/js/action-queue.js?v=1788617999", "/js/api.js?v=1788617999", "/js/core.js?v=1788617999", "/js/runtime.js?v=1788617999", "/js/offline-store.js?v=1788617999", "/js/virtual-feed.js?v=1788617999", "/js/spa-router.js?v=1788617999", "/js/app.js?v=1788617999", "/js/splash.js?v=1788617999",
-  "/js/install-prompt.js?v=1788617999", "/js/push-notifications.js?v=1788617999",
+  "/css/style.css?v=1788700000", "/css/splash.css?v=1788700000",
+  "/js/config.js?v=1788700000", "/js/seo.js?v=1788700000", "/js/action-queue.js?v=1788700000", "/js/api.js?v=1788700000", "/js/core.js?v=1788700000", "/js/runtime.js?v=1788700000", "/js/offline-store.js?v=1788700000", "/js/virtual-feed.js?v=1788700000", "/js/spa-router.js?v=1788700000", "/js/app.js?v=1788700000", "/js/splash.js?v=1788700000",
+  "/js/install-prompt.js?v=1788700000", "/js/push-notifications.js?v=1788700000",
   "/manifest.json",
   "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-512-maskable.png",
   "/img/hero-market.jpg"
