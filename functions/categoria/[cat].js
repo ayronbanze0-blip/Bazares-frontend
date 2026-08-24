@@ -21,14 +21,26 @@ function esc(str) {
     .replace(/"/g, '&quot;');
 }
 
+// Ver comentário equivalente em functions/product/[slug].js — mesmo
+// risco de "</" partir a tag <script> a meio.
+function safeJsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
 export async function onRequestGet(context) {
   const { params, env, request } = context;
   const category = decodeURIComponent(params.cat);
   const pageUrl = new URL(request.url);
 
+  // Ver comentário equivalente em functions/product/[slug].js: nunca
+  // passar o `request` original para env.ASSETS.fetch.
   const assetUrl = new URL('/products.html', pageUrl.origin);
-  const assetResponse = await env.ASSETS.fetch(new Request(assetUrl, request));
+  const assetResponse = await env.ASSETS.fetch(assetUrl);
   let html = await assetResponse.text();
+
+  if (!html || !html.includes('</head>')) {
+    return env.ASSETS.fetch(assetUrl);
+  }
 
   let products = [];
   let total = 0;
@@ -76,20 +88,17 @@ export async function onRequestGet(context) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(image)}">
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-<script>window.BAZARES_CATEGORY=${JSON.stringify(category)};</script>
+<script type="application/ld+json">${safeJsonForScript(jsonLd)}</script>
+<script>window.BAZARES_CATEGORY=${safeJsonForScript(category)};</script>
 `;
 
   html = html.replace(/<title>.*?<\/title>/i, '').replace('</head>', `${injected}</head>`);
 
-  // Content-Length/ETag originais não batem certo com o HTML já
-  // injectado — sem remover isto, o browser corta a resposta a meio.
-  const okHeaders = new Headers(assetResponse.headers);
-  okHeaders.delete('content-length');
-  okHeaders.delete('etag');
-  okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
   return new Response(html, {
     status: 200,
-    headers: okHeaders
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'Cache-Control': 'public, max-age=0, must-revalidate'
+    }
   });
 }
