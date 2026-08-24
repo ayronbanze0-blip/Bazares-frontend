@@ -57,6 +57,7 @@ export async function onRequestGet(context) {
     const fbHeaders = new Headers(assetResponse.headers);
     fbHeaders.delete('content-length');
     fbHeaders.delete('etag');
+    fbHeaders.delete('content-encoding');
     fbHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
     return new Response(html, { status: assetResponse.status, headers: fbHeaders });
   }
@@ -106,6 +107,7 @@ export async function onRequestGet(context) {
   const okHeaders = new Headers(assetResponse.headers);
   okHeaders.delete('content-length');
   okHeaders.delete('etag');
+  okHeaders.delete('content-encoding');
   okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
   okHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
   return new Response(html, {
@@ -113,3 +115,4 @@ export async function onRequestGet(context) {
     headers: okHeaders
   });
 }
+
