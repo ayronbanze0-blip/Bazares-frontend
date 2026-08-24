@@ -45,10 +45,24 @@ export async function onRequestGet(context) {
   const slug = params.slug;
   const pageUrl = new URL(request.url);
 
-  // Busca o HTML estático original de product.html (o "shell" da SPA)
+  // Busca o HTML estático original de product.html (o "shell" da SPA).
+  // Importante: passamos só o URL, NUNCA o `request` original — se
+  // clonássemos os headers do pedido do browser (ex: If-None-Match de uma
+  // visita anterior), o Cloudflare podia responder aqui dentro com um 304
+  // Not Modified, que não tem corpo nenhum, deixando toda a página vazia
+  // mesmo antes de mexermos em qualquer header de saída.
   const assetUrl = new URL('/product.html', pageUrl.origin);
-  const assetResponse = await env.ASSETS.fetch(new Request(assetUrl, request));
+  const assetResponse = await env.ASSETS.fetch(assetUrl);
   let html = await assetResponse.text();
+
+  // Rede de segurança: se por algum motivo o shell estático vier vazio ou
+  // sem </head> (ex: falha momentânea a buscar o asset), nunca queremos
+  // servir uma página em branco silenciosa — melhor devolver o shell
+  // estático tal como está e deixar o app.js do lado do cliente tratar
+  // disto normalmente, do que arriscar um HTML corrompido.
+  if (!html || !html.includes('</head>')) {
+    return env.ASSETS.fetch(assetUrl);
+  }
 
   let product = null;
   try {
@@ -76,26 +90,17 @@ export async function onRequestGet(context) {
     html = html
       .replace(/<link rel="canonical"[^>]*>/i, `<link rel="canonical" href="${esc(fallbackCanonical)}">`)
       .replace(/<meta property="og:url"[^>]*>/i, `<meta property="og:url" content="${esc(fallbackCanonical)}">`);
-    // Content-Length/ETag da resposta original já não correspondem ao HTML
-    // modificado (tamanho mudou) — herdá-los faz o browser cortar a
-    // resposta no byte errado, resultando em tela branca. Remove os dois,
-    // deixando o runtime calcular o Content-Length certo sozinho.
-    const fbHeaders = new Headers(assetResponse.headers);
-    fbHeaders.delete('content-length');
-    fbHeaders.delete('etag');
-    // O ficheiro estático é servido comprimido (Content-Encoding: br/gzip),
-    // mas o corpo que devolvemos aqui (html, já modificado) é texto simples
-    // — sem isto, o browser tenta descomprimir texto simples como se fosse
-    // Brotli/gzip, falha, e a página fica praticamente vazia.
-    fbHeaders.delete('content-encoding');
-    // Cache-Control herdado do ficheiro estático não faz sentido aqui —
-    // esta resposta é gerada por produto/pedido, não deve ficar presa em
-    // cache do browser/CDN (senão uma correcção de bug ou dado novo do
-    // produto não aparece até o cache expirar sozinho).
-    fbHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
+    // Construímos os headers de raiz (em vez de herdar do ficheiro
+    // estático) — mais simples e evita qualquer header escondido que não
+    // faça sentido para uma resposta gerada dinamicamente (Content-Length,
+    // ETag e Content-Encoding do ficheiro original não se aplicam a este
+    // corpo, que é outro).
     return new Response(html, {
       status: assetResponse.status,
-      headers: fbHeaders
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+        'Cache-Control': 'public, max-age=0, must-revalidate'
+      }
     });
   }
 
@@ -158,20 +163,15 @@ export async function onRequestGet(context) {
     .replace(/<title>.*?<\/title>/i, '')
     .replace('</head>', `${injected}</head>`);
 
-  // Mesmo motivo do ramo acima: Content-Length/ETag originais não batem
-  // certo com o HTML já injectado — sem remover isto, o browser corta a
-  // resposta a meio e a página fica em branco.
-  const okHeaders = new Headers(assetResponse.headers);
-  okHeaders.delete('content-length');
-  okHeaders.delete('etag');
-  // Mesmo motivo do ramo acima — o corpo devolvido aqui não está
-  // comprimido, o header herdado do ficheiro estático dizia que estava.
-  okHeaders.delete('content-encoding');
-  okHeaders.set('Content-Type', 'text/html;charset=UTF-8');
-  okHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
+  // Headers construídos de raiz — ver comentário equivalente no ramo
+  // acima sobre porque não herdamos os do ficheiro estático.
   return new Response(html, {
     status: 200,
-    headers: okHeaders
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'Cache-Control': 'public, max-age=0, must-revalidate'
+    }
   });
 }
+
 
