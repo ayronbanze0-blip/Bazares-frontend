@@ -101,66 +101,55 @@ Bazares.Error = (() => {
 })();
 
 // ── CONNECTIVITY MANAGER ────────────────────────────────────
-// Deteta apenas se o DISPOSITIVO tem rede (navigator.onLine), não se
-// o backend/base de dados está a responder — isso é um problema
-// diferente e não deve aparecer como "Sem ligação à internet".
-// navigator.onLine reflete a interface de rede (Wi-Fi/dados ligados
-// ou não); pode dar falso positivo em casos raros (ligado a uma rede
-// sem saída real para a internet), mas não confunde falhas do
-// servidor com falta de internet, que era o problema anterior.
-// Corre uma verificação periódica só quando a página está visível
-// (poupa bateria/dados) e mais vezes seguidas quando já está offline
-// (para detectar a recuperação depressa).
-Bazares.Connectivity = (() => {
-  let isOnline = true;
-  let timer = null;
+// Bazares.Connectivity = (() => {
+  let isOnline = navigator.onLine;
   const listeners = new Set();
 
   function setState(next) {
     if (next === isOnline) return;
+
     isOnline = next;
-    if (window.Bazares?.State) Bazares.State.set('online', isOnline);
-    listeners.forEach(fn => { try { fn(isOnline); } catch {} });
-    if (typeof toast === 'function') {
-      if (!isOnline) toast('Sem ligação à internet. A app vai voltar a funcionar assim que a rede regressar.', 'warn', 6000);
-      else toast('Ligação à internet recuperada.', 'ok', 2500);
+
+    if (window.Bazares?.State) {
+      Bazares.State.set('online', isOnline);
     }
-    schedule(); // muda o ritmo de verificação consoante o novo estado
+
+    listeners.forEach(fn => {
+      try {
+        fn(isOnline);
+      } catch {}
+    });
+
+    if (typeof toast === 'function') {
+      if (!isOnline) {
+        toast(
+          'Sem ligação à internet. A app voltará a funcionar quando a ligação regressar.',
+          'warn',
+          6000
+        );
+      } else {
+        toast('Ligação à internet recuperada.', 'ok', 2500);
+      }
+    }
   }
 
-  async function checkNow() {
-    if (document.visibilityState === 'hidden') return isOnline;
-
-    // Primeiro: verifica se o dispositivo está realmente sem rede.
-    if (!navigator.onLine) {
-      setState(false);
-      return isOnline;
-    }
-
-    // Se o dispositivo diz que está online, consideramos a internet
-    // disponível. A disponibilidade do servidor/backend é outra coisa
-    // e não deve ser confundida com "sem ligação à internet" — isso
-    // é tratado à parte (ver Bazares.ServerStatus, se existir).
-    setState(true);
+  function checkNow() {
+    setState(navigator.onLine);
     return isOnline;
   }
 
-  function schedule() {
-    clearTimeout(timer);
-    // offline: verifica de 8 em 8s (quer detectar a recuperação depressa);
-    // online: só de 45 em 45s (é só uma rede de segurança de fundo).
-    timer = setTimeout(checkNow, isOnline ? 45000 : 8000);
-  }
+  window.addEventListener('online', () => setState(true));
+  window.addEventListener('offline', () => setState(false));
 
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkNow(); });
-  window.addEventListener('online', checkNow);
-  window.addEventListener('offline', checkNow);
-  schedule();
-  checkNow();
-
-  return { checkNow, isOnline: () => isOnline, onChange: (fn) => listeners.add(fn) };
+  return {
+    checkNow,
+    isOnline: () => isOnline,
+    onChange: (fn) => {
+      listeners.add(fn);
+      return () => listeners.delete(fn);
+    }
+  };
 })();
-
 // ── LOADING MANAGER ─────────────────────────────────────────
 // Contador global (refcounted): várias chamadas em simultâneo não
 // fazem a barra "acabar" antes de tempo — só desaparece quando a
