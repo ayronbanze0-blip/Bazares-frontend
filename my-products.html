@@ -53,10 +53,10 @@
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
 <main id="main"><div id="view" class="pg-body"></div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
-  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788700000"></script>
+  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788710000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 let _products=[], _page=1;
 let _selMode=null;        // null | 'edit' | 'stock' | 'del'
@@ -88,7 +88,8 @@ initPage({ active:'my-products.html', requireAuth:true, roles:['SELLER'], onRead
 
   const sel=document.getElementById('pcat');
   CATS.forEach(c=>sel.insertAdjacentHTML('beforeend',`<option value="${esc(c.l)}">${esc(c.l)}</option>`));
-  document.getElementById('psrch').addEventListener('input', Bazares.Utils.debounce(() => loadMyProducts(1), 350));
+  let t;
+  document.getElementById('psrch').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>loadMyProducts(1),350);});
   document.getElementById('pcat').addEventListener('change',()=>loadMyProducts(1));
   renderFab();
   renderProductTip();
@@ -651,7 +652,6 @@ async function saveProduct(id){
       const res=await api.postForm('/products',fd);
       savedId=res?.data?.product?.id;
       imagesFailed=res?.data?.imagesFailed||0; serverMsg=res?.message;
-      Bazares.Analytics?.trackProductPublished(res?.data?.product||{name,category,price,stock});
     }
 
     // Persistir a ordem final. As imagens novas são sempre anexadas pelo

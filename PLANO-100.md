@@ -8,9 +8,9 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/ad-hoc (funciona ma
 
 ---
 
-## Navegação e estrutura — ~95% do essencial MPA feito; SPA migrada para todas as páginas (confirmado nesta ronda)
-- ✅ SPA — **corrigido nesta ronda**: as 55 páginas HTML já chamam `BazaresRouter.register([...])` com a lista completa — já não está inerte, a migração gradual terminou
-- ✅ Client-side routing — router pjax (fetch + swap de `#main` + pushState/popstate) activo em todas as páginas registadas; `home.html`/`notifications.html` já usam `BazaresRouter.prefetch()` em idle
+## Navegação e estrutura — ~95% do essencial MPA feito; SPA em migração gradual (iniciada Ronda 29)
+- ⚠️ SPA — decisão revista na Ronda 29: migração gradual, vanilla JS, sem bundler/framework, página a página. Router (`js/spa-router.js`) implementado; **0 páginas convertidas ainda** — infra pronta, inerte até `BazaresRouter.register()` ser chamado nas páginas
+- ⚠️ Client-side routing — router pjax (fetch + swap de `#main` + pushState/popstate) pronto; próximo passo é escolher o 1º par de páginas a converter
 - ✅ Dynamic routes — Cloudflare Functions (`functions/produto/[slug].js`, `bazar/[slug].js`, `categoria/[cat].js`)
 - 🚫 Nested routes — conceito de SPA, não se aplica a MPA
 - ✅ Route guards — `Session.isLoggedIn()` + `go('login.html')` em páginas protegidas
@@ -18,7 +18,7 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/ad-hoc (funciona ma
 - ✅ Browser History — nativo (MPA) + guarda customizada de overlays via `pushState`/`popstate`
 - ✅ Back/Forward navigation — `goBack()` com `GOBACK_FALLBACK` para entrada directa sem histórico
 - ✅ Deep linking — `?reel=ID&bazar=ID` (reels.html), slugs nas Functions de SEO
-- ✅ Query parameters — **corrigido nesta ronda**: helper `getParam()` (`URLSearchParams`) usado em 15 páginas (anuncio, bazar, chat, checkout, historia, home, login, my-products, newreels, order-detail, product, products, search, verify-email, wallet), não 6
+- ✅ Query parameters — `URLSearchParams` em 6 páginas
 - 🚫 Hash routing — não é necessário sem SPA
 - ✅ 404 personalizada — `404.html`
 - ✅ Loading states — `Bazares.Loading` (contador refcounted) + barra no topo (`core.js`)
@@ -140,7 +140,7 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/ad-hoc (funciona ma
 
 ## 🧩 Arquitetura — ~55%
 - ⚠️ Component system próprio — template strings, não componentes reais
-- ⚠️ Reusable components — **corrigido nesta ronda**: `product-picker.js` NÃO existe em `js/`; o que há é CSS `.nr-product-picker` repetido inline em pelo menos 3 páginas (anuncio.html, historia.html, newreels.html) — a extracção não aconteceu ou regrediu
+- ✅ Reusable components — `product-picker.js` extraído (Ronda 26)
 - ⚠️ Design system — tokens CSS (`:root`), não documentado formalmente
 - ✅ Utility functions — `Bazares.Utils` (debounce/throttle)
 - ✅ Service layer — `js/api.js`
@@ -149,12 +149,12 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/ad-hoc (funciona ma
 - ⚠️ Feature-based architecture — organização é por página, não por feature
 - ✅ Error boundary equivalente / Centralized error handling — `Bazares.Error`
 - ✅ Global notification system — toasts + `Bazares.Undo`
-- ✅ Global navigation manager — **corrigido nesta ronda**: `Bazares.Nav` (`js/runtime.js`) já é um objecto único que envolve `go()`/`goBack()`/`BazaresRouter.navigate()`, mantém a rota actual e dispara `'bazares:nav:change'` a cada navegação (recarga completa ou SPA)
+- ✅ Global navigation manager — `go()`/`goBack()`/guarda de overlays (funcional, não é um objecto único chamado "NavigationManager" mas cobre o papel)
 
 ## 🧠 "Cérebro responsivo" (lista de Managers) — ~70% (estimativa anterior desta conversa: 10% — estava errada)
-- ✅ Navigation Manager — **corrigido nesta ronda**: `Bazares.Nav` (`js/runtime.js`) já é um objecto único, não apenas `go()`/`goBack()` soltos
+- ⚠️ Navigation Manager — funcional via `go()`/`goBack()`, não é um objecto único
 - ✅ Session Manager — `Session`
-- ✅ Route Guard — **corrigido nesta ronda**: `Bazares.RouteGuard.check()` (`js/runtime.js`), centralizado (não ad hoc), usado por `initPage()` e pelo `BazaresRouter` antes de trocar `#main`
+- ✅ Route Guard — ad hoc mas funcional
 - ⚠️ Global App State — parcial (`Session` + módulos `Bazares.*`, sem store único)
 - ✅ Error Manager — `Bazares.Error`
 - ✅ Recovery Manager — `Bazares.Recovery` (retry de acções falhadas por rede)
@@ -176,8 +176,6 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/ad-hoc (funciona ma
 ---
 
 ## Log de rondas (o que foi feito, para nunca reabrir o que já está fechado)
-
-**Ronda 32 (25 Ago 2026)** — Fusão de duas branches paralelas do frontend que tinham divergido do mesmo ponto: `Bazares-frontend-monitoring.zip` (Sentry com tracing/Web Vitals, `js/analytics.js` novo — eventos `product_viewed`/`product_published`/`checkout_started`/`order_created`/`search_performed`/`api_error`/`api_slow`/`client_error` — e `admin-monitoring.html`) e `bazares-updated-1.zip` (memória de listagem fechada em `bazars`/`home`/`search`/`meufeed`/`favorites`/`category`, navegação com véu em `login.html`, `Bazares.Utils.debounce()` a substituir timers manuais em vários formulários). Nenhuma das duas tinha o trabalho da outra. Fundidas sem perdas: `config.js`/`core.js`/`api.js` do lado da monitorização eram sobreconjunto estrito do outro lado (copiados directamente); as 55 páginas ganharam a tag do `analytics.js` + `admin-monitoring.html` no registo do router; as chamadas de tracking em falta foram portadas manualmente para `checkout.html`/`product.html`/`novoproduto.html`/`my-products.html`; `products.html` (que só tinha a memória de listagem no lado da monitorização) ganhou-a também no lado actualizado, mantendo o `debounce()` mais recente. Botão "Monitorização" adicionado a `admin.html`. Validado: sintaxe de todos os `.js` partilhados + todos os `<script>` inline das 55 páginas (Node `new Function`), chavetas CSS balanceadas, sem novas colisões de aspas introduzidas. `sw.js` v47→v48 (changelog da monitorização, v45-v47, preservado).
 
 **Ronda 31c (23 Ago 2026)** — Utilizador reportou o bug a persistir mesmo depois da Ronda 31b (`?v=`/cache já corrigidos): ao clicar num produto, o URL final era `bazares.pages.dev/product` sem slug nenhum a seguir. Ainda a aguardar confirmação do utilizador sobre o URL exacto (há ou não `?id=...` a seguir a `/product`?) e de que ecrã veio o clique, para confirmar a causa exacta — mas encontrada e corrigida já uma causa real ao rever `PRETTY_ROUTES`: o teste `params.id ? ... : null` tratava o id `0` (numérico) como "sem id" por ser falsy em JavaScript, caindo para o URL feio antigo (`product.html?id=0`) que o Cloudflare depois encurta para `/product?id=0` — se algum produto tiver o identificador `0` (ex.: o primeiro criado na base de dados, dependendo de como o backend numera), batia exactamente neste caso. Trocado por `params.id != null && params.id !== ''` em `bazar.html` e `product.html` (mesma função serve as duas rotas). Efeito colateral útil: se o produto genuinamente não tiver `slug`/`id` (dado em falta), o URL agora mostra `/product/undefined` em vez de desaparecer silenciosamente para `/product` em branco — mais fácil de apanhar visualmente daqui para a frente. `?v=` subida (outra vez, por mudar `app.js`) para `1788617999`, `CACHE_NAME` para `bazares-v39`.
 
