@@ -286,10 +286,10 @@ body{background:var(--bg)}
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
 <main id="main"><div id="view" class="pg-body"></div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788700000"></script>
-  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788710000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);(window.requestIdleCallback||setTimeout)(()=>{const other=location.pathname.endsWith('notifications.html')?'/home.html':'/notifications.html';BazaresRouter.prefetch(other);});</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);(window.requestIdleCallback||setTimeout)(()=>{const other=location.pathname.endsWith('notifications.html')?'/home.html':'/notifications.html';BazaresRouter.prefetch(other);});</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 initPage({ active:'home.html', requireAuth:true, onReady: async(user) => {
   if(user.role==='ADMIN'){ window.location.replace('admin.html'); return; }
@@ -437,6 +437,7 @@ initPage({ active:'home.html', requireAuth:true, onReady: async(user) => {
   // Actualiza o indicador do carrossel de imagens ao deslizar (captura,
   // porque "scroll" não faz bubble — mas chega em fase de captura).
   document.getElementById('feed-list').addEventListener('scroll', Bazares.Utils.throttle(onCarouselScroll, 80), true);
+  document.getElementById('feed-list').addEventListener('click', _saveHomeFeedState, true);
 
   if (getParam('action') === 'story' && canPost) { go('historia.html'); return; }
   if (getParam('action') === 'announce' && canPost) { go('anuncio.html'); return; }
@@ -449,8 +450,20 @@ initPage({ active:'home.html', requireAuth:true, onReady: async(user) => {
   loadNewsDot();
   if (promoTarget) startPromoTicker(!myBazar);
   if (window.VirtualFeed) VirtualFeed.attach(document.getElementById('feed-list'), { itemSelector: '.feed-card' });
-  await loadFeed(1);
+
+  const savedHome = getListState('home');
+  if (savedHome && savedHome.scope && savedHome.scope !== 'foryou') await switchFeedTab(savedHome.scope);
+  else await loadFeed(1);
+  if (savedHome && savedHome.page > 1) {
+    for (let p = 2; p <= savedHome.page && _feedHasMore; p++) await loadFeed(p);
+  }
+  if (savedHome) restoreScrollY(savedHome.scrollY);
 }});
+
+// ─── Memória de listagem (voltar sem perder separador/página/scroll) ──
+function _saveHomeFeedState(){
+  saveListState('home',{scope:_feedScope, page:_feedPage, scrollY:window.scrollY});
+}
 
 // ─── Rotação de "vantagens" no banner verde — troca título, subtítulo,
 // foto e cor de fundo a cada 5s, com um fade suave entre trocas. ────
@@ -590,7 +603,7 @@ function switchFeedTab(scope){
   document.getElementById('tab-foryou')?.classList.toggle('active', scope==='foryou');
   document.getElementById('tab-following')?.classList.toggle('active', scope==='following');
   document.getElementById('tab-friends')?.classList.toggle('active', scope==='friends');
-  loadFeed(1);
+  return loadFeed(1);
 }
 
 let _feedIO = null;

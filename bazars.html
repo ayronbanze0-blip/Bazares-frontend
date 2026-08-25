@@ -106,10 +106,10 @@
   <div id="baz-loadmore" style="text-align:center;padding:16px;min-height:1px"></div>
 </div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788700000"></script>
-  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788710000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 function bazCard(b){
   const premium = !!b.seller?.isPremium;
@@ -198,6 +198,16 @@ function renderBazPage(){
   _setupBazInfiniteScroll();
 }
 
+// ─── Memória de listagem (voltar sem perder scroll/filtros) ────────
+function _saveBazState(){
+  saveListState('bazars',{
+    shown:_bazShown, q:document.getElementById('bsrch').value,
+    cat:_bazCat, sort:document.getElementById('bsort').value,
+    verif:document.getElementById('bverif').checked,
+    scrollY:window.scrollY
+  });
+}
+
 function resetBazFilters(){
   document.getElementById('bsort').value='relevance';
   document.getElementById('bverif').checked=false;
@@ -210,11 +220,23 @@ function resetBazFilters(){
 initPage({ active:'bazars.html', onReady:()=>{
   const sel=document.getElementById('bcat');
   CATS.forEach(c=>sel.insertAdjacentHTML('beforeend',`<option value="${esc(c.l)}">${esc(c.l)}</option>`));
-  renderCatStrip('baz-cat-strip','',cat=>{_bazCat=cat;document.getElementById('bcat').value=cat;loadBazars();});
+  const savedBaz=getListState('bazars');
+  if(savedBaz){
+    _bazCat=savedBaz.cat||''; sel.value=_bazCat;
+    document.getElementById('bsrch').value=savedBaz.q||'';
+    document.getElementById('bsort').value=savedBaz.sort||'relevance';
+    document.getElementById('bverif').checked=!!savedBaz.verif;
+  }
+  renderCatStrip('baz-cat-strip',_bazCat,cat=>{_bazCat=cat;document.getElementById('bcat').value=cat;loadBazars();});
   document.getElementById('bcat').addEventListener('change',e=>{_bazCat=e.target.value;loadBazars();});
   document.getElementById('bverif').addEventListener('change',()=>loadBazars());
-  loadBazars();
-  let t;
-  document.getElementById('bsrch').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(loadBazars,350);});
+  document.getElementById('baz-grid').addEventListener('click',_saveBazState,true);
+  loadBazars().then(()=>{
+    if(savedBaz && savedBaz.shown>BAZ_PAGE_SIZE){
+      while(_bazShown<savedBaz.shown && _bazShown<_bazAll.length) renderBazPage();
+    }
+    if(savedBaz) restoreScrollY(savedBaz.scrollY);
+  });
+  document.getElementById('bsrch').addEventListener('input', Bazares.Utils.debounce(loadBazars, 350));
 }});
 </script></body></html>
