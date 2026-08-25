@@ -14,6 +14,16 @@
 let _ieState = null;
 let _ieHistory = null;
 
+// Ronda 42 — mesmo risco do video-editor.js: `#ie-root` vive em
+// `document.body`, fora do `#main` que o router substitui.
+document.addEventListener('bz:spa-leave', () => {
+  if (!_ieState) return;
+  if (_ieState.blobUrl) URL.revokeObjectURL(_ieState.blobUrl);
+  document.getElementById('ie-root')?.remove();
+  _ieState = null;
+  _ieHistory = null;
+});
+
 const IE_PRESETS = [
   { key: 'original', label: 'Original', grayscale: 0, sepia: 0, hue: 0, extraSat: 0,  extraCon: 0,  extraBri: 0 },
   { key: 'vivido',   label: 'Vívido',   grayscale: 0, sepia: 0, hue: 0, extraSat: 35, extraCon: 12, extraBri: 0 },

@@ -58,6 +58,7 @@ window.BazaresRouter = (function () {
   const SPA_PAGES = new Set();     // preenchido por register() — só páginas já convertidas
   const htmlCache = new Map();     // url -> texto HTML já pedido (evita re-fetch ao voltar atrás)
   let navSeq = 0;                  // protege contra respostas fora de ordem (nav rápida A→B→C)
+  let displayedFile = null;        // ficheiro realmente pintado no ecrã agora (ver popstate, Ronda 31)
 
   function register(pages) {
     (Array.isArray(pages) ? pages : [pages]).forEach((p) => SPA_PAGES.add(p));
@@ -67,8 +68,32 @@ window.BazaresRouter = (function () {
     return pathname.split('/').pop() || 'index.html';
   }
 
+  // Ronda "client-side routing" — URLs amigáveis (/product/:slug,
+  // /bazar/:slug, /categoria/:cat — ver PRETTY_ROUTES em app.js e
+  // functions/*/[x].js no servidor) não terminam em .html, por isso
+  // fileOf() sozinho devolvia o slug (ex.: "conjunto-tech") em vez do
+  // ficheiro real — SPA_PAGES nunca continha esse "nome", e tanto a
+  // saída como a entrada nessas páginas caíam sempre em reload
+  // completo, mesmo já registadas. Este mapa faz a mesma tradução
+  // prefixo→ficheiro que o servidor já faz (env.ASSETS.fetch dentro de
+  // cada Function), só que no browser, para o router saber a que
+  // página SPA cada URL bonito corresponde.
+  const PRETTY_PREFIXES = {
+    product: 'product.html',
+    bazar: 'bazar.html',
+    categoria: 'products.html'
+  };
+
+  function resolveFile(pathname) {
+    const parts = pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || '';
+    if (/\.html$/.test(last)) return last;
+    if (parts.length >= 2 && PRETTY_PREFIXES[parts[0]]) return PRETTY_PREFIXES[parts[0]];
+    return fileOf(pathname);
+  }
+
   function currentFile() {
-    return fileOf(location.pathname);
+    return resolveFile(location.pathname);
   }
 
   function isSpaPage(file) {
@@ -184,7 +209,7 @@ window.BazaresRouter = (function () {
     opts = opts || {};
     const replace = !!opts.replace;
     const path = url.split('?')[0];
-    const targetFile = fileOf(path);
+    const targetFile = resolveFile(path);
 
     // Fallback total: página actual ou destino não convertida ainda →
     // comportamento normal, sem qualquer tentativa de SPA.
@@ -226,6 +251,17 @@ window.BazaresRouter = (function () {
         return;
       }
 
+      // Ronda 38 — aviso de saída ANTES do swap: um setInterval/
+      // IntersectionObserver criado pelo script inline da página que
+      // estamos a abandonar (ex: carrossel do explorar.html) fica preso
+      // no closure dessa execução e NÃO pára sozinho só por o #main ser
+      // substituído — sem este aviso continuaria a correr para sempre
+      // em segundo plano, mesmo sem elementos visíveis para actuar.
+      // Páginas com esse tipo de estado ouvem 'bz:spa-leave' uma única
+      // vez e fazem a sua própria limpeza (clearInterval/disconnect).
+      document.dispatchEvent(new CustomEvent('bz:spa-leave', { detail: { from: currentFile(), to: targetFile } }));
+
+
       main.innerHTML = mainHTML;
       document.title = title;
 
@@ -249,6 +285,7 @@ window.BazaresRouter = (function () {
 
       if (replace) history.replaceState({ spa: true, url }, '', url);
       else history.pushState({ spa: true, url }, '', url);
+      displayedFile = targetFile;
 
       runScripts(scriptCodes);
 
@@ -284,8 +321,14 @@ window.BazaresRouter = (function () {
         return;
       }
       if (url.origin !== location.origin) return;
-      if (!/\.html($|\?)/.test(url.pathname)) return;
-      if (!isSpaPage(currentFile()) || !isSpaPage(fileOf(url.pathname))) return;
+      // Antes exigia .html no path, o que excluía sempre as rotas
+      // bonitas (/product/:slug, /bazar/:slug) do fluxo SPA — agora
+      // resolve-se o ficheiro real (resolveFile) e deixa isSpaPage()
+      // decidir; um link para algo que não é nenhuma página SPA (API,
+      // imagens, ficheiros estáticos) simplesmente não bate em
+      // nenhuma entrada de SPA_PAGES/PRETTY_PREFIXES e cai para fora
+      // na mesma.
+      if (!isSpaPage(currentFile()) || !isSpaPage(resolveFile(url.pathname))) return;
 
       e.preventDefault();
       navigate(url.pathname + url.search);
@@ -293,13 +336,31 @@ window.BazaresRouter = (function () {
     true
   );
 
-  // Só reage a entradas de histórico próprias (state.spa === true). Uma
-  // entrada de overlay/modal (state.bzOverlay === true, ver app.js) não
-  // bate aqui — o listener de popstate desse sistema é que a trata,
-  // sem qualquer conflito entre os dois.
-  window.addEventListener('popstate', function (e) {
-    if (!e.state || e.state.spa !== true) return;
-    navigate(location.pathname + location.search, { replace: true });
+  // Ronda 31 — correcção crítica: NÃO decidir pela FORMA do history.state
+  // (isso ignorava a guarda "Queres sair da app?" ao voltar de uma página
+  // SPA para a Home, deixando o exit-confirm de app.js disparar por
+  // engano). Decide-se agora por o FICHEIRO REALMENTE MUDAR ou não:
+  //   - Ficheiro mudou (navegação real entre páginas): intercepta e
+  //     chama stopImmediatePropagation() para o listener de exit-confirm/
+  //     overlay de app.js não correr para esta entrada de histórico.
+  //   - Mesmo ficheiro (overlay a fechar-se, ou a própria guarda "Queres
+  //     sair?" a ser consumida na Home): não mexe em nada — cai sempre
+  //     para app.js tratar exactamente como sempre tratou.
+  // Capture:true + registado antes de app.js (ordem dos <script> nas
+  // páginas) garante que este listener corre primeiro.
+  window.addEventListener(
+    'popstate',
+    function (e) {
+      const targetFile = currentFile();
+      if (targetFile === displayedFile) return; // mesmo ficheiro — deixa para app.js
+      e.stopImmediatePropagation();
+      navigate(location.pathname + location.search, { replace: true });
+    },
+    true
+  );
+
+  document.addEventListener('DOMContentLoaded', function () {
+    displayedFile = currentFile();
   });
 
   // Pré-carrega o HTML de uma página (fica em htmlCache, pronto para
@@ -307,7 +368,7 @@ window.BazaresRouter = (function () {
   // no DOM. Falha em silêncio — é só uma optimização, nunca deve
   // interromper nada se a rede estiver ocupada/offline.
   function prefetch(url) {
-    const file = fileOf(url.split('?')[0].split('#')[0]);
+    const file = resolveFile(url.split('?')[0].split('#')[0]);
     if (!isSpaPage(file) || htmlCache.has(url)) return;
     fetchHtml(url).catch(() => {});
   }

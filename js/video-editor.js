@@ -12,6 +12,20 @@
 
 let _veState = null;
 
+// Ronda 42 — o editor de vídeo cria o seu `#ve-root` directamente em
+// `document.body` (fora do `#main` que o router substitui), por isso
+// uma navegação SPA a meio de uma edição deixava o modal preso no
+// ecrã por cima da página nova, com o objectURL nunca revogado. Isto
+// não chama `onCancel` (evita efeitos-secundários de uma navegação
+// involuntária) nem mexe num job já em polling no servidor — só limpa
+// o que é puramente visual/memória deste lado.
+document.addEventListener('bz:spa-leave', () => {
+  if (!_veState) return;
+  if (_veState.objUrl) URL.revokeObjectURL(_veState.objUrl);
+  document.getElementById('ve-root')?.remove();
+  _veState = null;
+});
+
 /**
  * Abre o editor de vídeo para `file` (um File bruto escolhido pelo
  * utilizador) e devolve, via `onDone`, o resultado processado:
