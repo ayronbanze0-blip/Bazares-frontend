@@ -66,10 +66,10 @@
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
 <main id="main"><div id="view" class="pg-body"></div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
-  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788700000"></script>
+  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788710000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 let _srchTab = 'tudo';
 let _srchTimer = null;
@@ -112,8 +112,6 @@ async function openPersonChat(id) {
 
 initPage({ active: '', onReady: () => {
   const q0 = getParam('q') || '';
-  const savedSrch = getListState('search');
-  if (savedSrch && savedSrch.tab) _srchTab = savedSrch.tab;
   document.getElementById('view').innerHTML = `
     <div class="pg-hero" style="margin-bottom:20px">
       <div class="pg-hero-content">
@@ -128,7 +126,7 @@ initPage({ active: '', onReady: () => {
     </div>
     <div class="srch-tabs" id="srch-tabs">
       ${[['tudo','Tudo'],['produtos','Produtos'],['bazares','Bazares'],['pessoas','Pessoas']].map(([k,l])=>
-        `<button class="srch-tab ${k===_srchTab?'on':''}" id="tab-${k}" onclick="switchSrchTab('${k}')">${l}</button>`
+        `<button class="srch-tab ${k==='tudo'?'on':''}" id="tab-${k}" onclick="switchSrchTab('${k}')">${l}</button>`
       ).join('')}
     </div>
     <div id="srch-results"></div>`;
@@ -139,18 +137,10 @@ initPage({ active: '', onReady: () => {
     _srchTimer = setTimeout(() => runSearch(input.value.trim()), 350);
   });
   input.addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(_srchTimer); runSearch(input.value.trim()); } });
-  document.getElementById('srch-results').addEventListener('click', _saveSrchState, true);
 
-  if (q0) {
-    runSearch(q0).then(() => { if (savedSrch) restoreScrollY(savedSrch.scrollY); });
-  }
+  if (q0) runSearch(q0);
   else document.getElementById('srch-results').innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Comece a escrever para pesquisar</h3><p>Produtos, bazares e pessoas — tudo num só lugar.</p></div>`;
 }});
-
-// ─── Memória de listagem (voltar sem perder separador/scroll) ──────
-function _saveSrchState(){
-  saveListState('search',{tab:_srchTab, scrollY:window.scrollY});
-}
 
 function switchSrchTab(tab) {
   _srchTab = tab;

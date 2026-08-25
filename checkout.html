@@ -57,11 +57,11 @@
 <div id="modal-root"></div>
 <div id="toast-root"></div>
 
-<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script>
-<script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
-  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788700000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script>
+<script src="/js/api.js?v=1788700000"></script>
+  <script src="/js/core.js?v=1788700000"></script><script src="/js/runtime.js?v=1788700000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788710000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script>
 <script src="/js/maps.js?v=1788700000"></script>
 <script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
@@ -117,9 +117,6 @@ function renderSingleCheckout(user, p, qty) {
     ${checkoutFormHtml(user, p)}
   </div>`;
 
-  Bazares.Analytics?.trackCheckoutStarted({ mode: 'single', itemCount: qty, total: p.price * qty });
-  Bazares.Analytics?.trackFunnelStep('checkout', 'iniciado', { mode: 'single' });
-
   document.body.classList.add('has-sticky-cta');
   document.body.insertAdjacentHTML('beforeend', `<div class="sticky-cta" id="sticky-cta-mount">
     <div class="sc-total"><span>Total</span><b id="sc-co-total">${fmtMT(p.price * qty)}</b></div>
@@ -172,9 +169,6 @@ function renderCartCheckout(user, items) {
     </div>
     ${checkoutFormHtml(user, null)}
   </div>`;
-
-  Bazares.Analytics?.trackCheckoutStarted({ mode: 'cart', itemCount: items.length, total });
-  Bazares.Analytics?.trackFunnelStep('checkout', 'iniciado', { mode: 'cart' });
 
   document.body.classList.add('has-sticky-cta');
   document.body.insertAdjacentHTML('beforeend', `<div class="sticky-cta" id="sticky-cta-mount">
@@ -315,13 +309,7 @@ async function submitOrder(body) {
   setLoading(btn, true);
   if (scBtn) setLoading(scBtn, true);
   try {
-    const orderRes = await api.post('/orders', body);
-    const order = orderRes?.data?.order;
-    Bazares.Analytics?.trackOrderCreated({
-      id: order?.id, total: order?.total, itemCount: body?.items?.length,
-      paymentMethod: body?.payment, mode: _co_mode
-    });
-    Bazares.Analytics?.trackFunnelStep('checkout', 'concluido', { mode: _co_mode });
+    await api.post('/orders', body);
     // Se veio do carrinho, esvaziar o carrinho agora que a encomenda foi criada.
     if (_co_mode === 'cart' && _co_cartItems.length) {
       await Promise.allSettled(_co_cartItems.map(i => api.delete(`/cart/items/${i.id}`)));
