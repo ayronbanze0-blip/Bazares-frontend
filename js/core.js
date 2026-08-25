@@ -643,4 +643,3 @@ Bazares.EditHistory = (() => {
 
   return { create };
 })();
-
