@@ -154,20 +154,10 @@ async function apiRequest(method, path, { body, isForm, params, _retry } = {}) {
     res = await fetchWithRetry(url, { method, headers, body: fetchBody, credentials: 'include' }, 3, timeoutMs);
   } catch (networkErr) {
     const isUpload = isForm && body instanceof FormData;
-    let msg;
-    if (!navigator.onLine) {
-      // O dispositivo está mesmo sem rede — aqui faz sentido apontar para a internet.
-      msg = isUpload
-        ? 'Não foi possível concluir o envio. Verifique a sua ligação à internet e tente novamente — se persistir, tente com menos imagens de cada vez.'
-        : 'Sem ligação à internet. Verifique a sua rede e tente novamente.';
-    } else {
-      // O dispositivo tem rede, mas o pedido falhou (servidor em baixo,
-      // timeout, CORS, etc.) — não é um problema de internet do utilizador.
-      msg = isUpload
-        ? 'Não foi possível concluir o envio. O servidor não respondeu — tente novamente em breve.'
-        : 'Não foi possível ligar ao servidor. Tente novamente em breve.';
-    }
-    _monitor(false, null, { reason: !navigator.onLine ? 'offline' : 'server_unreachable' });
+    const msg = isUpload
+      ? 'Não foi possível concluir o envio. Verifique a sua ligação à internet e tente novamente — se persistir, tente com menos imagens de cada vez.'
+      : 'Sem ligação ao servidor. Verifique a sua ligação à internet ou tente novamente em breve.';
+    _monitor(false, null, { reason: 'network' });
     throw { ok: false, networkError: true, message: msg };
   } finally {
     if (window.Bazares?.Loading) Bazares.Loading.stop();

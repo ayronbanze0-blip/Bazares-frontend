@@ -101,55 +101,62 @@ Bazares.Error = (() => {
 })();
 
 // ── CONNECTIVITY MANAGER ────────────────────────────────────
-// Bazares.Connectivity = (() => {
-  let isOnline = navigator.onLine;
+// Os eventos 'online'/'offline' do browser só reflectem a interface
+// de rede (Wi-Fi/dados ligados ou não) — NÃO se há internet a sério.
+// Em mobile é comum ficar "ligado" a uma rede sem internet (dados
+// desligados mas Wi-Fi de casa sem router activo, etc.) sem o browser
+// alguma vez disparar 'offline'. Por isso, a única forma fiável é
+// tentar mesmo um pedido leve ao backend (/health) e ver se responde.
+// Corre uma verificação periódica só quando a página está visível
+// (poupa bateria/dados) e mais vezes seguidas quando já está offline
+// (para detectar a recuperação depressa).
+Bazares.Connectivity = (() => {
+  let isOnline = true;
+  let timer = null;
   const listeners = new Set();
 
   function setState(next) {
     if (next === isOnline) return;
-
     isOnline = next;
-
-    if (window.Bazares?.State) {
-      Bazares.State.set('online', isOnline);
-    }
-
-    listeners.forEach(fn => {
-      try {
-        fn(isOnline);
-      } catch {}
-    });
-
+    if (window.Bazares?.State) Bazares.State.set('online', isOnline);
+    listeners.forEach(fn => { try { fn(isOnline); } catch {} });
     if (typeof toast === 'function') {
-      if (!isOnline) {
-        toast(
-          'Sem ligação à internet. A app voltará a funcionar quando a ligação regressar.',
-          'warn',
-          6000
-        );
-      } else {
-        toast('Ligação à internet recuperada.', 'ok', 2500);
-      }
+      if (!isOnline) toast('Sem ligação à internet. A app vai voltar a funcionar assim que a rede regressar.', 'warn', 6000);
+      else toast('Ligação à internet recuperada.', 'ok', 2500);
     }
+    schedule(); // muda o ritmo de verificação consoante o novo estado
   }
 
-  function checkNow() {
-    setState(navigator.onLine);
+  async function checkNow() {
+    if (document.visibilityState === 'hidden') return isOnline;
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/health', {
+        method: 'GET', cache: 'no-store', signal: controller.signal
+      });
+      clearTimeout(t);
+      setState(res.ok);
+    } catch {
+      setState(false);
+    }
     return isOnline;
   }
 
-  window.addEventListener('online', () => setState(true));
-  window.addEventListener('offline', () => setState(false));
+  function schedule() {
+    clearTimeout(timer);
+    // offline: verifica de 8 em 8s (quer detectar a recuperação depressa);
+    // online: só de 45 em 45s (é só uma rede de segurança de fundo).
+    timer = setTimeout(checkNow, isOnline ? 45000 : 8000);
+  }
 
-  return {
-    checkNow,
-    isOnline: () => isOnline,
-    onChange: (fn) => {
-      listeners.add(fn);
-      return () => listeners.delete(fn);
-    }
-  };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkNow(); });
+  schedule();
+  checkNow();
+
+  return { checkNow, isOnline: () => isOnline, onChange: (fn) => listeners.add(fn) };
 })();
+
 // ── LOADING MANAGER ─────────────────────────────────────────
 // Contador global (refcounted): várias chamadas em simultâneo não
 // fazem a barra "acabar" antes de tempo — só desaparece quando a
