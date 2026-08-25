@@ -101,12 +101,13 @@ Bazares.Error = (() => {
 })();
 
 // ── CONNECTIVITY MANAGER ────────────────────────────────────
-// Os eventos 'online'/'offline' do browser só reflectem a interface
-// de rede (Wi-Fi/dados ligados ou não) — NÃO se há internet a sério.
-// Em mobile é comum ficar "ligado" a uma rede sem internet (dados
-// desligados mas Wi-Fi de casa sem router activo, etc.) sem o browser
-// alguma vez disparar 'offline'. Por isso, a única forma fiável é
-// tentar mesmo um pedido leve ao backend (/health) e ver se responde.
+// Deteta apenas se o DISPOSITIVO tem rede (navigator.onLine), não se
+// o backend/base de dados está a responder — isso é um problema
+// diferente e não deve aparecer como "Sem ligação à internet".
+// navigator.onLine reflete a interface de rede (Wi-Fi/dados ligados
+// ou não); pode dar falso positivo em casos raros (ligado a uma rede
+// sem saída real para a internet), mas não confunde falhas do
+// servidor com falta de internet, que era o problema anterior.
 // Corre uma verificação periódica só quando a página está visível
 // (poupa bateria/dados) e mais vezes seguidas quando já está offline
 // (para detectar a recuperação depressa).
@@ -129,17 +130,18 @@ Bazares.Connectivity = (() => {
 
   async function checkNow() {
     if (document.visibilityState === 'hidden') return isOnline;
-    try {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 5000);
-      const res = await fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/health', {
-        method: 'GET', cache: 'no-store', signal: controller.signal
-      });
-      clearTimeout(t);
-      setState(res.ok);
-    } catch {
+
+    // Primeiro: verifica se o dispositivo está realmente sem rede.
+    if (!navigator.onLine) {
       setState(false);
+      return isOnline;
     }
+
+    // Se o dispositivo diz que está online, consideramos a internet
+    // disponível. A disponibilidade do servidor/backend é outra coisa
+    // e não deve ser confundida com "sem ligação à internet" — isso
+    // é tratado à parte (ver Bazares.ServerStatus, se existir).
+    setState(true);
     return isOnline;
   }
 
@@ -151,6 +153,8 @@ Bazares.Connectivity = (() => {
   }
 
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkNow(); });
+  window.addEventListener('online', checkNow);
+  window.addEventListener('offline', checkNow);
   schedule();
   checkNow();
 
@@ -639,3 +643,4 @@ Bazares.EditHistory = (() => {
 
   return { create };
 })();
+
