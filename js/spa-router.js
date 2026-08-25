@@ -68,32 +68,8 @@ window.BazaresRouter = (function () {
     return pathname.split('/').pop() || 'index.html';
   }
 
-  // Ronda "client-side routing" — URLs amigáveis (/product/:slug,
-  // /bazar/:slug, /categoria/:cat — ver PRETTY_ROUTES em app.js e
-  // functions/*/[x].js no servidor) não terminam em .html, por isso
-  // fileOf() sozinho devolvia o slug (ex.: "conjunto-tech") em vez do
-  // ficheiro real — SPA_PAGES nunca continha esse "nome", e tanto a
-  // saída como a entrada nessas páginas caíam sempre em reload
-  // completo, mesmo já registadas. Este mapa faz a mesma tradução
-  // prefixo→ficheiro que o servidor já faz (env.ASSETS.fetch dentro de
-  // cada Function), só que no browser, para o router saber a que
-  // página SPA cada URL bonito corresponde.
-  const PRETTY_PREFIXES = {
-    product: 'product.html',
-    bazar: 'bazar.html',
-    categoria: 'products.html'
-  };
-
-  function resolveFile(pathname) {
-    const parts = pathname.split('/').filter(Boolean);
-    const last = parts[parts.length - 1] || '';
-    if (/\.html$/.test(last)) return last;
-    if (parts.length >= 2 && PRETTY_PREFIXES[parts[0]]) return PRETTY_PREFIXES[parts[0]];
-    return fileOf(pathname);
-  }
-
   function currentFile() {
-    return resolveFile(location.pathname);
+    return fileOf(location.pathname);
   }
 
   function isSpaPage(file) {
@@ -209,7 +185,7 @@ window.BazaresRouter = (function () {
     opts = opts || {};
     const replace = !!opts.replace;
     const path = url.split('?')[0];
-    const targetFile = resolveFile(path);
+    const targetFile = fileOf(path);
 
     // Fallback total: página actual ou destino não convertida ainda →
     // comportamento normal, sem qualquer tentativa de SPA.
@@ -321,14 +297,8 @@ window.BazaresRouter = (function () {
         return;
       }
       if (url.origin !== location.origin) return;
-      // Antes exigia .html no path, o que excluía sempre as rotas
-      // bonitas (/product/:slug, /bazar/:slug) do fluxo SPA — agora
-      // resolve-se o ficheiro real (resolveFile) e deixa isSpaPage()
-      // decidir; um link para algo que não é nenhuma página SPA (API,
-      // imagens, ficheiros estáticos) simplesmente não bate em
-      // nenhuma entrada de SPA_PAGES/PRETTY_PREFIXES e cai para fora
-      // na mesma.
-      if (!isSpaPage(currentFile()) || !isSpaPage(resolveFile(url.pathname))) return;
+      if (!/\.html($|\?)/.test(url.pathname)) return;
+      if (!isSpaPage(currentFile()) || !isSpaPage(fileOf(url.pathname))) return;
 
       e.preventDefault();
       navigate(url.pathname + url.search);
@@ -368,7 +338,7 @@ window.BazaresRouter = (function () {
   // no DOM. Falha em silêncio — é só uma optimização, nunca deve
   // interromper nada se a rede estiver ocupada/offline.
   function prefetch(url) {
-    const file = resolveFile(url.split('?')[0].split('#')[0]);
+    const file = fileOf(url.split('?')[0].split('#')[0]);
     if (!isSpaPage(file) || htmlCache.has(url)) return;
     fetchHtml(url).catch(() => {});
   }

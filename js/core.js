@@ -37,23 +37,12 @@ Bazares.Error = (() => {
   let lastMsg = '';
 
   function report(err, context) {
-    const message = err instanceof Error ? err.message : String(err?.message || err || 'Erro desconhecido');
     try {
       if (window.Sentry?.captureException) {
-        window.Sentry.captureException(err instanceof Error ? err : new Error(message), {
+        window.Sentry.captureException(err instanceof Error ? err : new Error(String(err?.message || err)), {
           extra: { context: context || 'unknown' }
         });
       }
-    } catch {}
-    // Complementa o Sentry: um registo próprio, consultável em
-    // GET /api/analytics/summary — dá para ver "esta página está a
-    // gerar erros" sem precisar de abrir o dashboard do Sentry.
-    try {
-      Bazares.Analytics?.track('client_error', {
-        message: (message || '').slice(0, 300),
-        context: context || 'unknown',
-        stack: (err?.stack || '').slice(0, 500)
-      });
     } catch {}
   }
 
@@ -82,19 +71,6 @@ Bazares.Error = (() => {
   });
   window.addEventListener('unhandledrejection', (ev) => {
     report(ev.reason, 'unhandledrejection');
-  });
-
-  // Liga o utilizador autenticado ao Sentry (login/logout/bootstrap —
-  // ver Bazares.State em runtime.js) — sem isto, cada erro aparece no
-  // Sentry como "utilizador desconhecido" e não dá para saber quantas
-  // PESSOAS diferentes estão a ser afectadas pelo mesmo problema, só
-  // quantas VEZES aconteceu.
-  document.addEventListener('bazares:state:user', (ev) => {
-    try {
-      const user = ev.detail?.value;
-      if (user?.id) window.Sentry?.setUser?.({ id: user.id, username: user.name || undefined });
-      else window.Sentry?.setUser?.(null);
-    } catch {}
   });
 
   return { notify, report };
