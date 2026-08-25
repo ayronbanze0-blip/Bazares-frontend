@@ -1,4 +1,25 @@
 // Bazares — Service Worker (v15)
+// v47: subiu a versão do cache — nova página admin-monitoring.html
+// (painel de "Rotas com problemas" a partir de /api/analytics/*)
+// adicionada ao APP_SHELL; registo do router (BazaresRouter.register)
+// actualizado nas 55 páginas para incluir a nova.
+// v46: subiu a versão do cache — config.js (Sentry: bundle com
+// tracing/Web Vitals em vez do bundle base), api.js (mede duração de
+// cada chamada e reporta api_error/api_slow) e core.js (Bazares.Error
+// agora também alimenta a analytics própria, além do Sentry) mudaram
+// de conteúdo.
+// v45: subiu a versão do cache — novo js/analytics.js (tracking de
+// eventos centralizado: product_viewed, product_published,
+// checkout_started, order_created, search_performed, page_view,
+// funnel_step, feature_used) adicionado ao APP_SHELL e a todas as
+// páginas; sem isto, quem já tinha a app em cache nunca ia buscar o
+// ficheiro novo.
+// v44: subiu a versão do cache — js/spa-router.js mudou de conteúdo
+// (fase "client-side routing": rotas bonitas /product/:slug e
+// /bazar/:slug passaram a resolver para o ficheiro SPA real, entrando
+// e saindo dessas páginas sem reload completo — antes caíam sempre em
+// navegação normal por o router comparar o slug com a lista de
+// páginas registadas em vez do nome do ficheiro).
 // v9: subiu a versão do cache outra vez — mesmo problema documentado
 // abaixo (v4 a v8): o js/app.js mudou de conteúdo (produto associado
 // a Post/História passou a mostrar um cartão "Comprar" no feed) mas
@@ -82,7 +103,14 @@
 // interações normais, ex: "Ver mais" numa legenda). Sobe-se na mesma para
 // forçar todos os dispositivos já instalados a largar a cache antiga e
 // buscar tudo de novo, por segurança — mesmo raciocínio da v3.
-const CACHE_NAME = "bazares-v43";
+// v48: fusão de duas branches paralelas do frontend — a de monitorização
+// (v45-v47, acima) com a que fechou a "memória de listagem" (scroll/filtros
+// ao voltar) em bazars/home/search/meufeed/favorites/category, a navegação
+// com véu em login.html, e o helper Bazares.Utils.debounce em vários
+// formulários. products.html ganhou a memória de listagem nesta fusão
+// (só tinha em metade das páginas antes). Nenhum ficheiro JS partilhado
+// novo — sobe-se na mesma por precaução (mistura de páginas HTML mudadas).
+const CACHE_NAME = "bazares-v48";
 
 const APP_SHELL = [
   "/", "/index.html", "/home.html", "/notifications.html", "/dashboard.html", "/products.html", "/product.html",
@@ -93,10 +121,10 @@ const APP_SHELL = [
   "/my-products.html", "/my-bazar.html", "/referrals.html", "/ranking.html",
   "/support.html", "/admin.html", "/admin-users.html", "/admin-orders.html",
   "/admin-products.html", "/admin-finance.html", "/admin-wallet.html",
-  "/admin-reports.html", "/admin-logs.html", "/admin-broadcast.html",
+  "/admin-reports.html", "/admin-logs.html", "/admin-monitoring.html", "/admin-broadcast.html",
   "/admin-denuncias.html",
   "/css/style.css?v=1788700000", "/css/splash.css?v=1788700000",
-  "/js/config.js?v=1788700000", "/js/seo.js?v=1788700000", "/js/action-queue.js?v=1788700000", "/js/api.js?v=1788700000", "/js/core.js?v=1788700000", "/js/runtime.js?v=1788700000", "/js/offline-store.js?v=1788700000", "/js/virtual-feed.js?v=1788700000", "/js/spa-router.js?v=1788710000", "/js/app.js?v=1788700000", "/js/splash.js?v=1788700000",
+  "/js/config.js?v=1788740000", "/js/seo.js?v=1788700000", "/js/action-queue.js?v=1788700000", "/js/api.js?v=1788740000", "/js/analytics.js?v=1788730000", "/js/core.js?v=1788740000", "/js/runtime.js?v=1788700000", "/js/offline-store.js?v=1788700000", "/js/virtual-feed.js?v=1788700000", "/js/spa-router.js?v=1788720000", "/js/app.js?v=1788700000", "/js/splash.js?v=1788700000",
   "/js/install-prompt.js?v=1788700000", "/js/push-notifications.js?v=1788700000",
   "/manifest.json",
   "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-512-maskable.png",
