@@ -266,7 +266,11 @@ label{font-size:12px;color:var(--t3);display:block;margin-bottom:6px;font-weight
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
-.btn-primary{background:var(--g-green);color:#fff;box-shadow:0 2px 12px rgba(0,224,67,.28)}
+/* Texto escuro fixo (não var(--text), que fica claro em dark mode e
+   voltaria a falhar): branco sobre este gradiente dava só 1.79:1–2.65:1
+   de contraste (falha WCAG AA, mínimo 4.5:1). #1F2937 sobre o mesmo
+   gradiente dá 5.53:1–8.21:1, em ambos os temas. */
+.btn-primary{background:var(--g-green);color:#1F2937;box-shadow:0 2px 12px rgba(0,224,67,.28)}
 .btn-primary:hover{box-shadow:var(--sh-green);transform:translateY(-2px)}
 
 .btn-gold{background:var(--g-gold);color:var(--n-900);box-shadow:0 2px 12px rgba(245,184,0,.22);font-weight:800}
@@ -567,6 +571,7 @@ body.pg-landing .hero-content{padding-top:calc(var(--tb-h) + 26px)}
 .pg-hero.pg-hero--compact .section-pill{margin-bottom:6px;padding:3px 11px;font-size:9.5px}
 .pg-hero.pg-hero--compact h1{font-size:clamp(16px,2.8vw,21px)}
 .pg-hero.pg-hero--compact p{font-size:12px;margin-top:3px}
+.pg-hero.pg-hero--compact .trust-strip{gap:12px;font-size:10.5px}
 
 /* Variante escura — reservada às páginas onde o banner mostra uma foto
    de capa opcional (bannerUrl) ou botões/textos brancos fixos por cima
