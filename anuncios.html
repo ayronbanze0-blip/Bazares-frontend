@@ -95,7 +95,7 @@ function announcementCardHtml(a){
           <span>${fmtDate(a.createdAt)}</span>
         </div>
       </div>
-      <button class="btn-kebab" title="Mais opções" onclick="openFeedKebab('ANNOUNCEMENT','${a.id}','${_annBazarId}')"><svg class="ico-inline" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+      <button class="btn-kebab" title="Mais opções" aria-label="Mais opções" onclick="openFeedKebab('ANNOUNCEMENT','${a.id}','${_annBazarId}')"><svg class="ico-inline" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
     </div>
 
     ${quickTagBadgesHtml(parsedAnn.tags)}

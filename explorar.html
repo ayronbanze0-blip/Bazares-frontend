@@ -180,7 +180,7 @@ function initExpHeroCarousel(){
   const dotsEl = document.getElementById('exp-hero-dots');
   if(!track || !dotsEl) return;
   track.innerHTML = EXP_HERO_SLIDES.map((s,i) => s.type==='img' ? `
-    <button type="button" class="exp-hero-slide exp-hero-slide--img" style="background-image:url('${s.img}')" onclick="_expHeroGo(${i})"><img src="${s.img}" alt="${esc(s.alt||'')}" loading="lazy"></button>
+    <button type="button" class="exp-hero-slide exp-hero-slide--img" aria-label="${esc(s.cta || s.alt || 'Ver destaque')}" style="background-image:url('${s.img}')" onclick="_expHeroGo(${i})"><img src="${s.img}" alt="${esc(s.alt||'')}" loading="lazy"></button>
   ` : `
     <div class="exp-hero-slide exp-hero-slide--txt">
       <div class="exp-hero-text">

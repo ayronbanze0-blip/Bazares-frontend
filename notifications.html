@@ -166,7 +166,7 @@ function notifPageItemHtml(n){
       </div>
       ${!n.read ? `<div style="width:8px;height:8px;border-radius:50%;background:var(--blu);flex-shrink:0;margin-top:6px"></div>` : ''}
     </div>
-    <button class="btn-icon btn-xs" title="Apagar" onclick="deleteNotifPage('${n.id}')"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    <button class="btn-icon btn-xs" title="Apagar" aria-label="Apagar notificação" onclick="deleteNotifPage('${n.id}')"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
   </div>`;
 }
 
