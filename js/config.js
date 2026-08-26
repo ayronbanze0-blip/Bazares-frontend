@@ -59,18 +59,36 @@ window.FIREBASE_VAPID_KEY = 'BB6XsbrriV_7a1_7OyPwbqMeTzvEbBHh7_jOPmNkOFAtF-Hwdhl
    Sentry (rastreamento de erros no browser) — opcional.
    sentry.io → New Project (Browser JavaScript) → copia o DSN daqui.
    Com o campo vazio, nada é carregado — zero impacto.
+
+   NOTA (Ronda 52): trocado o bundle "base" pelo bundle "tracing" —
+   o anterior (bundle.min.js) só apanhava erros/crashes, não tinha
+   performance monitoring nem Web Vitals (LCP/CLS/INP), mesmo com
+   tracesSampleRate definido. browserTracingIntegration() é o que
+   liga isso, e tracePropagationTargets junta os traces do frontend
+   aos do backend (mesmo pedido, ponta a ponta) quando bate com o
+   domínio da API.
 ============================================================ */
 window.SENTRY_DSN = 'https://8b162bd61407b497da6d19827cdf1a84@o4511794985566208.ingest.us.sentry.io/4511794990481408';
 
 if (window.SENTRY_DSN) {
   const sentryScript = document.createElement('script');
-  sentryScript.src = 'https://browser.sentry-cdn.com/8.45.0/bundle.min.js';
+  sentryScript.src = 'https://browser.sentry-cdn.com/8.45.0/bundle.tracing.min.js';
   sentryScript.crossOrigin = 'anonymous';
   sentryScript.onload = () => {
     window.Sentry.init({
       dsn: window.SENTRY_DSN,
       environment: location.hostname === 'localhost' ? 'development' : 'production',
-      tracesSampleRate: 0.1
+      integrations: [
+        Sentry.browserTracingIntegration()
+      ],
+      tracesSampleRate: 0.1,
+      tracePropagationTargets: [window.BAZARES_API_BASE || 'http://localhost:3001'],
+      // Amostra de sessões: 0 em uso normal, 100% assim que um erro
+      // acontece — dá para ver o replay só de quem apanhou o bug, sem
+      // gravar toda a gente à toa (fica só activo se um dia se instalar
+      // o integrations Replay; sem essa integration este campo é inofensivo).
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 0
     });
 
     // Teste manual: abre qualquer página do site com ?sentry-test=1

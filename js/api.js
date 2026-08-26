@@ -103,6 +103,27 @@ function uploadTimeoutFor(formData) {
  * attaches the Bearer access token, and auto-refreshes once on 401.
  */
 async function apiRequest(method, path, { body, isForm, params, _retry } = {}) {
+  const _t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+  const _monitor = (ok, status, extra) => {
+    const durationMs = Math.round(((window.performance && performance.now) ? performance.now() : Date.now()) - _t0);
+    try {
+      window.Sentry?.addBreadcrumb?.({
+        category: 'api', level: ok ? 'info' : 'error',
+        message: `${method} ${path} → ${status ?? 'network-error'}`,
+        data: { method, path, status, durationMs, ...extra }
+      });
+    } catch {}
+    // Complementa o Sentry com um registo próprio, consultável em
+    // GET /api/analytics/summary sem precisar de abrir o dashboard do
+    // Sentry — só regista o que interessa (falhas e chamadas lentas),
+    // nunca todas as chamadas (isso seria a Analytics normal, não isto).
+    if (!ok) {
+      Bazares.Analytics?.track('api_error', { method, path, status: status ?? null, duration_ms: durationMs, ...extra });
+    } else if (durationMs > 3000) {
+      Bazares.Analytics?.track('api_slow', { method, path, duration_ms: durationMs });
+    }
+  };
+
   let url = API_BASE + path;
   if (params) {
     const qs = new URLSearchParams();
@@ -136,6 +157,7 @@ async function apiRequest(method, path, { body, isForm, params, _retry } = {}) {
     const msg = isUpload
       ? 'Não foi possível concluir o envio. Verifique a sua ligação à internet e tente novamente — se persistir, tente com menos imagens de cada vez.'
       : 'Sem ligação ao servidor. Verifique a sua ligação à internet ou tente novamente em breve.';
+    _monitor(false, null, { reason: 'network' });
     throw { ok: false, networkError: true, message: msg };
   } finally {
     if (window.Bazares?.Loading) Bazares.Loading.stop();
@@ -195,11 +217,14 @@ async function apiRequest(method, path, { body, isForm, params, _retry } = {}) {
         ? (retryAfter >= 60 ? `${Math.ceil(retryAfter / 60)} min` : `${retryAfter}s`)
         : 'momentos';
       const message = data?.message || `Está a ir depressa demais. Espere ${wait} e tente novamente.`;
+      _monitor(false, 429, { reason: 'rate_limited' });
       throw { ok: false, status: 429, code: data?.code, message, errors: data?.errors, rateLimited: true, retryAfter: Number.isFinite(retryAfter) ? retryAfter : null };
     }
     const message = data?.message || data?.errors?.[0]?.message || `Erro ${res.status}`;
+    _monitor(false, res.status, { code: data?.code || null });
     throw { ok: false, status: res.status, code: data?.code, message, errors: data?.errors };
   }
+  _monitor(true, res.status);
   return data; // { success, message, data }
 }
 
