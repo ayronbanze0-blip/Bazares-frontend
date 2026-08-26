@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 </head>
 <body data-require-auth="1" data-roles="BUYER">
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
@@ -61,7 +61,7 @@
 let _cartItems=[];
 initPage({ active:'cart.html', requireAuth:true, roles:['BUYER'], onReady: async()=>{
   document.getElementById('view').innerHTML=`
-    <div class="pg-hero">
+    <div class="pg-hero pg-hero--compact">
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Carrinho</div>
         <h1>O meu carrinho</h1>

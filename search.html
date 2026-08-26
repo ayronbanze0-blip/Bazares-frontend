@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 <style>
 .srch-input-wrap{position:relative;margin-bottom:16px}
 .srch-input-wrap .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t4)}
@@ -115,7 +115,7 @@ initPage({ active: '', onReady: () => {
   const savedSrch = getListState('search');
   if (savedSrch && savedSrch.tab) _srchTab = savedSrch.tab;
   document.getElementById('view').innerHTML = `
-    <div class="pg-hero" style="margin-bottom:20px">
+    <div class="pg-hero pg-hero--compact" style="margin-bottom:20px">
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Pesquisa</div>
         <h1>Pesquisar no Bazares</h1>

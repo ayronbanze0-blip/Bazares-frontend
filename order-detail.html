@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 <style>
 .od-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
 @media (max-width:860px){.od-grid{grid-template-columns:1fr}}
@@ -114,7 +114,7 @@ function renderOrder() {
   const canReview = role==='BUYER' && o.status==='ENTREGUE' && !o.reviewed;
 
   view.innerHTML = `
-    <div class="pg-hero" style="margin-bottom:20px">
+    <div class="pg-hero pg-hero--compact" style="margin-bottom:20px">
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg> Encomenda #${o.id.slice(0,8).toUpperCase()}</div>
         <h1>Detalhe da encomenda</h1>

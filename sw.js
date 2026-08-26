@@ -123,7 +123,7 @@ const APP_SHELL = [
   "/admin-products.html", "/admin-finance.html", "/admin-wallet.html",
   "/admin-reports.html", "/admin-logs.html", "/admin-monitoring.html", "/admin-broadcast.html",
   "/admin-denuncias.html",
-  "/css/style.css?v=1788700000", "/css/splash.css?v=1788700000",
+  "/css/style.css?v=1788750000", "/css/splash.css?v=1788700000",
   "/js/config.js?v=1788740000", "/js/seo.js?v=1788700000", "/js/action-queue.js?v=1788700000", "/js/api.js?v=1788740000", "/js/analytics.js?v=1788730000", "/js/core.js?v=1788740000", "/js/runtime.js?v=1788700000", "/js/offline-store.js?v=1788700000", "/js/virtual-feed.js?v=1788700000", "/js/spa-router.js?v=1788720000", "/js/app.js?v=1788700000", "/js/splash.js?v=1788700000",
   "/js/install-prompt.js?v=1788700000", "/js/push-notifications.js?v=1788700000",
   "/manifest.json",

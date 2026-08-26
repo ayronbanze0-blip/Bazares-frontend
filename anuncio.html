@@ -30,7 +30,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 <style>
 .hashtag-chip{display:inline-flex;align-items:center;gap:5px;background:var(--b-50);color:var(--grn);font-size:12px;font-weight:700;padding:5px 10px;border-radius:var(--pill)}
 .hashtag-chip button{background:none;border:none;color:inherit;cursor:pointer;padding:0;display:flex;font-size:13px;line-height:1}
@@ -171,7 +171,7 @@ initPage({ active:'anuncio.html', requireAuth:true, roles:['SELLER'], onReady: a
   }
 
   view.innerHTML = `
-    <div class="pg-hero">
+    <div class="pg-hero pg-hero--compact">
       ${_editAnnouncementId ? '' : `<button type="button" class="pg-hero-corner" onclick="openAnnDrafts()">${icon('folder',14,2)} Rascunhos</button>`}
       <div class="pg-hero-content">
         <div class="section-pill">${icon('megaphone',16)} Post</div>

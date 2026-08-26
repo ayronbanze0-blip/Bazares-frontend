@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 </head>
 <body data-require-auth="1">
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
@@ -67,7 +67,7 @@ initPage({ active:'referrals.html', requireAuth:true, onReady: async(user)=>{
   const link=`${window.location.origin}/register.html?ref=${code}`;
   const stats=data?.stats||{};
   view.innerHTML=`
-    <div class="pg-hero">
+    <div class="pg-hero pg-hero--compact">
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Referências</div>
         <h1>Programa de Referidos</h1>

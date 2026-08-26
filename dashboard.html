@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 </head>
 <body data-require-auth="1">
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
@@ -71,7 +71,7 @@ initPage({ active:'dashboard.html', requireAuth:true, onReady: async(user) => {
     // de deixar o spinner preso para sempre em silêncio), mostra um erro
     // visível com opção de tentar de novo.
     console.error('[dashboard] falha ao renderizar:', err);
-    view.innerHTML = `<div class="pg-hero"><div class="pg-hero-content"><h1>Não foi possível carregar o dashboard</h1><p>Ocorreu um erro inesperado. Tente novamente.</p><div class="pg-hero-actions"><button class="btn btn-terra btn-sm" onclick="location.reload()"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Tentar novamente</button></div></div></div>`;
+    view.innerHTML = `<div class="pg-hero pg-hero--compact"><div class="pg-hero-content"><h1>Não foi possível carregar o dashboard</h1><p>Ocorreu um erro inesperado. Tente novamente.</p><div class="pg-hero-actions"><button class="btn btn-terra btn-sm" onclick="location.reload()"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Tentar novamente</button></div></div></div>`;
   }
 }});
 
@@ -92,7 +92,7 @@ async function renderBuyerDash(user) {
   } catch{}
 
   view.innerHTML = `
-    <div class="pg-hero">
+    <div class="pg-hero pg-hero--compact">
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M6 13.5V11a2 2 0 0 0-4 0c0 4 2 9 8 9h1c4.5 0 7-2.5 7-7v-3"/></svg> Bem-vindo</div>
         <h1>${greeting()}, ${esc(user.name.split(' ')[0])}!</h1>
@@ -149,7 +149,7 @@ async function renderSellerDash(user) {
   let bazar=null, orders=[];
   try { bazar=(await api.get('/bazars/me'))?.data?.bazar; } catch{ bazar=false; }
   if(!bazar){
-    view.innerHTML=`<div class="pg-hero"><div class="pg-hero-content"><h1>Criar o seu Bazar</h1><p>Ainda não tem um Bazar. Crie o seu espaço de venda agora.</p><div class="pg-hero-actions"><button class="btn btn-terra btn-sm" onclick="go('my-bazar.html')"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-6h16l1 6"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></svg> Criar Bazar agora</button></div></div></div>`;
+    view.innerHTML=`<div class="pg-hero pg-hero--compact"><div class="pg-hero-content"><h1>Criar o seu Bazar</h1><p>Ainda não tem um Bazar. Crie o seu espaço de venda agora.</p><div class="pg-hero-actions"><button class="btn btn-terra btn-sm" onclick="go('my-bazar.html')"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-6h16l1 6"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></svg> Criar Bazar agora</button></div></div></div>`;
     return;
   }
   // As 3 chamadas abaixo são independentes entre si — disparam em paralelo
@@ -187,7 +187,7 @@ async function renderSellerDash(user) {
     : avatar(user.name,46);
 
   view.innerHTML=`
-    <div class="pg-hero pg-hero--dark">
+    <div class="pg-hero pg-hero--dark pg-hero--compact">
       <div class="pg-hero-content">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div style="display:flex;align-items:center;gap:14px;min-width:0">

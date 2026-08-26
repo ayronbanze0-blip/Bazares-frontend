@@ -30,7 +30,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788700000">
+<link rel="stylesheet" href="/css/style.css?v=1788750000">
 <style>
 .hs-wrap{display:grid;grid-template-columns:1fr;gap:26px;max-width:920px;margin:0 auto}
 @media(min-width:760px){.hs-wrap{grid-template-columns:296px 1fr;align-items:start}}
@@ -185,7 +185,7 @@ initPage({ active:'historia.html', requireAuth:true, roles:['SELLER'], onReady: 
   }
 
   view.innerHTML = `
-    <div class="pg-hero">
+    <div class="pg-hero pg-hero--compact">
       ${_editStoryId ? '' : `<button type="button" class="pg-hero-corner" onclick="openHsDrafts()">${icon('folder',14,2)} Rascunhos</button>`}
       <div class="pg-hero-content">
         <div class="section-pill"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> História</div>
