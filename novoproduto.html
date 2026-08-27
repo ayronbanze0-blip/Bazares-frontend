@@ -39,7 +39,7 @@
 <script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788780000"></script><script src="/js/api.js?v=1788790000"></script><script src="/js/analytics.js?v=1788730000"></script>
   <script src="/js/core.js?v=1788790000"></script><script src="/js/runtime.js?v=1788960000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788970000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788990000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onReady: async()=>{
   const view=document.getElementById('view');
@@ -77,7 +77,12 @@ initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onRead
         <div class="fg"><label>Stock</label><input type="number" id="pm-stock" value="1" min="0" placeholder="0"></div>
       </div>
       <div class="fg" id="pm-cat-grp"><label>Categoria *</label>
-        <select id="pm-cat"><option value="">Escolhe uma categoria</option>${CATS.map(c=>`<option value="${esc(c.l)}">${esc(c.l)}</option>`).join('')}</select>
+        <button type="button" class="cat-picker-btn" id="pm-cat-btn" onclick="Bazares.CategoryPicker.open(document.getElementById('pm-cat').value, document.getElementById('pm-subcat').value, _onPmCatPicked)">
+          <span id="pm-cat-display">Escolhe uma categoria</span>
+          ${icon('chevronRight', 16, 2)}
+        </button>
+        <input type="hidden" id="pm-cat">
+        <input type="hidden" id="pm-subcat">
         <div class="field-err-msg" id="pm-cat-err">Escolhe uma categoria.</div>
       </div>
 
@@ -259,8 +264,8 @@ async function generateWithAI(){
     const data=res?.data||{};
     if(data.description) document.getElementById('pm-desc').value=data.description;
     if(data.suggestedCategory && catEl){
-      const opt=[...catEl.options].find(o=>o.value.toLowerCase()===String(data.suggestedCategory).toLowerCase());
-      if(opt) catEl.value=opt.value;
+      const match=CATS.find(c=>c.l.toLowerCase()===String(data.suggestedCategory).toLowerCase());
+      if(match) _onPmCatPicked(match.l, '');
     }
     toast('Descrição gerada — revê antes de publicar.','ok');
   }catch(e){
@@ -338,8 +343,9 @@ function validateAllFields() {
   let firstInvalid = null;
   ids.forEach(id => { if (!_validateField(id) && !firstInvalid) firstInvalid = id; });
   if (firstInvalid) {
+    const focusTarget = document.getElementById(firstInvalid === 'pm-cat' ? 'pm-cat-btn' : firstInvalid);
     document.getElementById(firstInvalid).scrollIntoView({ behavior: 'smooth', block: 'center' });
-    document.getElementById(firstInvalid).focus();
+    focusTarget?.focus();
     return false;
   }
   return true;
@@ -358,6 +364,7 @@ function _collectAutosaveFields() {
     price: document.getElementById('pm-price')?.value || '',
     stock: document.getElementById('pm-stock')?.value || '',
     cat: document.getElementById('pm-cat')?.value || '',
+    subcat: document.getElementById('pm-subcat')?.value || '',
     loc: document.getElementById('pm-loc')?.value || '',
     del: document.getElementById('pm-del')?.value || '',
     cond: document.getElementById('pm-cond')?.value || '',
@@ -376,7 +383,7 @@ function initAutosave() {
     document.getElementById('pm-name').value = saved.name || '';
     document.getElementById('pm-price').value = saved.price || '';
     document.getElementById('pm-stock').value = saved.stock || '1';
-    if (saved.cat) document.getElementById('pm-cat').value = saved.cat;
+    if (saved.cat) _onPmCatPicked(saved.cat, saved.subcat || '');
     document.getElementById('pm-loc').value = saved.loc || '';
     if (saved.del) document.getElementById('pm-del').value = saved.del;
     if (saved.cond) document.getElementById('pm-cond').value = saved.cond;
@@ -436,12 +443,29 @@ function previewProduct() {
 }
 
 /* ── Guardar ──────────────────────────────────────────────── */
+// ── Selector de categoria (bottom sheet 2 níveis) ────────────────
+// Actualiza os inputs escondidos + o texto do botão; dispara 'input'
+// para o autosave delegado em #view apanhar a mudança (o autosave
+// ouve eventos a borbulhar do container, não faria sentido chamá-lo
+// directamente aqui e duplicar a lógica de debounce).
+function _onPmCatPicked(cat, subcat) {
+  const catEl = document.getElementById('pm-cat');
+  const subEl = document.getElementById('pm-subcat');
+  const display = document.getElementById('pm-cat-display');
+  catEl.value = cat;
+  subEl.value = subcat || '';
+  display.textContent = subcat ? `${cat} · ${subcat}` : cat;
+  display.style.color = 'var(--text)';
+  catEl.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
 async function saveProduct(){
   const name=document.getElementById('pm-name').value.trim();
   const description=document.getElementById('pm-desc').value.trim();
   const price=parseFloat(document.getElementById('pm-price').value);
   const stock=parseInt(document.getElementById('pm-stock').value)||0;
   const category=document.getElementById('pm-cat').value;
+  const subcategory=document.getElementById('pm-subcat').value;
   const location=document.getElementById('pm-loc').value.trim();
   const condition=document.getElementById('pm-cond').value;
   const color=document.getElementById('pm-color').value.trim();
@@ -462,6 +486,10 @@ async function saveProduct(){
     const fd=new FormData();
     fd.append('name',name); fd.append('description',description); fd.append('price',price);
     fd.append('stock',stock); fd.append('category',category); fd.append('location',location);
+    // Só envia subcategory quando escolhida — o backend ainda não tem
+    // este campo (ver nota no PLANO-100.md); enviar sempre uma string
+    // vazia arriscava criar um valor "" gravado em vez de undefined.
+    if(subcategory) fd.append('subcategory',subcategory);
     fd.append('condition',condition); fd.append('color',color); fd.append('size',size);
     fd.append('deliveryMethod',deliveryMethod);
 
