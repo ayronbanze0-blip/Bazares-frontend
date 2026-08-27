@@ -298,13 +298,27 @@ function prettyUrl(page, params) {
 
 // ─── FORMAT HELPERS ─────────────────────────────────────────────
 const CATS = [
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>', l: 'Telemóveis e Acessórios', color:'#2563EB' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>', l: 'Electrónicos', color:'#7C3AED' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 3 4-3 3 4-3 2v12H8V9L5 7z"/></svg>', l: 'Moda', color:'#DB2777' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20v2H2z"/><path d="M4 18v-4l4-2 3 2 4-4 5 3v5"/></svg>', l: 'Calçados', color:'#D97706' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', l: 'Casa e Jardim', color:'#16A34A' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3"/><path d="M2 11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/><path d="M4 16v3"/><path d="M20 16v3"/></svg>', l: 'Móveis', color:'#B45309' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-6h16l1 6"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></svg>', l: 'Electrodomésticos', color:'#0891B2' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/><path d="M5 17h9.5"/></svg>', l: 'Automóveis', color:'#DC2626' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 17.5h-9l2-6h4l3 3h3"/><path d="M8 8.5h5"/></svg>', l: 'Motociclos', color:'#EA580C' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0-5.66 5.66l-6 6a2 2 0 1 0 2.83 2.83l6-6a4 4 0 1 0 5.66-5.66l-2.12 2.12-2.83-2.83z"/></svg>', l: 'Serviços', color:'#0D9488' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20"/><line x1="8" y1="6" x2="8" y2="6.01"/><line x1="12" y1="6" x2="12" y2="6.01"/><line x1="16" y1="6" x2="16" y2="6.01"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/></svg>', l: 'Imóveis', color:'#4F46E5' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V10"/><path d="M12 10c-3 0-5-2-5-5 3 0 5 2 5 5z"/><path d="M12 10c3 0 5-2 5-5-3 0-5 2-5 5z"/><path d="M12 15c-2.5 0-4-1.5-4-4 2.5 0 4 1.5 4 4z"/><path d="M12 15c2.5 0 4-1.5 4-4-2.5 0-4 1.5-4 4z"/></svg>', l: 'Agricultura', color:'#65A30D' },
-  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v6l-2 2v10a1 1 0 0 1-1 1h-0a1 1 0 0 1-1-1V10l-2-2z"/></svg>', l: 'Saúde e Beleza', color:'#E11D48' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="15.5" y1="9.5" x2="20" y2="8"/><line x1="14" y1="13.5" x2="16.5" y2="19"/><line x1="10" y1="13.5" x2="7.5" y2="19"/><line x1="8.5" y1="9.5" x2="4" y2="8"/></svg>', l: 'Desporto', color:'#F59E0B' }, { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>', l: 'Outros', color:'#64748B' }
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>', l: 'Telemóveis e Acessórios', color:'#2563EB',
+    subs: ['Smartphones', 'Telemóveis básicos', 'Capas e Películas', 'Carregadores e Cabos', 'Fones e Auscultadores', 'Powerbanks', 'Outros acessórios'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>', l: 'Electrónicos', color:'#7C3AED',
+    subs: ['Computadores e Portáteis', 'TVs', 'Câmaras e Fotografia', 'Consolas e Jogos', 'Áudio e Colunas', 'Componentes e Acessórios', 'Outros'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 3 4-3 3 4-3 2v12H8V9L5 7z"/></svg>', l: 'Moda', color:'#DB2777',
+    subs: ['Roupa de Homem', 'Roupa de Mulher', 'Roupa de Criança', 'Acessórios', 'Relógios e Joalharia', 'Malas e Carteiras'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20v2H2z"/><path d="M4 18v-4l4-2 3 2 4-4 5 3v5"/></svg>', l: 'Calçados', color:'#D97706' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', l: 'Casa e Jardim', color:'#16A34A',
+    subs: ['Decoração', 'Cozinha e Utensílios', 'Jardim e Exterior', 'Ferramentas', 'Iluminação', 'Roupa de Cama e Casa de Banho'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3"/><path d="M2 11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/><path d="M4 16v3"/><path d="M20 16v3"/></svg>', l: 'Móveis', color:'#B45309' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-6h16l1 6"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></svg>', l: 'Electrodomésticos', color:'#0891B2' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/><path d="M5 17h9.5"/></svg>', l: 'Automóveis', color:'#DC2626',
+    subs: ['Carros ligeiros', 'Carrinhas e SUV', 'Camiões', 'Peças e Acessórios', 'Pneus e Jantes'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 17.5h-9l2-6h4l3 3h3"/><path d="M8 8.5h5"/></svg>', l: 'Motociclos', color:'#EA580C' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0-5.66 5.66l-6 6a2 2 0 1 0 2.83 2.83l6-6a4 4 0 1 0 5.66-5.66l-2.12 2.12-2.83-2.83z"/></svg>', l: 'Serviços', color:'#0D9488' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20"/><line x1="8" y1="6" x2="8" y2="6.01"/><line x1="12" y1="6" x2="12" y2="6.01"/><line x1="16" y1="6" x2="16" y2="6.01"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/></svg>', l: 'Imóveis', color:'#4F46E5',
+    subs: ['Casas para Arrendar', 'Casas para Vender', 'Apartamentos', 'Terrenos', 'Escritórios e Comercial'] },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V10"/><path d="M12 10c-3 0-5-2-5-5 3 0 5 2 5 5z"/><path d="M12 10c3 0 5-2 5-5-3 0-5 2-5 5z"/><path d="M12 15c-2.5 0-4-1.5-4-4 2.5 0 4 1.5 4 4z"/><path d="M12 15c2.5 0 4-1.5 4-4-2.5 0-4 1.5-4 4z"/></svg>', l: 'Agricultura', color:'#65A30D' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v6l-2 2v10a1 1 0 0 1-1 1h-0a1 1 0 0 1-1-1V10l-2-2z"/></svg>', l: 'Saúde e Beleza', color:'#E11D48' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="15.5" y1="9.5" x2="20" y2="8"/><line x1="14" y1="13.5" x2="16.5" y2="19"/><line x1="10" y1="13.5" x2="7.5" y2="19"/><line x1="8.5" y1="9.5" x2="4" y2="8"/></svg>', l: 'Desporto', color:'#F59E0B' },
+  { ico: '<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>', l: 'Outros', color:'#64748B' }
 ];
 
 const ROLE_LABEL = { ADMIN: 'Administrador', SELLER: 'Vendedor', BUYER: 'Comprador', REVENDEDOR: 'Revendedor' };
@@ -768,6 +782,8 @@ function userPhoto(user) {
 // ─── ICON SYSTEM (outline, stroke-based — substitui emojis na UI de navegação) ──
 // Uso: icon('bell', 18) devolve um <svg> inline herdando currentColor.
 const ICONS = {
+  chevronRight: '<polyline points="9 18 15 12 9 6"/>',
+  chevronLeft:  '<polyline points="15 18 9 12 15 6"/>',
   undo:        '<path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 1 2.6 6.4"/>',
   sync:        '<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
   redo:        '<path d="M21 7v6h-6"/><path d="M21 13a9 9 0 1 0-2.6 6.4"/>',
@@ -1264,6 +1280,68 @@ Bazares.Drawer = {
 Bazares.Sheet = {
   open: (html, opts = {}) => Bazares.Modal.open(html, { ...opts, stack: true, variant: 'sheet' }),
   close: () => Bazares.Modal.close()
+};
+
+// ─── SELECTOR DE CATEGORIA/SUBCATEGORIA (bottom sheet, 2 níveis) ────
+// Substitui o <select> nativo de categoria em novoproduto.html/
+// my-products.html. 1º nível lista as 14 categorias; se a escolhida
+// tiver `subs` (nem todas têm — só as que têm produtos muito
+// diferentes entre si, ex. Electrónicos), abre um 2º nível dentro do
+// mesmo sheet (fecha e reabre com o novo conteúdo — mais simples do
+// que expor os internos do Bazares.Modal só para isto, e a transição
+// de fecho/abertura do sheet já é rápida). "Nenhuma em particular" no
+// 2º nível deixa a subcategoria por preencher, de propósito — nem
+// todas as categorias precisam de uma subcategoria.
+// onSelect(cat, subcat) — subcat vem '' se não escolhida/não aplicável.
+Bazares.CategoryPicker = {
+  open(currentCat, currentSub, onSelect) {
+    const step1 = `
+      <div class="modal-hd"><h3>Escolhe a categoria</h3><button class="modal-x" onclick="Bazares.Sheet.close()">${icon('close', 18, 2)}</button></div>
+      <div class="sheet-list">
+        ${CATS.map(c => `
+          <button type="button" class="sheet-item${c.l === currentCat ? ' on' : ''}" onclick="Bazares.CategoryPicker._pickCat('${esc(c.l).replace(/'/g, "\\'")}')">
+            <span class="sheet-item-ico" style="color:${c.color}">${c.ico}</span>
+            <span class="sheet-item-label">${esc(c.l)}</span>
+            ${c.subs ? icon('chevronRight', 16, 2) : ''}
+          </button>`).join('')}
+      </div>`;
+    Bazares.Sheet.open(step1);
+    Bazares.CategoryPicker._onSelect = onSelect;
+  },
+
+  // Categoria sem subcategorias — resolve já; com subcategorias — abre o 2º nível.
+  _pickCat(catLabel) {
+    const cat = CATS.find(c => c.l === catLabel);
+    if (!cat) return;
+    if (!cat.subs) { Bazares.Sheet.close(); Bazares.CategoryPicker._onSelect?.(cat.l, ''); return; }
+    Bazares.Sheet.close();
+    setTimeout(() => Bazares.CategoryPicker._openSubs(cat), 0); // deixa o sheet anterior fechar antes de abrir o próximo
+  },
+
+  _back() {
+    const onSelect = Bazares.CategoryPicker._onSelect;
+    Bazares.Sheet.close();
+    setTimeout(() => Bazares.CategoryPicker.open('', '', onSelect), 0);
+  },
+
+  _openSubs(cat) {
+    const step2 = `
+      <div class="modal-hd">
+        <button class="modal-x" onclick="Bazares.CategoryPicker._back()" aria-label="Voltar às categorias">${icon('chevronLeft', 18, 2)}</button>
+        <h3>${esc(cat.l)}</h3>
+        <button class="modal-x" onclick="Bazares.Sheet.close()">${icon('close', 18, 2)}</button>
+      </div>
+      <div class="sheet-list">
+        <button type="button" class="sheet-item" onclick="Bazares.Sheet.close();Bazares.CategoryPicker._onSelect?.('${esc(cat.l).replace(/'/g, "\\'")}','')">
+          <span class="sheet-item-label" style="color:var(--t3)">Nenhuma em particular</span>
+        </button>
+        ${cat.subs.map(s => `
+          <button type="button" class="sheet-item" onclick="Bazares.Sheet.close();Bazares.CategoryPicker._onSelect?.('${esc(cat.l).replace(/'/g, "\\'")}','${esc(s).replace(/'/g, "\\'")}')">
+            <span class="sheet-item-label">${esc(s)}</span>
+          </button>`).join('')}
+      </div>`;
+    Bazares.Sheet.open(step2);
+  }
 };
 
 // ─── CONFIRMAÇÃO ESTILIZADA ────────────────────────────────────────
