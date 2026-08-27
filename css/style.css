@@ -85,6 +85,21 @@ html,body{touch-action:manipulation}
   /* Radii — levemente mais "squircle", menos genérico */
   --r:11px; --rl:17px; --rxl:21px; --rxxl:28px; --pill:999px;
 
+  /* Espaçamento — escala em vez de valores soltos por componente
+     (ver PLANO-UX-VISUAL.md, item "Espaçamento consistente"). Novo
+     código deve usar isto em vez de px directo; o CSS existente vai
+     sendo migrado aos poucos, não tudo de uma vez. */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+
+  /* Elevação — z-index nomeado por camada, para não se inventar
+     números novos ao calhas. Os valores numéricos actuais no resto
+     do ficheiro continuam válidos (não foram migrados retroactivamente
+     para não arriscar a ordem de empilhamento); usar estes tokens em
+     código novo daqui para a frente. */
+  --z-base:1; --z-sticky:60; --z-nav:150; --z-overlay:300;
+  --z-modal:4000; --z-toast:100050; --z-top:100100;
+
   /* Sombras — mais suaves e em camadas (aparência premium); um pouco
      mais fundas que antes para os cartões brancos "brilharem" por
      cima do fundo cinza-esverdeado, agora com mais contraste. */
@@ -101,7 +116,29 @@ html,body{touch-action:manipulation}
   --ease:.18s cubic-bezier(.25,.46,.45,.94);
   --spring:.4s cubic-bezier(.34,1.56,.64,1);
 
-  /* Gradientes */
+  /* Escala de duração para animações teatrais (entradas de modal/sheet/
+     página, pops de sucesso) — hoje cada @keyframes ainda define a sua
+     própria duração "à mão" (.22s, .26s, .28s, .32s...); esta escala
+     existe para que novas animações escolham daqui em vez de inventar
+     mais um valor, e para migração gradual das existentes sem stress.
+     Não inclui os loops decorativos contínuos (shimmer, spin, glows de
+     Premium) — esses variam de propósito para dar uma sensação de
+     "viva" e não de UI a responder a uma ação, por isso ficam fora
+     desta escala. */
+  --dur-fast:.18s;   /* pop, ripple, toggle rápido */
+  --dur-base:.28s;   /* entrada de modal/sheet/drawer */
+  --dur-slow:.4s;    /* entrada de página inteira */
+  --dur-loop:1.4s;   /* loop de loading (shimmer, skeleton) */
+
+  /* Gradientes
+     Regra de uso (PLANO-UX-VISUAL.md, "cor de destaque para ações
+     importantes"): --g-green é a cor primária da marca — botão de
+     ação principal, links activos, elementos de confiança/sucesso.
+     --g-gold é reservada a Premium/destaque pago (planos, selos de
+     loja premium) — nunca usar dourado para uma ação comum, ou perde
+     o significado de "isto é premium". --g-terra é usada em avisos
+     suaves e em acentos decorativos do tema capulana (nunca como cor
+     de botão de ação — não é uma cor semântica de estado). */
   --g-green:linear-gradient(135deg,var(--b-600) 0%,var(--b-500) 100%);
   --g-green2:linear-gradient(135deg,var(--b-500) 0%,var(--b-300) 100%);
   --g-gold:linear-gradient(135deg,var(--a-600) 0%,var(--a-400) 100%);
@@ -217,6 +254,20 @@ input,select,textarea{
 input:focus,select:focus,textarea:focus{
   border-color:var(--b-400);
   box-shadow:0 0 0 3px rgba(0,224,67,.14);
+}
+/* Texto só para leitores de ecrã — visualmente escondido sem usar
+   display:none (que também o esconde de leitores de ecrã). */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+/* Anel de foco visível para navegação por teclado em qualquer elemento
+   focável que não tenha já um estilo de foco próprio (botões, links,
+   cards clicáveis, itens de dropdown). Só aparece com :focus-visible,
+   para não poluir cliques de rato/toque. */
+a:focus-visible,button:focus-visible,[role="button"]:focus-visible,
+.card:focus-visible,.dropdown-item:focus-visible{
+  outline:2px solid var(--b-400);outline-offset:2px;border-radius:var(--r);
 }
 input::placeholder{color:var(--t4)}
 textarea{resize:vertical;min-height:80px}
@@ -532,15 +583,15 @@ body.pg-landing .hero-content{padding-top:calc(var(--tb-h) + 26px)}
 /* ══════════════════════════════════════
    PAGE HEADERS
 ══════════════════════════════════════ */
-.sh{margin-bottom:16px}
-.sh h2{margin-bottom:4px}
+.sh{margin-bottom:var(--space-4)}
+.sh h2{margin-bottom:var(--space-1)}
 .sh p{font-size:13px;color:var(--t4)}
-.sh-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.sh-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-3);margin-bottom:var(--space-4)}
 .section-pill{
   display:inline-flex;align-items:center;gap:6px;
   background:var(--b-50);color:var(--b-600);border:1px solid var(--b-100);
   padding:4px 14px;border-radius:var(--pill);font-size:10.5px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--space-2);
 }
 
 /* ══════════════════════════════════════
@@ -550,7 +601,7 @@ body.pg-landing .hero-content{padding-top:calc(var(--tb-h) + 26px)}
   background:var(--surf);border:1px solid var(--brd);box-shadow:var(--sh1);
   border-radius:var(--rxxl);
   padding:clamp(12px,2vw,19px) clamp(20px,3.5vw,38px);
-  margin-bottom:16px;position:relative;overflow:hidden;
+  margin-bottom:var(--space-4);position:relative;overflow:hidden;
 }
 .pg-hero::before{
   content:'';position:absolute;inset:0;
@@ -929,7 +980,7 @@ body.pg-landing .hero-content{padding-top:calc(var(--tb-h) + 26px)}
 .p-img{
   width:100%;height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
   background:linear-gradient(90deg,var(--g-100) 25%,var(--g-200) 37%,var(--g-100) 63%);
-  background-size:400% 100%;animation:pImgShimmer 1.4s ease infinite;
+  background-size:400% 100%;animation:pImgShimmer var(--dur-loop) ease infinite;
 }
 .p-img.loaded{animation:none;background:var(--g-100)}
 @keyframes pImgShimmer{0%{background-position:100% 0}100%{background-position:0 0}}
@@ -1722,7 +1773,7 @@ html.bz-splash-revealing .hero-loading{opacity:1}
 ══════════════════════════════════════ */
 .pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px}
 .pd-grid>div{min-width:0}
-.pd-main-img{height:340px;border-radius:var(--rxl);overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1.5px solid var(--brd);background:linear-gradient(90deg,var(--g-100) 25%,var(--g-200) 37%,var(--g-100) 63%);background-size:400% 100%;animation:pImgShimmer 1.4s ease infinite}
+.pd-main-img{height:340px;border-radius:var(--rxl);overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1.5px solid var(--brd);background:linear-gradient(90deg,var(--g-100) 25%,var(--g-200) 37%,var(--g-100) 63%);background-size:400% 100%;animation:pImgShimmer var(--dur-loop) ease infinite}
 .pd-main-img.loaded{animation:none;background:var(--g-100)}
 .pd-main-img img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease}
 .pd-main-img img.loaded{opacity:1}
@@ -2030,7 +2081,7 @@ html.bz-splash-revealing .hero-loading{opacity:1}
   border-radius:8px;
   background:linear-gradient(90deg,var(--g-100) 25%,var(--g-200) 50%,var(--g-100) 75%);
   background-size:200% 100%;
-  animation:shimmer 1.4s ease-in-out infinite;
+  animation:shimmer var(--dur-loop) ease-in-out infinite;
 }
 .skel-text   { height:13px;margin-bottom:8px;border-radius:5px; }
 .skel-title  { height:22px;margin-bottom:12px;border-radius:6px; }
@@ -2784,6 +2835,14 @@ body.reels-fullscreen .bn-item-main-ico{border-color:rgba(0,0,0,.32)}
 .field-counter{display:flex;justify-content:flex-end;font-size:11px;color:var(--t4);margin-top:4px;font-variant-numeric:tabular-nums}
 .field-counter.field-counter--near{color:#9D6A04}
 .field-counter.field-counter--full{color:var(--red)}
+
+/* Validação em tempo real de formulários — usado em novoproduto.html
+   e reaproveitável noutros formulários. .fg--err marca o grupo do
+   campo (label+input+mensagem); a mensagem só aparece com essa classe,
+   para não ocupar espaço em campos válidos. */
+.fg--err input, .fg--err select, .fg--err textarea{border-color:var(--red)!important}
+.field-err-msg{display:none;color:var(--red);font-size:11.5px;margin-top:4px;font-weight:500}
+.fg--err .field-err-msg{display:block}
 
 /* Nota informativa com ícone — substitui um parágrafo cinzento solto
    por uma linha com um (i) alinhado ao texto. */
