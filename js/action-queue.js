@@ -27,12 +27,15 @@ window.ActionQueue = (function () {
   const KEY = 'bz_action_queue_v1';
   const handlers = new Map(); // type -> async function(payload)
   let flushing = false;
+  const listeners = new Set(); // avisados sempre que o nº de pendentes muda — ver onChange()
 
   function readQueue() {
     try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; }
   }
   function writeQueue(q) {
     try { localStorage.setItem(KEY, JSON.stringify(q)); } catch {}
+    const count = Object.keys(q).length;
+    listeners.forEach(fn => { try { fn(count); } catch {} });
   }
 
   function registerHandler(type, fn) {
@@ -67,6 +70,7 @@ window.ActionQueue = (function () {
   async function flush() {
     if (flushing || !navigator.onLine) return;
     flushing = true;
+    const synced = []; // labels das acções que conseguiram sair desta vez
     try {
       const q = readQueue();
       for (const key of Object.keys(q)) {
@@ -76,6 +80,7 @@ window.ActionQueue = (function () {
         try {
           await handler(item.payload);
           dequeue(key);
+          synced.push(item.label || '');
         } catch (e) {
           if (!e?.networkError) dequeue(key); // erro "de negócio" — repetir não ia ajudar
           // erro de rede — mantém na fila, tenta na próxima 'online'
@@ -83,6 +88,15 @@ window.ActionQueue = (function () {
       }
     } finally {
       flushing = false;
+    }
+    // Avisa que o que ficou pendente offline já foi enviado — sem isto,
+    // a pessoa nunca sabe se aquela reacção/acção chegou mesmo a sair,
+    // só que "parecia" ter funcionado no momento em que a fez.
+    if (synced.length && typeof toast === 'function') {
+      const msg = synced.length === 1
+        ? `${synced[0] ? synced[0].charAt(0).toUpperCase() + synced[0].slice(1) : 'Ação pendente'} sincronizada.`
+        : `${synced.length} ações pendentes foram sincronizadas.`;
+      toast(msg, 'ok', 3000);
     }
   }
 
@@ -96,5 +110,16 @@ window.ActionQueue = (function () {
     });
   }
 
-  return { registerHandler, enqueue, dequeue, flush, pendingCount };
+  // onChange(fn) — regista para ser avisado sempre que o nº de acções
+  // pendentes mudar (enfileirar, sincronizar com sucesso, ou falhar
+  // por erro "de negócio" e sair da fila). Usado pelo indicador do
+  // topbar (ver buildTopbar em app.js) para se manter sempre correcto,
+  // em vez de só actualizar quando a página carrega.
+  function onChange(fn) {
+    listeners.add(fn);
+    fn(pendingCount()); // estado actual já ao registar, sem esperar pela próxima mudança
+    return () => listeners.delete(fn);
+  }
+
+  return { registerHandler, enqueue, dequeue, flush, pendingCount, onChange };
 })();

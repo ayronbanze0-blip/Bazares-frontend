@@ -639,3 +639,76 @@ Bazares.EditHistory = (() => {
 
   return { create };
 })();
+
+// ── RECENT SEARCHES ─────────────────────────────────────────
+// Histórico de pesquisa local (localStorage, por dispositivo — sem
+// endpoint no backend). Usado pela pesquisa da topbar (js/app.js) e
+// por search.html. Cap de 8 termos, mais recente primeiro, sem
+// duplicados (reintroduzir um termo já existente só o traz para o
+// topo em vez de duplicar a entrada).
+Bazares.RecentSearches = (() => {
+  const KEY = 'bz_recent_searches';
+  const MAX = 8;
+
+  function get() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+  }
+  function add(term) {
+    const t = (term || '').trim();
+    if (!t) return;
+    try {
+      let list = get().filter(x => x.toLowerCase() !== t.toLowerCase());
+      list.unshift(t);
+      if (list.length > MAX) list = list.slice(0, MAX);
+      localStorage.setItem(KEY, JSON.stringify(list));
+    } catch {}
+  }
+  function remove(term) {
+    try { localStorage.setItem(KEY, JSON.stringify(get().filter(x => x !== term))); } catch {}
+  }
+  function clear() {
+    try { localStorage.removeItem(KEY); } catch {}
+  }
+  return { get, add, remove, clear };
+})();
+
+// ── DISTÂNCIA DE EDIÇÃO (Levenshtein) ───────────────────────
+// Usado para sugerir correcções ortográficas ("Quis dizer...?")
+// quando uma pesquisa não devolve resultados — comparação leve,
+// só contra listas curtas já carregadas no cliente (categorias,
+// pesquisas recentes), nunca contra o catálogo inteiro.
+Bazares.Utils.levenshtein = function levenshtein(a, b) {
+  a = (a || '').toLowerCase(); b = (b || '').toLowerCase();
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = a[i - 1] === b[j - 1]
+        ? prev[j - 1]
+        : 1 + Math.min(prev[j - 1], prev[j], cur[j - 1]);
+    }
+    prev = cur;
+  }
+  return prev[n];
+};
+
+// Dado um termo pesquisado e uma lista de candidatos (ex.: nomes de
+// categoria, pesquisas recentes), devolve o candidato mais próximo se
+// estiver "suficientemente perto" (distância pequena face ao tamanho
+// da palavra) — ou null se nenhum servir, para nunca sugerir algo
+// aleatório face a um termo genuinamente sem correspondência.
+Bazares.Utils.closestMatch = function closestMatch(term, candidates) {
+  const t = (term || '').trim().toLowerCase();
+  if (t.length < 3 || !candidates?.length) return null;
+  let best = null, bestDist = Infinity;
+  for (const c of candidates) {
+    const cl = (c || '').toLowerCase();
+    if (cl === t) continue; // igual não é "correcção"
+    const dist = Bazares.Utils.levenshtein(t, cl);
+    const maxAllowed = t.length <= 4 ? 1 : t.length <= 8 ? 2 : 3;
+    if (dist <= maxAllowed && dist < bestDist) { best = c; bestDist = dist; }
+  }
+  return best;
+};

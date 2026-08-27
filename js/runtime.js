@@ -428,16 +428,21 @@ Bazares.History = (() => {
 // sozinho ao tocar fora, ao rolar a página, ao mudar de tamanho de
 // ecrã, ou com Escape, exactamente como qualquer menu nativo.
 Bazares.Dropdown = (() => {
-  let current = null; // { el, onOutside, onEsc }
+  let current = null; // { el, onOutside, onEsc, anchor }
 
   function close() {
     if (!current) return;
-    current.el.remove();
+    const { el, anchor } = current;
+    el.remove();
     document.removeEventListener('click', current.onOutside, true);
     document.removeEventListener('keydown', current.onEsc);
     window.removeEventListener('scroll', close, true);
     window.removeEventListener('resize', close);
     current = null;
+    // Devolve o foco ao botão que abriu o dropdown — sem isto, quem
+    // navega por teclado perde o sítio na página sempre que fecha um
+    // menu (Escape, seleccionar item, tocar fora).
+    if (anchor && document.contains(anchor)) anchor.focus();
   }
 
   // anchor: elemento de referência (normalmente o botão que foi tocado).
@@ -448,6 +453,7 @@ Bazares.Dropdown = (() => {
     close();
     const el = document.createElement('div');
     el.className = 'dropdown-panel';
+    el.setAttribute('role', 'menu');
     el.innerHTML = itemsHtml;
     document.body.appendChild(el);
 
@@ -472,7 +478,12 @@ Bazares.Dropdown = (() => {
     window.addEventListener('scroll', close, true);
     window.addEventListener('resize', close);
     document.addEventListener('keydown', onEsc);
-    current = { el, onOutside, onEsc };
+    current = { el, onOutside, onEsc, anchor };
+    // Move o foco para o 1º item do menu — quem abriu por teclado
+    // (Enter/Espaço no botão) espera continuar a navegar por teclado
+    // dentro do menu, não voltar a ter de procurar o Tab certo.
+    const firstItem = el.querySelector('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])');
+    if (firstItem) firstItem.focus();
     return el;
   }
 

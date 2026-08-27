@@ -94,10 +94,17 @@ const Session = {
 
 // Force logout on 401
 document.addEventListener('bazares:unauthorized', () => {
+  const hadSession = !!Session._user;
   Session._user = null;
   setAccessToken(null);
   const cur = location.href;
   if (!cur.includes('login.html') && !cur.includes('register.html')) {
+    // Só avisa se havia mesmo uma sessão activa — evita mostrar
+    // "sessão expirou" a um visitante que nunca chegou a ter sessão
+    // (ex.: 401 de optionalAuth numa página pública)
+    if (hadSession && typeof toast === 'function') {
+      toast('A tua sessão expirou. Inicia sessão novamente.', 'warn', 4500);
+    }
     go('login.html');
   }
 });
@@ -762,6 +769,7 @@ function userPhoto(user) {
 // Uso: icon('bell', 18) devolve um <svg> inline herdando currentColor.
 const ICONS = {
   undo:        '<path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 1 2.6 6.4"/>',
+  sync:        '<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
   redo:        '<path d="M21 7v6h-6"/><path d="M21 13a9 9 0 1 0-2.6 6.4"/>',
   menu:        '<path d="M4 6h16M4 12h16M4 18h16"/>',
   bell:        '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
@@ -960,7 +968,17 @@ function brandGlyph(size = 24, color = '#fff') {
 // suave), ou logo ao tocar no X / arrastar na horizontal.
 function toast(msg, type = 'ok', dur = 3800) {
   let root = document.getElementById('toast-root');
-  if (!root) { root = document.createElement('div'); root.id = 'toast-root'; document.body.appendChild(root); }
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'toast-root';
+    // aria-live: leitores de ecrã anunciam cada toast como uma região
+    // que muda (erros interrompem menos que 'assertive' seria ideal para
+    // 'err', mas 'polite' evita cortar o que o utilizador já estava a
+    // ouvir — suficiente para mensagens informativas/confirmação).
+    root.setAttribute('aria-live', 'polite');
+    root.setAttribute('role', 'status');
+    document.body.appendChild(root);
+  }
   const icons = {
     ok:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
     err:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
@@ -1035,6 +1053,43 @@ function toast(msg, type = 'ok', dur = 3800) {
 // mais explícitos para o mesmo motor.
 Bazares.Modal = (() => {
   const stack = []; // camadas empilhadas (stack:true) — modal-root não entra aqui
+  const PANEL_SEL = '.modal, .drawer-panel, .sheet-panel';
+  const FOCUSABLE_SEL = 'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+  // ── Gestão de foco (teclado) ──────────────────────────────────
+  // Sem isto, quem navega só por teclado (ou VoiceOver/TalkBack) abre
+  // um modal e o foco fica preso na página por trás — invisível e
+  // inacessível. Guarda quem tinha o foco antes de abrir (para o
+  // devolver ao fechar) e prende o Tab dentro do painel enquanto
+  // estiver aberto (padrão "focus trap" de qualquer diálogo modal).
+  function _focusables(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SEL)).filter(el => el.offsetParent !== null);
+  }
+
+  function _focusPanel(container) {
+    const panel = container.querySelector(PANEL_SEL);
+    if (!panel) return;
+    const first = _focusables(panel)[0];
+    if (first) { first.focus(); return; }
+    // Sem nada focável dentro (raro) — o próprio painel recebe o foco,
+    // para o leitor de ecrã pelo menos anunciar que entrou num diálogo.
+    panel.setAttribute('tabindex', '-1');
+    panel.focus();
+  }
+
+  function _onTrapKeydown(e) {
+    if (e.key !== 'Tab') return;
+    const top = stack.length ? stack[stack.length - 1] : document.getElementById('modal-root');
+    if (!top) return;
+    const panel = top.querySelector(PANEL_SEL);
+    if (!panel) return;
+    const items = _focusables(panel);
+    if (!items.length) { e.preventDefault(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  document.addEventListener('keydown', _onTrapKeydown);
 
   const VARIANTS = {
     dialog: (html, large) => `<div class="modal-bd"><div class="modal${large ? ' modal-lg' : ''}" role="dialog" aria-modal="true">${html}</div></div>`,
@@ -1079,38 +1134,55 @@ Bazares.Modal = (() => {
   // "closer" registado no History Manager (chamado depois do browser
   // já ter consumido a entrada de histórico sozinho, ao voltar atrás).
   function _removeTopLayer() {
-    if (stack.length) { stack.pop().remove(); return true; }
-    const r = document.getElementById('modal-root');
-    if (r && r.innerHTML.trim()) { r.innerHTML = ''; return true; }
-    return false;
+    let layer, isRoot = false;
+    if (stack.length) { layer = stack.pop(); }
+    else {
+      const r = document.getElementById('modal-root');
+      if (r && r.innerHTML.trim()) { layer = r; isRoot = true; }
+    }
+    if (!layer) return false;
+    const prevFocus = layer._bzPrevFocus;
+    if (isRoot) layer.innerHTML = ''; else layer.remove();
+    // Devolve o foco a quem o tinha antes de abrir — só se o elemento
+    // ainda existir na página (pode ter desaparecido entretanto, ex.
+    // o produto que se acabou de apagar); nesse caso o foco fica onde
+    // o browser o puser, em vez de apontar para o nada.
+    if (prevFocus && document.contains(prevFocus)) prevFocus.focus();
+    return true;
   }
 
   function open(html, opts = {}) {
     const { large = false, stack: doStack = false, variant = 'dialog' } = opts;
     const build = VARIANTS[variant] || VARIANTS.dialog;
+    const previousFocus = document.activeElement; // para devolver o foco ao fechar
     if (doStack) {
       const layer = document.createElement('div');
       layer.className = 'modal-root-layer';
       layer.innerHTML = build(html, large);
+      layer._bzPrevFocus = previousFocus;
       const bd = layer.querySelector(BACKDROP_SEL);
       bd.addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
       if (variant === 'sheet') _attachSheetDrag(layer.querySelector('.sheet-panel'), close);
       document.body.appendChild(layer);
       stack.push(layer);
       Bazares.History.openOverlay();
+      _focusPanel(layer);
       return;
     }
     let root = document.getElementById('modal-root');
     if (!root) { root = document.createElement('div'); root.id = 'modal-root'; document.body.appendChild(root); }
     const wasEmpty = !root.innerHTML.trim(); // troca de conteúdo com o modal já aberto não deve empilhar outra entrada de histórico
+    if (wasEmpty) root._bzPrevFocus = previousFocus; // só guarda no 1º open; substituir conteúdo não deve perder o alvo original
     root.innerHTML = build(html, large);
     root.querySelector(BACKDROP_SEL).addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
     if (variant === 'sheet') _attachSheetDrag(root.querySelector('.sheet-panel'), close);
     if (wasEmpty) Bazares.History.openOverlay();
+    _focusPanel(root);
   }
 
   // Fecho explícito (botão, ESC, toque fora) — consome a entrada de
-  // histórico que a abertura tinha armado.
+  // histórico que a abertura tinha armado. A restauração do foco fica
+  // a cargo de _removeTopLayer (ponto único de remoção do DOM).
   function close() {
     if (_removeTopLayer()) Bazares.History.consumeOverlayGuard();
   }
@@ -1631,6 +1703,9 @@ function buildTopbar(activePage = '') {
       <div id="search-dd"></div>
     </div>`}
     <div class="tb-actions">
+      ${user ? `<button class="tb-btn" id="sync-btn" title="A sincronizar" style="display:none" onclick="toast('As alterações feitas offline vão ser enviadas assim que a ligação voltar.','info',4000)">
+        ${icon('sync', 18)}<span class="tb-badge" id="sync-count" style="display:none"></span>
+      </button>` : ''}
       ${user ? `<button class="tb-btn" id="notif-btn" onclick="toggleNotifPanel()" title="Notificações">
         ${icon('bell', 19)}<span class="tb-badge" id="notif-count" style="display:none"></span>
       </button>` : ''}
@@ -1655,8 +1730,12 @@ function buildTopbar(activePage = '') {
     const debouncedSearch = Bazares.Utils.debounce((q) => doGlobalSearch(q, dd), 350);
     si.addEventListener('input', () => {
       const q = si.value.trim();
-      if (q.length < 2) { debouncedSearch.cancel(); dd.style.display = 'none'; return; }
+      if (q.length < 2) { debouncedSearch.cancel(); q.length === 0 ? renderRecentSearchesDD(dd) : (dd.style.display = 'none'); return; }
       debouncedSearch(q);
+    });
+    si.addEventListener('focus', () => { if (!si.value.trim()) renderRecentSearchesDD(dd); });
+    si.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && si.value.trim()) { Bazares.RecentSearches.add(si.value.trim()); go('search.html', { q: si.value.trim() }); dd.style.display = 'none'; }
     });
     document.addEventListener('click', e => {
       if (!e.target.closest('#tb-search-wrap')) dd.style.display = 'none';
@@ -1667,14 +1746,33 @@ function buildTopbar(activePage = '') {
   if (user) { refreshNotifDot(); refreshChatBadge(); }
 }
 
+// Mostra as últimas pesquisas quando o campo está vazio (foco sem
+// texto) — cada chip repete a pesquisa; "x" remove só essa; um botão
+// no fundo limpa tudo. Nada aparece se ainda não há histórico.
+function renderRecentSearchesDD(dd) {
+  const recent = Bazares.RecentSearches.get();
+  if (!recent.length) { dd.style.display = 'none'; return; }
+  dd.innerHTML = `<div style="padding:7px 12px 3px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);display:flex;justify-content:space-between;align-items:center">
+      <span>Pesquisas recentes</span>
+      <button type="button" onclick="event.stopPropagation();Bazares.RecentSearches.clear();document.getElementById('search-dd').style.display='none'" style="background:none;border:none;color:var(--t4);font-size:10px;font-weight:600;cursor:pointer;text-transform:none">Limpar</button>
+    </div>
+    ${recent.map(term => `<div class="sdd-item" style="justify-content:space-between" onclick="go('search.html',{q:'${escJsAttr(term)}'})">
+      <span style="display:flex;align-items:center;gap:9px;font-size:13px">${icon('clock', 14)}${esc(term)}</span>
+      <button type="button" onclick="event.stopPropagation();Bazares.RecentSearches.remove('${escJsAttr(term)}');renderRecentSearchesDD(document.getElementById('search-dd'))" aria-label="Remover" style="background:none;border:none;color:var(--t4);cursor:pointer;padding:4px">${icon('close', 12)}</button>
+    </div>`).join('')}`;
+  dd.style.display = 'block';
+}
+
 async function doGlobalSearch(q, dd) {
   try {
     // Usa o endpoint dedicado de pesquisa com sugestões rápidas
     const res = await api.get('/search/suggestions', { q });
     const suggestions = res?.data?.suggestions || [];
     if (!suggestions.length) {
-      dd.innerHTML = `<div style="padding:12px;color:var(--t4);font-size:13px">Sem resultados para "${esc(q)}" — <a href="search.html?q=${encodeURIComponent(q)}" style="color:var(--b-500);font-weight:600">ver todos</a></div>`;
+      const guess = Bazares.Utils.closestMatch(q, CATS.map(c => c.l).concat(Bazares.RecentSearches.get()));
+      dd.innerHTML = `<div style="padding:12px;color:var(--t4);font-size:13px">Sem resultados para "${esc(q)}"${guess ? ` — quis dizer <a href="search.html?q=${encodeURIComponent(guess)}" onclick="Bazares.RecentSearches.add('${escJsAttr(guess)}')" style="color:var(--b-500);font-weight:700">${esc(guess)}</a>?` : ''} — <a href="search.html?q=${encodeURIComponent(q)}" style="color:var(--b-500);font-weight:600">ver todos</a></div>`;
     } else {
+      Bazares.RecentSearches.add(q);
       const bazars = suggestions.filter(s => s.type === 'bazar');
       const products = suggestions.filter(s => s.type === 'product');
       dd.innerHTML =
@@ -1687,7 +1785,7 @@ async function doGlobalSearch(q, dd) {
             <div><div style="font-size:13px;font-weight:600">${esc(p.label)}</div><div style="font-size:11px;color:var(--t4)">${esc(p.sub||'')}</div></div>
           </div>`).join('')}` : '') +
         `<div style="padding:8px 12px;border-top:1px solid var(--brd);text-align:center">
-          <a href="search.html?q=${encodeURIComponent(q)}" style="font-size:12px;color:var(--b-500);font-weight:600">Ver todos os resultados para "${esc(q)}" <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <a href="search.html?q=${encodeURIComponent(q)}" onclick="Bazares.RecentSearches.add('${escJsAttr(q)}')" style="font-size:12px;color:var(--b-500);font-weight:600">Ver todos os resultados para "${esc(q)}" <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>`;
     }
     dd.style.display = 'block';
@@ -1831,6 +1929,20 @@ function _paintBadge(elId, unread) {
 }
 Bazares.State.subscribe('unreadNotif', (v) => _paintBadge('notif-count', v || 0));
 Bazares.State.subscribe('unreadChat', (v) => _paintBadge('tb-chat-count', v || 0));
+
+// ─── INDICADOR DE SINCRONIZAÇÃO (ações offline pendentes) ────────
+// Ao contrário dos badges acima (contagens vindas do servidor), este
+// reflecte o estado local do ActionQueue (js/action-queue.js): mostra
+// quantas ações feitas offline ainda não saíram. onChange() já entrega
+// a contagem actual assim que este ficheiro corre, por isso o botão
+// nasce sempre no estado certo, sem precisar de um refresh manual.
+if (window.ActionQueue?.onChange) {
+  ActionQueue.onChange((count) => {
+    const btn = document.getElementById('sync-btn');
+    if (btn) btn.style.display = count > 0 ? '' : 'none';
+    _paintBadge('sync-count', count || 0);
+  });
+}
 
 async function refreshNotifDot() {
   const cached = Bazares.State.get('unreadNotif');
@@ -2015,7 +2127,16 @@ function toggleDark() {
 }
 (function initTheme() {
   const saved = localStorage.getItem('bz_theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    return;
+  }
+  // Sem escolha guardada: respeita a preferência do sistema em vez de
+  // assumir sempre claro. Não grava em localStorage — só grava quando o
+  // utilizador escolhe explicitamente (toggleDark), para continuar a
+  // seguir o SO se ele mudar de tema mais tarde.
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (prefersDark) document.documentElement.setAttribute('data-theme', 'dark');
 })();
 
 // ─── BFCACHE GUARD ────────────────────────────────────────────────
@@ -2296,6 +2417,23 @@ function skeletonCards(container, n = 6) {
 }
 
 /**
+ * Render N skeleton row placeholders (avatar + duas linhas de texto)
+ * para listas horizontais — notificações, conversas, etc.
+ * Usage: skeletonRows(container, 5)
+ */
+function skeletonRows(container, n = 5) {
+  if (!container) return;
+  container.innerHTML = Array.from({ length: n }, () => `
+    <div style="display:flex;gap:12px;align-items:center;padding:12px 4px">
+      <div class="skel skel-avatar" style="width:40px;height:40px;flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div class="skel skel-text" style="width:75%"></div>
+        <div class="skel skel-text" style="width:45%;margin-bottom:0"></div>
+      </div>
+    </div>`).join('');
+}
+
+/**
  * Render N skeleton row placeholders inside a table body.
  */
 function skeletonTable(tbody, cols = 5, n = 5) {
@@ -2448,6 +2586,14 @@ async function toggleFavorite(productId, btn) {
     if (btn && isFav !== !wasFav) btn.innerHTML = iconHtml(isFav); // reconcilia se o servidor discordar
     toast(isFav ? 'Adicionado aos favoritos! <svg class="ico-inline" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' : 'Removido dos favoritos.', isFav ? 'ok' : 'info');
   } catch (e) {
+    if (e?.networkError && window.ActionQueue) {
+      // Sem rede — mantém o coração já preenchido/vazio no ecrã (não
+      // reverte) e fica em fila para reenviar sozinho quando a
+      // ligação voltar, tal como acontece com as reacções do feed.
+      ActionQueue.enqueue(`favorite:${productId}`, 'favorite', { productId, targetFav: !wasFav }, 'favorito');
+      toast('Sem ligação — vai ficar guardado assim que a internet voltar.', 'warn', 4000);
+      return;
+    }
     if (btn) btn.innerHTML = iconHtml(wasFav); // repõe o estado anterior
     toast(apiErrorMessage(e), 'err');
   }
@@ -2488,6 +2634,11 @@ async function toggleFeedFavorite(productId, btn) {
     const isFav = res?.data?.isFavorite;
     if (isFav !== !wasFav) apply(isFav); // reconcilia se o servidor discordar
   } catch (e) {
+    if (e?.networkError && window.ActionQueue) {
+      ActionQueue.enqueue(`favorite:${productId}`, 'favorite', { productId }, 'favorito');
+      toast('Sem ligação — vai ficar guardado assim que a internet voltar.', 'warn', 4000);
+      return;
+    }
     apply(wasFav); // repõe o estado anterior
     toast(apiErrorMessage(e), 'err');
   }
@@ -3136,6 +3287,14 @@ async function syncReactionToServer({ targetType, targetId, value, cardId }) {
   return { likeCount, myReaction };
 }
 if (window.ActionQueue) ActionQueue.registerHandler('react', syncReactionToServer);
+
+// Reenvio de um favorito marcado offline — mesmo endpoint de toggle
+// usado em toggleFavorite(); o ecrã já foi actualizado na hora, isto
+// só confirma no servidor quando a ligação voltar.
+async function syncFavoriteToServer({ productId }) {
+  await api.post(`/products/${productId}/favorite`);
+}
+if (window.ActionQueue) ActionQueue.registerHandler('favorite', syncFavoriteToServer);
 
 // Duplo-toque na imagem (estilo Instagram) — anima a reacção escolhida
 // (ou o coração, por omissão) por cima da foto; nunca faz "unreact" no

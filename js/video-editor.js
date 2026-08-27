@@ -75,6 +75,7 @@ function openVideoEditor(file, opts) {
           <div id="ve-progress-wrap" style="display:none">
             <div class="ve-progress-bar"><div class="ve-progress-fill" id="ve-progress-fill"></div></div>
             <p id="ve-progress-txt" style="text-align:center;font-size:12px;color:var(--t3);margin-top:8px">A processar…</p>
+            <p style="text-align:center;font-size:11px;color:var(--t4);margin-top:2px">Isto pode demorar um pouco dependendo da tua ligação — não feches esta página.</p>
           </div>
         </div>
         <div class="ve-footer">
