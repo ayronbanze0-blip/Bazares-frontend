@@ -2277,6 +2277,15 @@ html[data-premium="true"] .profile-hero::before{
   .pg-hero.pg-hero--premium,.baz-head.baz-head--premium,.p-badge.p-badge-premium::after{ animation:none; background-position:0 0; }
 }
 
+/* Cartão de produto marcado como Destaque (p.featured — curadoria/
+   admin, diferente de vendedor Premium acima: aqui é o produto que é
+   promovido, não a loja). Faixa no topo em vez de contorno inteiro,
+   para não se confundir visualmente com o dourado do Premium — as
+   duas coisas podem coexistir no mesmo cartão (loja premium E produto
+   em destaque), por isso têm de ser distinguíveis lado a lado. */
+.p-card.p-card--featured{ border-top:3px solid transparent; background-image:linear-gradient(var(--surf),var(--surf)),linear-gradient(90deg,#7C3AED,#DB2777); background-origin:border-box; background-clip:padding-box,border-box; }
+.p-card.p-card--featured:hover{ box-shadow:0 0 0 1px rgba(124,58,237,.22),var(--sh2); }
+
 /* ── Banner de pedido de notificações push (js/push-notifications.js) ── */
 .push-prompt{
   position:fixed;left:12px;right:12px;bottom:12px;z-index:9990;
@@ -2916,6 +2925,17 @@ body.reels-fullscreen .bn-item-main-ico{border-color:rgba(0,0,0,.32)}
 .sheet-panel{background:var(--surf);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;border-radius:var(--rxxl) var(--rxxl) 0 0;padding:8px 20px 26px;box-shadow:0 -24px 60px rgba(0,0,0,.35);animation:sheetIn .28s cubic-bezier(.32,.72,0,1) both}
 .sheet-drag-handle{width:36px;height:4px;border-radius:2px;background:var(--brd);margin:0 auto 14px;cursor:grab;touch-action:none}
 @keyframes sheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* PEEK BOTTOM SHEET — abre só ~42vh (mostra que há mais conteúdo
+   abaixo, em vez de saltar logo para o ecrã cheio). Arrastar o
+   puxador para cima, ou tocar nele, expande para a altura normal do
+   sheet (remove esta classe via JS, ver _attachSheetDrag). */
+.sheet-panel--peek{max-height:42vh;display:flex;flex-direction:column;position:relative}
+.sheet-panel--peek .sheet-peek-scroll{overflow:hidden;flex:1;position:relative}
+.sheet-peek-fade{
+  position:absolute;left:0;right:0;bottom:0;height:34px;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,var(--surf));border-radius:0 0 var(--rxxl) var(--rxxl);
+}
 
 /* DROPDOWN — pequeno painel ancorado a um botão/trigger, sem fundo
    escuro por trás; ver Bazares.Dropdown (runtime.js). */
