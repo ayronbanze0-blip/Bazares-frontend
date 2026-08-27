@@ -1111,7 +1111,11 @@ Bazares.Modal = (() => {
     dialog: (html, large) => `<div class="modal-bd"><div class="modal${large ? ' modal-lg' : ''}" role="dialog" aria-modal="true">${html}</div></div>`,
     'drawer-left': (html) => `<div class="drawer-bd drawer-left"><div class="drawer-panel" role="dialog" aria-modal="true">${html}</div></div>`,
     'drawer-right': (html) => `<div class="drawer-bd drawer-right"><div class="drawer-panel" role="dialog" aria-modal="true">${html}</div></div>`,
-    sheet: (html) => `<div class="sheet-bd"><div class="sheet-panel" role="dialog" aria-modal="true"><div class="sheet-drag-handle" aria-hidden="true"></div>${html}</div></div>`
+    sheet: (html) => `<div class="sheet-bd"><div class="sheet-panel" role="dialog" aria-modal="true"><div class="sheet-drag-handle" aria-hidden="true"></div>${html}</div></div>`,
+    // Peek: abre só parcialmente (mostra que há mais conteúdo abaixo em
+    // vez de ocupar logo o ecrã todo) — arrastar o puxador para cima
+    // expande para altura cheia; para baixo fecha, como o sheet normal.
+    'sheet-peek': (html) => `<div class="sheet-bd"><div class="sheet-panel sheet-panel--peek" role="dialog" aria-modal="true"><div class="sheet-drag-handle" aria-hidden="true"></div><div class="sheet-peek-scroll">${html}</div><div class="sheet-peek-fade" aria-hidden="true"></div></div></div>`
   };
   const BACKDROP_SEL = '.modal-bd, .drawer-bd, .sheet-bd';
 
@@ -1122,28 +1126,42 @@ Bazares.Modal = (() => {
   function _attachSheetDrag(panel, onClose) {
     const handle = panel.querySelector('.sheet-drag-handle');
     if (!handle) return;
+    const isPeek = () => panel.classList.contains('sheet-panel--peek');
+    const expand = () => { panel.classList.remove('sheet-panel--peek'); panel.querySelector('.sheet-peek-fade')?.remove(); };
     let startY = null, lastY = 0, lastT = 0, velocity = 0;
     const onStart = (y) => { startY = y; lastY = y; lastT = Date.now(); panel.style.transition = 'none'; };
     const onMove = (y) => {
       if (startY == null) return;
-      const dy = Math.max(0, y - startY);
+      const raw = y - startY; // negativo = a arrastar para cima
       const now = Date.now();
       const dt = now - lastT || 16;
       velocity = (y - lastY) / dt;
       lastY = y; lastT = now;
-      panel.style.transform = `translateY(${dy}px)`;
+      if (isPeek() && raw < 0) {
+        // No modo peek, arrastar para cima só dá um feedback pequeno
+        // (não desloca o painel a sério — só confirma "estou a puxar");
+        // a expansão real acontece no fim do gesto, em onEnd.
+        panel.style.transform = `translateY(${Math.max(raw, -24)}px)`;
+        return;
+      }
+      panel.style.transform = `translateY(${Math.max(0, raw)}px)`;
     };
     const onEnd = () => {
       if (startY == null) return;
-      const dy = Math.max(0, lastY - startY);
+      const raw = lastY - startY;
       panel.style.transition = '';
-      if (dy > 90 || velocity > 0.6) { onClose(); }
-      else { panel.style.transform = ''; }
+      panel.style.transform = '';
+      if (isPeek() && (raw < -36 || velocity < -0.5)) { expand(); startY = null; return; }
+      const dy = Math.max(0, raw);
+      if (dy > 90 || velocity > 0.6) onClose();
       startY = null;
     };
     handle.addEventListener('touchstart', (e) => onStart(e.touches[0].clientY), { passive: true });
     handle.addEventListener('touchmove', (e) => onMove(e.touches[0].clientY), { passive: true });
     handle.addEventListener('touchend', onEnd);
+    // Toque simples no puxador também expande — não depende só do
+    // gesto de arrastar, mais acessível a quem usa toque assistido.
+    if (isPeek()) handle.addEventListener('click', expand);
   }
 
   // Remove só a camada do topo, SEM mexer no histórico — usado pelo
@@ -1178,7 +1196,7 @@ Bazares.Modal = (() => {
       layer._bzPrevFocus = previousFocus;
       const bd = layer.querySelector(BACKDROP_SEL);
       bd.addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
-      if (variant === 'sheet') _attachSheetDrag(layer.querySelector('.sheet-panel'), close);
+      if (variant === 'sheet' || variant === 'sheet-peek') _attachSheetDrag(layer.querySelector('.sheet-panel'), close);
       document.body.appendChild(layer);
       stack.push(layer);
       Bazares.History.openOverlay();
@@ -1191,7 +1209,7 @@ Bazares.Modal = (() => {
     if (wasEmpty) root._bzPrevFocus = previousFocus; // só guarda no 1º open; substituir conteúdo não deve perder o alvo original
     root.innerHTML = build(html, large);
     root.querySelector(BACKDROP_SEL).addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
-    if (variant === 'sheet') _attachSheetDrag(root.querySelector('.sheet-panel'), close);
+    if (variant === 'sheet' || variant === 'sheet-peek') _attachSheetDrag(root.querySelector('.sheet-panel'), close);
     if (wasEmpty) Bazares.History.openOverlay();
     _focusPanel(root);
   }
@@ -1279,6 +1297,9 @@ Bazares.Drawer = {
 // centro do ecrã) e ganha o arrastar-para-fechar de borla.
 Bazares.Sheet = {
   open: (html, opts = {}) => Bazares.Modal.open(html, { ...opts, stack: true, variant: 'sheet' }),
+  // Abre só parcialmente (~42vh) — para pré-visualizações rápidas onde
+  // faz sentido sugerir que há mais, sem forçar já o ecrã cheio.
+  openPeek: (html, opts = {}) => Bazares.Modal.open(html, { ...opts, stack: true, variant: 'sheet-peek' }),
   close: () => Bazares.Modal.close()
 };
 
@@ -2532,7 +2553,7 @@ function productCard(p) {
   const hasDiscount = oldPrice > p.price;
   const discountPct = hasDiscount ? Math.round((1 - p.price / oldPrice) * 100) : 0;
   return `
-    <div class="p-card anim-item${premiumSeller ? ' p-card--premium' : ''}" id="pcard-${p.id}" onclick="go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})">
+    <div class="p-card anim-item${premiumSeller ? ' p-card--premium' : ''}${p.featured ? ' p-card--featured' : ''}" id="pcard-${p.id}" onclick="go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})">
       <div class="p-img">
         ${(hasDiscount || p.featured || premiumSeller) ? `<div class="p-badges">
           ${hasDiscount ? `<span class="p-badge p-badge-disc">-${discountPct}%</span>` : ''}
@@ -2568,7 +2589,7 @@ function productCardCompact(p) {
   const hasDiscount = oldPrice > p.price;
   const discountPct = hasDiscount ? Math.round((1 - p.price / oldPrice) * 100) : 0;
   return `
-    <div class="p-card pc-compact anim-item${premiumSeller ? ' p-card--premium' : ''}" id="pcard-${p.id}" onclick="go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})">
+    <div class="p-card pc-compact anim-item${premiumSeller ? ' p-card--premium' : ''}${p.featured ? ' p-card--featured' : ''}" id="pcard-${p.id}" onclick="go('product.html',{id:'${escJsAttr(p.slug || p.id)}'})">
       <div class="p-img">
         ${(hasDiscount || p.featured || premiumSeller) ? `<div class="p-badges">
           ${hasDiscount ? `<span class="p-badge p-badge-disc">-${discountPct}%</span>` : ''}
