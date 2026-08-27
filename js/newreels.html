@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="light">
+<head>
+<base href="/">
+<script>(function(){try{if(localStorage.getItem('bz_premium_hint')==='1'){document.documentElement.setAttribute('data-premium','true');}}catch(e){}})();</script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazares">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://bazare-s.onrender.com">
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="dns-prefetch" href="https://res.cloudinary.com">
+<title>Novo Reel — Bazares</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Novo Reel no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<link rel="canonical" href="https://bazares.pages.dev/newreels.html">
+<meta property="og:site_name" content="Bazares">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Novo Reel — Bazares">
+<meta property="og:description" content="Novo Reel no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta property="og:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<meta property="og:url" content="https://bazares.pages.dev/newreels.html">
+<meta property="og:locale" content="pt_MZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Novo Reel — Bazares">
+<meta name="twitter:description" content="Novo Reel no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=1788950000">
+<style>
+.hashtag-chip{display:inline-flex;align-items:center;gap:5px;background:var(--b-50);color:var(--grn);font-size:12px;font-weight:700;padding:5px 10px;border-radius:var(--pill)}
+.hashtag-chip button{background:none;border:none;color:inherit;cursor:pointer;padding:0;display:flex;font-size:13px;line-height:1}
+
+.nr-wrap{display:grid;grid-template-columns:1fr;gap:26px;max-width:920px;margin:0 auto}
+@media(min-width:760px){.nr-wrap{grid-template-columns:280px 1fr;align-items:start}}
+
+.nr-stage{position:relative;padding:30px 0 8px;border-radius:var(--rxxl);background:radial-gradient(120% 100% at 50% 0%,rgba(0,224,67,.14),transparent 65%),#0B0E13}
+.nr-stage::before{content:'';position:absolute;inset:0;background-image:var(--capulana-pattern);background-size:70px 70px;opacity:.07;border-radius:inherit;pointer-events:none}
+.nr-phone{width:230px;aspect-ratio:9/16;margin:0 auto;border-radius:30px;background:#000;position:relative;overflow:hidden;box-shadow:0 22px 46px -14px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.06) inset;border:7px solid #000;z-index:1}
+.nr-phone-notch{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:64px;height:16px;background:#000;border-radius:0 0 12px 12px;z-index:3}
+.nr-phone-media{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#111;overflow:hidden;color:rgba(255,255,255,.4);font-size:11px;text-align:center;padding:0 20px}
+.nr-phone-media video{width:100%;height:100%;object-fit:cover}
+.nr-phone-info{position:absolute;left:14px;right:60px;bottom:18px;color:#fff;z-index:2}
+.nr-phone-info b{font-size:12px;font-weight:700;display:block;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.nr-phone-info span{font-size:11px;color:rgba(255,255,255,.75);white-space:pre-wrap;word-break:break-word}
+.nr-phone-actions{position:absolute;right:10px;bottom:18px;display:flex;flex-direction:column;gap:16px;color:#fff;z-index:2;opacity:.55}
+.nr-stage-hint{text-align:center;font-size:11px;color:rgba(255,255,255,.4);margin-top:14px}
+
+.nr-drop{border:2px dashed var(--b-200);border-radius:var(--rl);background:var(--surf2);padding:34px 16px;text-align:center;cursor:pointer;transition:var(--ease)}
+.nr-drop:hover,.nr-drop.drag-over{border-color:var(--b-400);background:var(--b-50)}
+.nr-drop .ico{color:var(--t3);margin-bottom:8px}
+
+.nr-file-card{display:flex;gap:12px;padding:12px;border:1px solid var(--brd);border-radius:var(--rl);background:var(--surf)}
+.nr-file-thumb{width:72px;aspect-ratio:9/16;border-radius:10px;overflow:hidden;flex-shrink:0;position:relative;background:#0B0E13}
+.nr-file-thumb img,.nr-file-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.nr-file-meta{flex:1;min-width:0}
+.nr-file-meta .name{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;word-break:break-all}
+.nr-file-meta .name svg{color:var(--grn);flex-shrink:0}
+.nr-file-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.nr-file-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--t3);background:var(--surf2);padding:3px 8px;border-radius:var(--pill)}
+.nr-quality-ok{display:flex;gap:8px;align-items:flex-start;background:var(--b-50);border:1px solid var(--b-200);border-radius:var(--r);padding:10px 12px;margin-top:10px}
+.nr-quality-ok .ico{color:var(--grn);flex-shrink:0;margin-top:1px}
+.nr-quality-ok strong{display:block;font-size:12px;color:var(--text)}
+.nr-quality-ok span{font-size:11px;color:var(--t3)}
+.nr-file-actions{display:flex;gap:8px;margin-top:10px}
+.nr-file-actions .btn{flex:1}
+
+.nr-cover-row{display:flex;align-items:center;gap:14px}
+.nr-cover-thumb{width:66px;aspect-ratio:9/16;border-radius:10px;overflow:hidden;background:var(--surf2);border:1px solid var(--brd);position:relative;flex-shrink:0}
+.nr-cover-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.nr-cover-thumb .edit-badge{position:absolute;bottom:3px;right:3px;width:22px;height:22px;border-radius:50%;background:var(--g-green);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh1)}
+.nr-cover-upload{border:2px dashed var(--brd2);border-radius:10px;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;color:var(--t3);padding:14px 10px;cursor:pointer;text-align:center;transition:var(--ease)}
+.nr-cover-upload:hover{border-color:var(--grn);color:var(--grn);background:var(--b-50)}
+
+.nr-product-picker{display:flex;flex-direction:column;gap:8px}
+.nr-product-chips{display:flex;flex-wrap:wrap;gap:8px}
+.nr-product-chip{display:flex;align-items:center;gap:8px;background:var(--b-50);border:1px solid var(--b-200);border-radius:var(--pill);padding:5px 6px 5px 5px}
+.nr-product-chip img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--surf2)}
+.nr-product-chip b{font-size:12px;font-weight:700}
+.nr-product-chip span{font-size:11px;color:var(--t3)}
+.nr-product-chip button{background:none;border:none;color:var(--t3);cursor:pointer;padding:2px;display:flex}
+.nr-picker-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);border:1px solid var(--brd);background:var(--surf);cursor:pointer;text-align:left;width:100%;transition:var(--ease)}
+.nr-picker-row:hover{background:var(--surf2);border-color:var(--brd2)}
+.nr-picker-row img{width:38px;height:38px;border-radius:8px;object-fit:cover;background:var(--surf2);flex-shrink:0}
+</style>
+</head>
+<body data-require-auth="1" data-roles="SELLER">
+<header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
+<main id="main"><div id="view" class="pg-body"></div></main>
+<div id="modal-root"></div><div id="toast-root"></div>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788780000"></script><script src="/js/api.js?v=1788790000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788790000"></script><script src="/js/runtime.js?v=1788960000"></script>
+  <script src="/js/offline-store.js?v=1788700000"></script>
+<script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788990000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/video-editor.js?v=1788780000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+<script>
+let _myBazar = null;
+let _nrMediaKind = 'video'; // 'video' | 'photo'
+let _nrVideoFile = null;
+let _nrVideoUrl = null;
+let _nrVideoJobId = null;   // vídeo já cortado/editado e processado no servidor (Fase 3)
+let _nrImageFile = null;
+let _nrImageUrl = null;
+let _nrTags = [];
+let _nrCaption = '';
+let _nrLinkedProduct = null;
+let _nrProducts = [];
+let _nrCoverFile = null;
+let _nrCoverUrl = null;
+// Ronda 43 — mesmo cuidado do historia.html: revoga objectURLs locais
+// ainda por publicar ao sair via SPA.
+document.addEventListener('bz:spa-leave', () => {
+  if (_nrImageUrl) URL.revokeObjectURL(_nrImageUrl);
+  if (_nrCoverUrl) URL.revokeObjectURL(_nrCoverUrl);
+  if (_nrVideoUrl) { try { URL.revokeObjectURL(_nrVideoUrl); } catch (e) {} }
+}, { once: true });
+const MAX_NR_VIDEO_SECONDS = 60;
+const MAX_NR_VIDEO_MB = 60;
+// Quando se vem de "Editar" num Reel próprio (?edit=ID) esta página
+// deixa de publicar e passa a actualizar esse Reel. Trocar o VÍDEO em
+// si não é suportado aqui (teria de voltar a passar pelo editor de
+// vídeo) — nesse caso só a legenda, o produto associado e as hashtags
+// ficam editáveis. Reels de FOTO já dão para trocar a foto também.
+let _editReelId = null;
+let _editReelHasVideo = false;
+
+function parseCaptionForEdit(rawText){
+  const t = rawText || '';
+  const m = /\n\n(#[^\n]+)$/.exec(t);
+  if(!m) return { caption: t.trim(), tags: [] };
+  return { caption: t.slice(0, m.index).trim(), tags: m[1].split(/\s+/).map(x=>x.replace(/^#/,'')).filter(Boolean) };
+}
+
+initPage({ active:'newreels.html', requireAuth:true, roles:['SELLER'], onReady: async(user) => {
+  try{ _myBazar = (await api.get('/bazars/me'))?.data?.bazar || null; }catch{ _myBazar = null; }
+
+  const view = document.getElementById('view');
+  if(!_myBazar){
+    view.innerHTML = `<div class="card" style="max-width:480px;margin:40px auto;text-align:center;padding:36px">
+      <h3 style="margin-bottom:8px">Ainda sem Bazar</h3>
+      <p style="margin-bottom:20px">Cria o teu Bazar primeiro para poderes publicar Reels.</p>
+      <button class="btn btn-primary" onclick="go('my-bazar.html')">Criar o meu Bazar</button>
+    </div>`;
+    return;
+  }
+
+  let myProducts = [];
+  try{ myProducts = (await api.get('/products', { bazarId: _myBazar.id, limit: 50 }))?.data?.products || []; }catch{}
+  _nrProducts = myProducts;
+
+  _editReelId = getParam('edit');
+  let editData = null;
+  if(_editReelId){
+    try{
+      const r = await api.get(`/bazars/${_myBazar.id}/reels/${_editReelId}`);
+      editData = r?.data?.reel || null;
+    }catch(e){ toast(apiErrorMessage(e),'err'); }
+    if(!editData){ go('meufeed.html'); return; }
+    document.title = 'Editar Reel — Bazares';
+    _editReelHasVideo = !!editData.videoUrl;
+    _nrMediaKind = _editReelHasVideo ? 'video' : 'photo';
+  }
+  const parsedCaption = editData ? parseCaptionForEdit(editData.text) : null;
+  if(parsedCaption){
+    _nrCaption = parsedCaption.caption;
+    _nrTags = parsedCaption.tags;
+    _nrLinkedProduct = editData.productId || editData.product?.id || null;
+    if(!_editReelHasVideo && editData.imageUrl) _nrImageUrl = editData.imageUrl;
+  }
+
+  view.innerHTML = `
+    <div class="pg-hero pg-hero--compact">
+      ${_editReelId ? '' : `<button type="button" class="pg-hero-corner" onclick="openNrDrafts()">${icon('folder',14,2)} Rascunhos</button>`}
+      <div class="pg-hero-content">
+        <div class="section-pill">${icon('video',16)} Reel</div>
+        <h1>${_editReelId ? 'Editar Reel' : 'Criar Reel'}</h1>
+        <p>Um vídeo curto vertical — fica visível na aba Reels, ao estilo Instagram/TikTok</p>
+      </div>
+    </div>
+
+    <div class="nr-wrap">
+      <div>
+        <div class="nr-stage">
+          <div class="nr-phone" id="nr-phone">
+            <div class="nr-phone-notch"></div>
+            <div class="nr-phone-media" id="nr-phone-media">O teu vídeo aparece aqui</div>
+            <div class="nr-phone-info" id="nr-phone-info">
+              <b>${esc(_myBazar.name)}</b>
+              <span id="nr-phone-caption"></span>
+            </div>
+            <div class="nr-phone-actions">
+              ${icon('heart',22)}
+              ${icon('chat',21)}
+              ${icon('share',20)}
+            </div>
+          </div>
+        </div>
+        <p class="nr-stage-hint">Pré-visualização em tempo real</p>
+      </div>
+
+      <div class="card reveal">
+        <div style="display:flex;gap:6px;background:var(--surf2);padding:4px;border-radius:var(--pill);margin-bottom:16px">
+          <button type="button" class="btn btn-sm" id="nr-tab-video" style="flex:1;border-radius:var(--pill)" onclick="setNrMediaKind('video')" ${_editReelId?'disabled':''}>${icon('video',15,2)} Vídeo</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="nr-tab-photo" style="flex:1;border-radius:var(--pill)" onclick="setNrMediaKind('photo')" ${_editReelId?'disabled':''}>${icon('image',15,2)} Foto</button>
+        </div>
+        <div id="nr-video-panel">
+          ${_editReelId && _editReelHasVideo ? `
+          <div class="nr-file-card">
+            <div class="nr-file-thumb"><video src="${esc(editData.videoUrl)}" muted playsinline></video></div>
+            <div class="nr-file-meta">
+              <div class="name">${icon('checkCircle',15,2.2)} <span>Vídeo actual</span></div>
+              <p style="font-size:11.5px;color:var(--t4);margin-top:6px;line-height:1.5">Para trocar o vídeo em si, apaga este Reel e publica um novo — aqui só dá para mudar a legenda, o produto associado e as hashtags.</p>
+            </div>
+          </div>` : `
+          <div id="nr-video-drop-wrap">
+            <div class="imgup-drop nr-drop" id="nr-video-drop" onclick="document.getElementById('nr-video-input').click()">
+              <div class="ico">${icon('video',30,1.6)}</div>
+              <div><strong>Toque para escolher um vídeo</strong> ou arraste aqui</div>
+              <small>Até ${MAX_NR_VIDEO_SECONDS}s e ${MAX_NR_VIDEO_MB}MB — vertical funciona melhor</small>
+            </div>
+          </div>
+          <div id="nr-file-card-wrap" style="display:none">
+            <div class="nr-file-card">
+              <div class="nr-file-thumb" id="nr-file-thumb"></div>
+              <div class="nr-file-meta">
+                <div class="name">${icon('checkCircle',15,2.2)} <span id="nr-file-name"></span></div>
+                <div class="nr-file-tags" id="nr-file-tags"></div>
+              </div>
+            </div>
+            <div class="nr-quality-ok">
+              <span class="ico">${icon('checkCircle',16,2)}</span>
+              <div><strong>Qualidade ideal</strong><span>Resolução, formato e duração perfeitos para Reels.</span></div>
+            </div>
+            <div class="nr-file-actions">
+              <button type="button" class="btn btn-soft btn-sm" onclick="reopenVideoEditor()">${icon('edit',14,2)} Editar / Cortar</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('nr-video-input').click()">${icon('refresh',14,2)} Substituir vídeo</button>
+            </div>
+          </div>
+          <input type="file" id="nr-video-input" accept="video/mp4,video/webm,video/quicktime" hidden>
+
+          <div class="fg" id="nr-cover-section" style="display:none;margin-top:18px">
+            <label style="display:flex;align-items:center;gap:6px">Capa do Reel <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" title="Aparece como miniatura no feed e no teu perfil"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+            <p class="form-sec-hint" style="margin:-4px 0 10px">Escolhe um frame do vídeo ou carrega uma imagem.</p>
+            <div class="nr-cover-row">
+              <div class="nr-cover-thumb" id="nr-cover-thumb"><span class="edit-badge">${icon('edit',12,2.4)}</span></div>
+              <div class="nr-cover-upload" onclick="document.getElementById('nr-cover-input').click()">${icon('image',18,1.8)} Carregar capa</div>
+            </div>
+            <input type="file" id="nr-cover-input" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>`}
+        </div>
+        <div id="nr-photo-panel" style="display:none">
+          <div class="imgup-drop nr-drop" id="nr-photo-drop" onclick="document.getElementById('nr-photo-input').click()">
+            <div class="ico">${icon('image',30,1.6)}</div>
+            <div><strong>Toque para ${_editReelId?'trocar a foto':'escolher uma foto'}</strong> ou arraste aqui</div>
+            <small>Uma publicação com foto — vertical funciona melhor</small>
+          </div>
+          <input type="file" id="nr-photo-input" accept="image/jpeg,image/png,image/webp" hidden>
+        </div>
+
+        <div class="form-sec-label"><b>1</b> Legenda</div>
+        <div class="fg" style="margin-top:0">
+          <textarea id="nr-caption" rows="2" maxlength="500" placeholder="Escreve algo sobre este Reel...">${esc(_nrCaption)}</textarea>
+          <div class="field-counter" id="nr-caption-count">${_nrCaption.length}/500</div>
+          <button type="button" class="btn btn-ai btn-sm" id="nr-ai-gen-btn" onclick="generateReelCaption()" style="margin-top:8px;width:100%;justify-content:center">
+            <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+            Gerar legenda com IA
+          </button>
+        </div>
+
+        <div class="form-sec-label"><span class="field-label-info"><b>2</b> Associar produto (opcional) <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" title="O produto aparece como etiqueta clicável sobre o Reel"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span></div>
+        <div class="fg nr-product-picker">
+          <div class="nr-product-chips" id="nr-product-chips"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="nr-product-add-btn" onclick="openNrProductPicker()">${icon('plus',14,2.2)} Adicionar produto</button>
+        </div>
+
+        <div class="form-sec-label"><b>3</b> Hashtags (opcional)</div>
+        <div class="fg">
+          <div class="field-with-icon" style="display:flex;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+            <input id="nr-tag-input" placeholder="Ex: promoção" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addNrTag();}">
+            <button type="button" class="btn btn-tag-add btn-sm" onclick="addNrTag()">Adicionar</button>
+          </div>
+          <div id="nr-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+        </div>
+
+        <div class="info-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Fica visível no feed e no teu perfil para todos os visitantes.</span></div>
+        <button class="btn btn-primary btn-block" id="nr-submit" onclick="publishReel()">${icon('video',16,2.2)} ${_editReelId ? 'Guardar alterações' : 'Publicar Reel'}</button>
+      </div>
+    </div>`;
+
+  document.getElementById('nr-video-input')?.addEventListener('change', e=>{ setNrVideoFile(e.target.files?.[0]); e.target.value=''; });
+  const drop = document.getElementById('nr-video-drop');
+  if(drop){
+    drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag-over'); });
+    drop.addEventListener('dragleave', ()=> drop.classList.remove('drag-over'));
+    drop.addEventListener('drop', e=>{ e.preventDefault(); drop.classList.remove('drag-over'); if(e.dataTransfer?.files?.[0]) setNrVideoFile(e.dataTransfer.files[0]); });
+  }
+
+  document.getElementById('nr-photo-input').addEventListener('change', e=>{ setNrImageFile(e.target.files?.[0]); e.target.value=''; });
+  const dropPhoto = document.getElementById('nr-photo-drop');
+  dropPhoto.addEventListener('dragover', e=>{ e.preventDefault(); dropPhoto.classList.add('drag-over'); });
+  dropPhoto.addEventListener('dragleave', ()=> dropPhoto.classList.remove('drag-over'));
+  dropPhoto.addEventListener('drop', e=>{ e.preventDefault(); dropPhoto.classList.remove('drag-over'); if(e.dataTransfer?.files?.[0]) setNrImageFile(e.dataTransfer.files[0]); });
+
+  document.getElementById('nr-caption').addEventListener('input', e=>{
+    _nrCaption = e.target.value;
+    document.getElementById('nr-phone-caption').textContent = _nrCaption;
+    updateNrCaptionCount();
+  });
+  document.getElementById('nr-cover-input')?.addEventListener('change', e=>{ setNrCoverFile(e.target.files?.[0]); e.target.value=''; });
+  renderNrProductChips();
+  renderNrTags();
+
+  // Pré-visualização inicial em modo de edição.
+  document.getElementById('nr-phone-caption').textContent = _nrCaption;
+  if(_editReelId){
+    setNrMediaKind(_nrMediaKind);
+    const media = document.getElementById('nr-phone-media');
+    if(_editReelHasVideo){
+      media.innerHTML = `<video src="${esc(editData.videoUrl)}" autoplay muted loop playsinline></video>`;
+    } else if(_nrImageUrl){
+      media.innerHTML = `<img loading="lazy" decoding="async" src="${esc(_nrImageUrl)}" alt="">`;
+    }
+  }
+}});
+
+async function generateReelCaption(){
+  const btn = document.getElementById('nr-ai-gen-btn');
+  setLoading(btn, true);
+  try{
+    const res = await api.post('/ai/generate-caption', { kind: 'REEL' });
+    const caption = res?.data?.caption;
+    if(caption){ document.getElementById('nr-caption').value = caption; _nrCaption = caption; }
+    toast('Legenda gerada — revê antes de publicar.','ok');
+  }catch(e){
+    if(isPremiumRequiredError(e)) showPremiumUpsell(e.message);
+    else toast(apiErrorMessage(e),'warn');
+  }finally{ setLoading(btn, false); }
+}
+
+function setNrMediaKind(kind){
+  _nrMediaKind = kind;
+  document.getElementById('nr-tab-video').classList.toggle('btn-ghost', kind!=='video');
+  document.getElementById('nr-tab-photo').classList.toggle('btn-ghost', kind!=='photo');
+  document.getElementById('nr-video-panel').style.display = kind==='video' ? '' : 'none';
+  document.getElementById('nr-photo-panel').style.display = kind==='photo' ? '' : 'none';
+}
+
+function fmtFileSize(bytes){
+  if(bytes >= 1024*1024) return (bytes/(1024*1024)).toFixed(1).replace('.0','') + ' MB';
+  return Math.round(bytes/1024) + ' KB';
+}
+function fmtDuration(sec){
+  sec = Math.round(sec||0);
+  const m = Math.floor(sec/60), s = sec%60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function setNrVideoFile(file){
+  if(!file) return;
+  const accepted = ['video/mp4','video/webm','video/quicktime'];
+  if(!accepted.includes(file.type)){ toast('Formato de vídeo não suportado. Usa MP4, WebM ou MOV.','warn'); return; }
+  if(file.size > MAX_NR_VIDEO_MB*1024*1024){ toast(`O vídeo tem de ter até ${MAX_NR_VIDEO_MB}MB.`,'warn'); return; }
+  if(_nrImageUrl){ URL.revokeObjectURL(_nrImageUrl); _nrImageUrl=null; _nrImageFile=null; }
+  if(_nrVideoUrl){ URL.revokeObjectURL(_nrVideoUrl); _nrVideoUrl=null; }
+  // O vídeo bruto tem sempre de passar pelo editor (corte + capa + música
+  // opcional) antes de poder ser publicado — o backend só aceita o
+  // `processedVideoJobId` devolvido no fim desse processamento.
+  _nrVideoFile = file;
+  _nrVideoJobId = null;
+  const media = document.getElementById('nr-phone-media');
+  media.innerHTML = `A preparar o vídeo…`;
+  document.getElementById('nr-video-drop-wrap').style.display = 'none';
+  document.getElementById('nr-file-card-wrap').style.display = '';
+  document.getElementById('nr-file-name').textContent = file.name;
+  openVideoEditor(file, {
+    target: 'reels',
+    maxSeconds: MAX_NR_VIDEO_SECONDS,
+    onDone: (result) => {
+      _nrVideoJobId = result.jobId;
+      _nrVideoUrl = result.resultUrl;
+      media.innerHTML = `<video src="${_nrVideoUrl}" autoplay muted loop playsinline></video>`;
+      document.getElementById('nr-file-tags').innerHTML = [
+        result.aspect ? `<span class="nr-file-tag">${esc(result.aspect)}</span>` : `<span class="nr-file-tag">9:16</span>`,
+        result.duration ? `<span class="nr-file-tag">${fmtDuration(result.duration)}</span>` : '',
+        `<span class="nr-file-tag">${fmtFileSize(file.size)}</span>`,
+      ].join('');
+      const thumb = document.getElementById('nr-file-thumb');
+      thumb.innerHTML = `<video src="${_nrVideoUrl}" muted playsinline></video>`;
+      // Capa por omissão = primeiro frame do vídeo processado, editável abaixo.
+      const coverThumb = document.getElementById('nr-cover-thumb');
+      if(!_nrCoverFile) coverThumb.innerHTML = `<video src="${_nrVideoUrl}" muted playsinline></video><span class="edit-badge">${icon('edit',12,2.4)}</span>`;
+      document.getElementById('nr-cover-section').style.display = '';
+      toast('Vídeo pronto — já podes publicar.','ok');
+    },
+    onCancel: () => {
+      _nrVideoFile = null;
+      media.innerHTML = `O teu vídeo aparece aqui`;
+      document.getElementById('nr-video-drop-wrap').style.display = '';
+      document.getElementById('nr-file-card-wrap').style.display = 'none';
+      document.getElementById('nr-cover-section').style.display = 'none';
+    }
+  });
+}
+
+function setNrCoverFile(file){
+  if(!file) return;
+  const accepted = ['image/jpeg','image/png','image/webp'];
+  if(!accepted.includes(file.type)){ toast('Formato de imagem não suportado. Usa JPG, PNG ou WEBP.','warn'); return; }
+  if(file.size > 8*1024*1024){ toast('A capa tem de ter até 8MB.','warn'); return; }
+  if(_nrCoverUrl) URL.revokeObjectURL(_nrCoverUrl);
+  _nrCoverFile = file;
+  _nrCoverUrl = URL.createObjectURL(file);
+  document.getElementById('nr-cover-thumb').innerHTML = `<img loading="lazy" decoding="async" src="${_nrCoverUrl}" alt=""><span class="edit-badge">${icon('edit',12,2.4)}</span>`;
+}
+
+function reopenVideoEditor(){
+  if(!_nrVideoFile) return;
+  setNrVideoFile(_nrVideoFile);
+}
+
+function setNrImageFile(file){
+  if(!file) return;
+  const accepted = ['image/jpeg','image/png','image/webp'];
+  if(!accepted.includes(file.type)){ toast('Formato de foto não suportado. Usa JPG, PNG ou WEBP.','warn'); return; }
+  if(file.size > 15*1024*1024){ toast('A foto tem de ter até 15MB.','warn'); return; }
+  if(_nrVideoUrl){ URL.revokeObjectURL(_nrVideoUrl); _nrVideoUrl=null; _nrVideoFile=null; }
+  if(_nrImageUrl) URL.revokeObjectURL(_nrImageUrl);
+  _nrImageFile = file;
+  _nrImageUrl = URL.createObjectURL(file);
+  const media = document.getElementById('nr-phone-media');
+  media.innerHTML = `<img loading="lazy" decoding="async" src="${_nrImageUrl}" alt="">`;
+}
+
+function updateNrCaptionCount(){
+  const el = document.getElementById('nr-caption-count');
+  if(!el) return;
+  const len = _nrCaption.length;
+  el.textContent = `${len}/500`;
+  el.classList.toggle('field-counter--near', len>=400 && len<500);
+  el.classList.toggle('field-counter--full', len>=500);
+}
+function renderNrProductChips(){
+  const el = document.getElementById('nr-product-chips');
+  const addBtn = document.getElementById('nr-product-add-btn');
+  if(!el || !addBtn) return;
+  if(!_nrLinkedProduct){ el.innerHTML=''; addBtn.style.display=''; return; }
+  const p = _nrProducts.find(x=>x.id===_nrLinkedProduct);
+  if(!p){ el.innerHTML=''; addBtn.style.display=''; return; }
+  el.innerHTML = `<div class="nr-product-chip">
+    <img loading="lazy" decoding="async" src="${cldImg(p.images?.[0]?.url, 60)}" alt="">
+    <div><b>${esc(p.name)}</b><br><span>${fmtMT(p.price)}</span></div>
+    <button type="button" onclick="removeNrProduct()">✕</button>
+  </div>`;
+  addBtn.style.display = 'none';
+}
+function removeNrProduct(){ _nrLinkedProduct = null; renderNrProductChips(); }
+function openNrProductPicker(){
+  if(!_nrProducts.length){ toast('Ainda não tens produtos no teu Bazar.','warn'); return; }
+  const html = `<div class="card" style="max-width:420px">
+    <h3 style="margin-bottom:12px">Associar produto</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto">
+      ${_nrProducts.map(p=>`
+        <button type="button" class="nr-picker-row" onclick="selectNrProduct('${p.id}')">
+          <img loading="lazy" decoding="async" src="${cldImg(p.images?.[0]?.url, 60)}" alt="">
+          <span style="flex:1"><b style="display:block;font-size:12.5px">${esc(p.name)}</b><span style="font-size:11.5px;color:var(--t4)">${fmtMT(p.price)}</span></span>
+        </button>`).join('')}
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:14px" onclick="closeModal()">Cancelar</button>
+  </div>`;
+  openModal(html);
+}
+function selectNrProduct(id){
+  _nrLinkedProduct = id;
+  renderNrProductChips();
+  closeModal();
+}
+
+function addNrTag(){
+  const input = document.getElementById('nr-tag-input');
+  let val = input.value.trim().replace(/^#/,'').replace(/\s+/g,'');
+  if(!val) return;
+  if(!_nrTags.includes(val) && _nrTags.length<10) _nrTags.push(val);
+  input.value='';
+  renderNrTags();
+}
+function removeNrTag(i){ _nrTags.splice(i,1); renderNrTags(); }
+function renderNrTags(){
+  document.getElementById('nr-tags').innerHTML = _nrTags.map((t,i)=>
+    `<span class="hashtag-chip">#${esc(t)}<button type="button" onclick="removeNrTag(${i})">✕</button></span>`).join('');
+}
+
+function saveNrDraft(){
+  let drafts = [];
+  try{ drafts = JSON.parse(localStorage.getItem('bz_nr_drafts')||'[]'); }catch{ drafts = []; }
+  drafts.unshift({
+    id: Date.now(),
+    caption: _nrCaption,
+    tags: _nrTags.slice(),
+    linkedProductId: _nrLinkedProduct,
+    savedAt: new Date().toISOString(),
+  });
+  drafts = drafts.slice(0,5);
+  localStorage.setItem('bz_nr_drafts', JSON.stringify(drafts));
+  toast('Rascunho guardado.','ok');
+}
+function openNrDrafts(){
+  let drafts = [];
+  try{ drafts = JSON.parse(localStorage.getItem('bz_nr_drafts')||'[]'); }catch{ drafts = []; }
+  const list = drafts.length ? drafts.map(d=>`
+    <div class="hs-tpl-card" style="cursor:default">
+      <b>${esc(d.caption ? (d.caption.slice(0,40) + (d.caption.length>40?'…':'')) : 'Sem legenda')}</b>
+      <span>${d.tags?.length ? '#'+d.tags.join(' #')+' · ' : ''}${new Date(d.savedAt).toLocaleDateString('pt-PT')}</span>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button type="button" class="btn btn-primary btn-sm" style="flex:1" onclick="restoreNrDraft(${d.id})">Restaurar</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="deleteNrDraft(${d.id})" aria-label="Eliminar rascunho">${icon('trash',14,2)}</button>
+      </div>
+    </div>`).join('')
+    : `<p style="font-size:12.5px;color:var(--t4);text-align:center;padding:20px 0">Ainda não tens rascunhos guardados.</p>`;
+  const html = `<div class="card" style="max-width:420px">
+    <h3 style="margin-bottom:4px">Rascunhos</h3>
+    <p style="font-size:12.5px;color:var(--t3);margin-bottom:16px">Nota: o vídeo/foto não é guardado — volta a escolhê-lo ao restaurar.</p>
+    <div style="display:flex;flex-direction:column;gap:8px">${list}</div>
+    <button type="button" class="btn btn-ghost btn-block" style="margin-top:16px" onclick="saveNrDraft();closeModal();openNrDrafts()">${icon('folder',15,2)} Guardar rascunho atual</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="closeModal()">Fechar</button>
+  </div>`;
+  openModal(html);
+}
+function restoreNrDraft(id){
+  const drafts = JSON.parse(localStorage.getItem('bz_nr_drafts')||'[]');
+  const d = drafts.find(x=>x.id===id);
+  if(!d) return;
+  _nrCaption = d.caption||'';
+  document.getElementById('nr-caption').value = _nrCaption;
+  document.getElementById('nr-phone-caption').textContent = _nrCaption;
+  updateNrCaptionCount();
+  _nrTags = d.tags||[];
+  renderNrTags();
+  _nrLinkedProduct = d.linkedProductId||null;
+  renderNrProductChips();
+  closeModal();
+  toast('Rascunho restaurado.','ok');
+}
+function deleteNrDraft(id){
+  let drafts = JSON.parse(localStorage.getItem('bz_nr_drafts')||'[]');
+  drafts = drafts.filter(x=>x.id!==id);
+  localStorage.setItem('bz_nr_drafts', JSON.stringify(drafts));
+  openNrDrafts();
+}
+
+// Comprime antes de subir — mesmo helper de anuncio.html/novoproduto.html.
+function compressNrImage(file, maxSize=1600, quality=0.82){
+  return window.MediaCompress ? MediaCompress.compressImage(file, maxSize, quality) : Promise.resolve(file);
+}
+
+async function publishReel(){
+  if(!_myBazar) return;
+  if(_editReelId){
+    const btn = document.getElementById('nr-submit');
+    setLoading(btn, true);
+    try{
+      const caption = _nrCaption.trim();
+      const fullCaption = _nrTags.length ? `${caption}\n\n${_nrTags.map(t=>'#'+t).join(' ')}`.trim() : caption;
+      const fd = new FormData();
+      fd.append('text', fullCaption);
+      fd.append('productId', _nrLinkedProduct || '');
+      // Só envia uma foto nova se o utilizador tiver mesmo escolhido
+      // outra (senão a foto actual do Reel fica como está).
+      if(!_editReelHasVideo && _nrImageFile) fd.append('image', await compressNrImage(_nrImageFile));
+      await api.putForm(`/bazars/${_myBazar.id}/reels/${_editReelId}`, fd);
+      toast('Reel actualizado!','ok');
+      go('meufeed.html');
+    }catch(e){ setLoading(btn, false); toast(apiErrorMessage(e),'err'); }
+    return;
+  }
+  if(_nrMediaKind==='video' && !_nrVideoFile){ toast('Escolhe um vídeo primeiro.','warn'); return; }
+  if(_nrMediaKind==='video' && !_nrVideoJobId){ toast('Aguarda o vídeo terminar de ser processado antes de publicar.','warn'); return; }
+  if(_nrMediaKind==='photo' && !_nrImageFile){ toast('Escolhe uma foto primeiro.','warn'); return; }
+  const btn = document.getElementById('nr-submit');
+  setLoading(btn, true);
+  try{
+    const caption = _nrCaption.trim();
+    const fullCaption = _nrTags.length ? `${caption}\n\n${_nrTags.map(t=>'#'+t).join(' ')}`.trim() : caption;
+    const fd = new FormData();
+    if(_nrMediaKind==='video') fd.append('processedVideoJobId', _nrVideoJobId);
+    else fd.append('image', await compressNrImage(_nrImageFile));
+    if(fullCaption) fd.append('text', fullCaption);
+    if(_nrLinkedProduct) fd.append('productId', _nrLinkedProduct);
+    // TODO: a capa personalizada (_nrCoverFile) já está pronta no frontend,
+    // mas só deve ser enviada quando o backend tiver um campo `cover` a
+    // aceitar no endpoint de Reels — confirmar antes de descomentar:
+    // if(_nrCoverFile) fd.append('cover', _nrCoverFile);
+    await api.postForm(`/bazars/${_myBazar.id}/reels`, fd);
+    toast('Reel publicado!','ok');
+    go('meufeed.html');
+  }catch(e){ setLoading(btn, false); toast(apiErrorMessage(e),'err'); }
+}
+</script></body></html>

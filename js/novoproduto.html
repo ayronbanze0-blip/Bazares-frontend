@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="light">
+<head>
+<base href="/">
+<script>(function(){try{if(localStorage.getItem('bz_premium_hint')==='1'){document.documentElement.setAttribute('data-premium','true');}}catch(e){}})();</script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00E043">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazares">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://bazare-s.onrender.com">
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="dns-prefetch" href="https://res.cloudinary.com">
+<title>Novo produto — Bazares</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Novo produto no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<link rel="canonical" href="https://bazares.pages.dev/novoproduto.html">
+<meta property="og:site_name" content="Bazares">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Novo produto — Bazares">
+<meta property="og:description" content="Novo produto no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta property="og:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<meta property="og:url" content="https://bazares.pages.dev/novoproduto.html">
+<meta property="og:locale" content="pt_MZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Novo produto — Bazares">
+<meta name="twitter:description" content="Novo produto no Bazares — o marketplace moçambicano para comprar e vender com segurança via M-Pesa e e-Mola.">
+<meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=1788950000">
+</head>
+<body data-require-auth="1" data-roles="SELLER">
+<header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
+<main id="main"><div id="view" class="pg-body"></div></main>
+<div id="modal-root"></div><div id="toast-root"></div>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788780000"></script><script src="/js/api.js?v=1788790000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788790000"></script><script src="/js/runtime.js?v=1788960000"></script>
+  <script src="/js/offline-store.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788990000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+<script>
+initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onReady: async()=>{
+  const view=document.getElementById('view');
+  view.innerHTML = `
+    <div class="pg-hero pg-hero--compact">
+      <button type="button" class="pg-hero-corner" onclick="openPmDrafts()">${icon('folder',14,2)} Rascunhos</button>
+      <div class="pg-hero-content">
+        <div class="section-pill">${icon('box',16)} Novo produto</div>
+        <h1>Adicionar Produto</h1>
+        <p>Preenche os detalhes do artigo à venda na tua loja</p>
+      </div>
+    </div>
+    <div class="card reveal" style="max-width:640px;margin:0 auto">
+      <div class="form-sec-label"><b>1</b> Fotos do produto</div>
+      <p class="form-sec-hint">A primeira foto é a capa — aparece na loja e nos resultados de pesquisa</p>
+      <div class="fg" style="margin-bottom:0">
+        <div class="imgup-drop" id="imgup-drop" onclick="document.getElementById('imgup-input').click()">
+          <div class="ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+          <div><strong>Toque para escolher fotos</strong> ou arraste aqui</div>
+          <small>JPG, PNG ou WEBP · até 20 imagens · a primeira é a capa</small>
+        </div>
+        <input type="file" id="imgup-input" accept="image/jpeg,image/jpg,image/png,image/webp" multiple hidden>
+        <div class="imgup-count"><span>Imagens seleccionadas</span><b id="imgup-counter">0/20</b></div>
+        <div class="imgup-grid" id="imgup-grid"></div>
+      </div>
+
+      <div class="form-sec-label"><b>2</b> Informações principais</div>
+      <p class="form-sec-hint">O nome e a categoria certos ajudam os compradores a encontrar o teu produto</p>
+      <div class="fg" id="pm-name-grp"><label>Nome do produto *</label><input id="pm-name" placeholder="Nome do produto"><div class="field-err-msg" id="pm-name-err">Escreve o nome do produto.</div></div>
+      <div class="row2">
+        <div class="fg" id="pm-price-grp"><label>Preço (MT) *</label><input type="number" id="pm-price" min="0" step="0.01" placeholder="0">
+          <button type="button" onclick="suggestPrice()" style="background:none;border:none;color:var(--grn);font-size:11px;font-weight:600;padding:4px 0;cursor:pointer">${icon('star',11,2.5)} Sugerir preço com IA</button>
+          <div class="field-err-msg" id="pm-price-err">Indica um preço válido, maior que 0.</div>
+        </div>
+        <div class="fg"><label>Stock</label><input type="number" id="pm-stock" value="1" min="0" placeholder="0"></div>
+      </div>
+      <div class="fg" id="pm-cat-grp"><label>Categoria *</label>
+        <button type="button" class="cat-picker-btn" id="pm-cat-btn" onclick="Bazares.CategoryPicker.open(document.getElementById('pm-cat').value, document.getElementById('pm-subcat').value, _onPmCatPicked)">
+          <span id="pm-cat-display">Escolhe uma categoria</span>
+          ${icon('chevronRight', 16, 2)}
+        </button>
+        <input type="hidden" id="pm-cat">
+        <input type="hidden" id="pm-subcat">
+        <div class="field-err-msg" id="pm-cat-err">Escolhe uma categoria.</div>
+      </div>
+
+      <div class="form-sec-label"><b>3</b> Venda</div>
+      <p class="form-sec-hint">Onde e como o comprador recebe o produto</p>
+      <div class="row2">
+        <div class="fg"><label>Localização</label><input id="pm-loc" placeholder="Ex: Maputo"></div>
+        <div class="fg"><label>Método de entrega</label>
+          <select id="pm-del">${['Entrega ao domicílio','Recolha no local','Envio por correio','Combinado'].map(v=>`<option>${v}</option>`).join('')}</select>
+        </div>
+      </div>
+
+      <div class="form-sec-label"><b>4</b> Características</div>
+      <p class="form-sec-hint">Detalhes que ajudam o comprador a decidir</p>
+      <div class="row2">
+        <div class="fg"><label>Condição</label>
+          <select id="pm-cond">${['Novo','Usado - Bom estado','Usado - Estado razoável','Para peças'].map(v=>`<option>${v}</option>`).join('')}</select>
+        </div>
+        <div class="fg"><label>Cor</label><input id="pm-color" placeholder="Ex: Preto"></div>
+      </div>
+      <div class="fg"><label>Tamanho</label><input id="pm-size" placeholder="Ex: M / 42"></div>
+
+      <div class="form-sec-label"><b>5</b> Descrição</div>
+      <p class="form-sec-hint">Escreve uma descrição clara e honesta do produto</p>
+      <div class="fg" id="pm-desc-grp"><label>Descrição *</label><textarea id="pm-desc" rows="3" maxlength="1000" placeholder="Descreva o produto..."></textarea><div class="field-counter" id="pm-desc-count">0/1000</div><div class="field-err-msg" id="pm-desc-err">Escreve uma descrição com pelo menos 20 caracteres.</div></div>
+      <div class="fg">
+        <label>Palavras-chave para a IA (opcional)</label>
+        <input id="pm-ai-keywords" placeholder="Ex: novo, cor preta, entrega rápida">
+        <button type="button" class="btn btn-ai btn-sm" id="ai-gen-btn" onclick="generateWithAI()" style="margin-top:8px;width:100%;justify-content:center">
+          <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+          Gerar descrição com IA
+        </button>
+      </div>
+
+      <div id="pm-progress-wrap" style="display:none">
+        <div class="ve-progress-bar"><div class="ve-progress-fill" id="pm-progress-fill"></div></div>
+        <p id="pm-progress-txt" style="text-align:center;font-size:12px;color:var(--t3);margin-top:8px">A preparar imagens…</p>
+      </div>
+
+      <div style="display:flex;gap:9px;padding-top:4px" id="pm-actions">
+        <button class="btn btn-soft" onclick="previewProduct()" title="Pré-visualizar">${icon('eye',15,2.4)}</button>
+        <button class="btn btn-primary" style="flex:1" id="pm-submit" onclick="saveProduct()">${icon('check',15,2.4)} Publicar produto</button>
+        <button class="btn btn-ghost" onclick="go('my-products.html')">Cancelar</button>
+      </div>
+      <p id="pm-autosave-note" style="display:none;text-align:center;font-size:11.5px;color:var(--t4);margin-top:8px">${icon('folder',12,2)} Rascunho recuperado automaticamente — <button type="button" onclick="discardAutosave()" style="background:none;border:none;color:var(--t4);text-decoration:underline;font-size:11.5px;cursor:pointer;padding:0">descartar</button></p>
+    </div>`;
+  initImageUploader();
+  const descEl = document.getElementById('pm-desc');
+  const descCount = document.getElementById('pm-desc-count');
+  if(descEl && descCount){
+    descEl.addEventListener('input', ()=>{
+      const len = descEl.value.length;
+      descCount.textContent = `${len}/1000`;
+      descCount.classList.toggle('field-counter--near', len>=850 && len<1000);
+      descCount.classList.toggle('field-counter--full', len>=1000);
+    });
+  }
+
+  initFormValidation();
+  initAutosave();
+
+  // Barra de acção fixa em mobile — o botão "Publicar" fica sempre visível
+  // sem exigir scroll até ao fim do formulário (mesmo padrão do checkout).
+  document.body.classList.add('has-sticky-cta');
+  document.body.insertAdjacentHTML('beforeend', `<div class="sticky-cta" id="sticky-cta-mount">
+    <button class="btn btn-primary" onclick="saveProduct()"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Publicar produto</button>
+  </div>`);
+}});
+
+/* ── Imagens ──────────────────────────────────────────────── */
+let _imgState=[];
+// Ronda 42 — sem isto, ficheiros ainda por gravar ficavam com o
+// objectURL preso em memória se a pessoa saísse a meio via SPA.
+document.addEventListener('bz:spa-leave', () => { _imgState.forEach(it => { if (it?.previewUrl) URL.revokeObjectURL(it.previewUrl); }); }, { once: true });
+const MAX_IMAGES=20;
+
+function initImageUploader(){
+  _imgState=[];
+  renderImgGrid();
+  const drop=document.getElementById('imgup-drop');
+  const input=document.getElementById('imgup-input');
+  input.addEventListener('change', e=>{ addFiles(e.target.files); input.value=''; });
+  drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag-over'); });
+  drop.addEventListener('dragleave', ()=> drop.classList.remove('drag-over'));
+  drop.addEventListener('drop', e=>{
+    e.preventDefault(); drop.classList.remove('drag-over');
+    if(e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
+  });
+}
+
+/* Reduz uma imagem antes do envio — mesma lógica de my-products.html.
+   O trabalho pesado corre numa Worker thread (js/media-compress.js). */
+function compressImage(file, maxSize=1600, quality=0.82){
+  return window.MediaCompress ? MediaCompress.compressImage(file, maxSize, quality) : Promise.resolve(file);
+}
+
+function addFiles(fileList){
+  const accepted=['image/jpeg','image/jpg','image/png','image/webp'];
+  const files=Array.from(fileList);
+  let rejected=0, tooBig=0;
+  for(const file of files){
+    if(_imgState.length>=MAX_IMAGES){ toast(`Máximo de ${MAX_IMAGES} imagens por post.`,'warn'); break; }
+    if(!accepted.includes(file.type)){ rejected++; continue; }
+    if(file.size>10*1024*1024){ tooBig++; continue; }
+    _imgState.push({kind:'new', file, previewUrl:URL.createObjectURL(file)});
+  }
+  if(rejected) toast('Algumas imagens foram ignoradas (formato não suportado). Use JPG, PNG ou WEBP.','warn');
+  if(tooBig) toast('Algumas imagens excedem 10MB e foram ignoradas.','warn');
+  renderImgGrid();
+}
+
+function removeImg(idx){
+  const item=_imgState[idx];
+  if(item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+  _imgState.splice(idx,1);
+  renderImgGrid();
+}
+
+function editImg(idx){
+  const item=_imgState[idx];
+  if(!item) return;
+  openImageEditor(item.file, {
+    onDone: (file) => {
+      if(item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      _imgState[idx] = { kind:'new', file, previewUrl: URL.createObjectURL(file) };
+      renderImgGrid();
+      toast('Foto editada.','ok');
+    }
+  });
+}
+
+let _dragIdx=null;
+function renderImgGrid(){
+  const grid=document.getElementById('imgup-grid');
+  const counter=document.getElementById('imgup-counter');
+  const drop=document.getElementById('imgup-drop');
+  if(!grid) return;
+  counter.textContent=`${_imgState.length}/${MAX_IMAGES}`;
+  if(drop) drop.style.display = _imgState.length ? 'none' : '';
+  grid.innerHTML=_imgState.map((item,i)=>`<div class="imgup-thumb" draggable="true" data-idx="${i}">
+      ${_imgState.length>1?'<span class="imgup-grip">⠿</span>':''}
+      <img loading="lazy" decoding="async" src="${esc(item.previewUrl)}" alt="" onclick="event.stopPropagation();openImageLightbox('${esc(item.previewUrl)}')">
+      <button type="button" class="imgup-edit" onclick="event.stopPropagation();editImg(${i})" title="Editar foto">${icon('pencil',12,2.2)}</button>
+      <button type="button" class="imgup-rm" onclick="event.stopPropagation();removeImg(${i})" aria-label="Remover imagem"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      ${i===0?'<div class="imgup-cover">Capa</div>':''}
+    </div>`).join('') + (_imgState.length && _imgState.length<MAX_IMAGES ? `<div class="imgup-add" onclick="document.getElementById('imgup-input').click()" aria-label="Adicionar mais fotos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>` : '');
+
+  grid.querySelectorAll('.imgup-thumb').forEach(el=>{
+    el.addEventListener('dragstart', ()=>{ _dragIdx=+el.dataset.idx; el.classList.add('dragging'); });
+    el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); grid.querySelectorAll('.drag-target').forEach(x=>x.classList.remove('drag-target')); });
+    el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drag-target'); });
+    el.addEventListener('dragleave', ()=> el.classList.remove('drag-target'));
+    el.addEventListener('drop', e=>{
+      e.preventDefault();
+      const targetIdx=+el.dataset.idx;
+      if(_dragIdx===null||_dragIdx===targetIdx) return;
+      const [moved]=_imgState.splice(_dragIdx,1);
+      _imgState.splice(targetIdx,0,moved);
+      _dragIdx=null;
+      renderImgGrid();
+    });
+  });
+}
+
+/* ── IA ───────────────────────────────────────────────────── */
+async function generateWithAI(){
+  const nameEl=document.getElementById('pm-name');
+  const name=nameEl?.value?.trim();
+  if(!name){ toast('Escreve o nome do produto primeiro.','warn'); nameEl?.focus(); return; }
+  const catEl=document.getElementById('pm-cat');
+  const condEl=document.getElementById('pm-cond');
+  const kwEl=document.getElementById('pm-ai-keywords');
+  const btn=document.getElementById('ai-gen-btn');
+  setLoading(btn,true);
+  try{
+    const res=await api.post('/products/generate-description',{
+      name, category:catEl?.value||'', condition:condEl?.value||'', keywords:kwEl?.value?.trim()||''
+    });
+    const data=res?.data||{};
+    if(data.description) document.getElementById('pm-desc').value=data.description;
+    if(data.suggestedCategory && catEl){
+      const match=CATS.find(c=>c.l.toLowerCase()===String(data.suggestedCategory).toLowerCase());
+      if(match) _onPmCatPicked(match.l, '');
+    }
+    toast('Descrição gerada — revê antes de publicar.','ok');
+  }catch(e){
+    if (isPremiumRequiredError(e)) { showPremiumUpsell(e.message); }
+    else toast(apiErrorMessage(e),'warn');
+  }finally{
+    setLoading(btn,false);
+  }
+}
+
+async function suggestPrice(){
+  const catEl=document.getElementById('pm-cat');
+  const nameEl=document.getElementById('pm-name');
+  const category=catEl?.value;
+  if(!category){ toast('Escolhe a categoria primeiro.','warn'); return; }
+  try{
+    toast('A analisar preços de produtos semelhantes...','info');
+    const res=await api.get('/premium/price-suggestion',{ category, name: nameEl?.value?.trim()||'' });
+    const d=res?.data;
+    if(!d || d.sampleSize < 3){ toast(d?.message||'Sem dados suficientes para sugerir um preço.','warn'); return; }
+    openModal(`
+      <div class="modal-hd"><h3>Preço sugerido</h3><button class="modal-x" onclick="closeModal()" aria-label="Fechar">${icon('close',18,2)}</button></div>
+      <p style="font-size:12.5px;color:var(--t3);margin-bottom:14px">Baseado em ${d.sampleSize} produtos semelhantes já publicados.</p>
+      <div style="text-align:center;padding:14px 0;margin-bottom:14px;background:var(--b-50);border-radius:12px">
+        <div style="font-size:11px;color:var(--t3)">Preço sugerido</div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:var(--grn)">${fmtMT(d.suggested)}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t3);margin-bottom:16px">
+        <span>Mín: ${fmtMT(d.min)}</span><span>Média: ${fmtMT(d.average)}</span><span>Máx: ${fmtMT(d.max)}</span>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="document.getElementById('pm-price').value=${d.suggested};closeModal()">Usar este preço</button>
+    `);
+  }catch(e){
+    if (isPremiumRequiredError(e)) { showPremiumUpsell(e.message); return; }
+    toast(apiErrorMessage(e),'err');
+  }
+}
+
+/* ── Validação em tempo real ─────────────────────────────────
+   Cada campo obrigatório valida-se sozinho ao sair (blur) e, uma vez
+   marcado com erro, também a cada input seguinte (para o erro
+   desaparecer assim que a pessoa corrige, sem esperar por outro
+   blur). O toast genérico do submit deixa de ser a única pista —
+   agora há uma mensagem junto ao campo certo, e o primeiro campo
+   inválido recebe o foco automaticamente.
+   Devolve true se válido. */
+function _validateField(id) {
+  const el = document.getElementById(id);
+  const grp = document.getElementById(id + '-grp');
+  if (!el || !grp) return true;
+  let ok = true;
+  if (id === 'pm-name') ok = el.value.trim().length > 0;
+  else if (id === 'pm-price') ok = parseFloat(el.value) > 0;
+  else if (id === 'pm-cat') ok = !!el.value;
+  else if (id === 'pm-desc') ok = el.value.trim().length >= 20;
+  grp.classList.toggle('fg--err', !ok);
+  return ok;
+}
+
+function initFormValidation() {
+  ['pm-name', 'pm-price', 'pm-cat', 'pm-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('blur', () => _validateField(id));
+    el.addEventListener('input', () => {
+      // só revalida em cada tecla depois de já ter sido marcado com
+      // erro — antes disso não interrompe quem ainda está a escrever
+      if (document.getElementById(id + '-grp')?.classList.contains('fg--err')) _validateField(id);
+    });
+  });
+}
+
+function validateAllFields() {
+  const ids = ['pm-name', 'pm-price', 'pm-cat', 'pm-desc'];
+  let firstInvalid = null;
+  ids.forEach(id => { if (!_validateField(id) && !firstInvalid) firstInvalid = id; });
+  if (firstInvalid) {
+    const focusTarget = document.getElementById(firstInvalid === 'pm-cat' ? 'pm-cat-btn' : firstInvalid);
+    document.getElementById(firstInvalid).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    focusTarget?.focus();
+    return false;
+  }
+  return true;
+}
+
+/* ── Autosave silencioso ──────────────────────────────────────
+   Guarda os campos de texto (não as imagens — Files não persistem
+   em localStorage) a cada alteração, com debounce, sem qualquer
+   toast ou indicação visível — só a mensagem de recuperação ao
+   reabrir a página é que se nota. Limpo sozinho ao publicar com
+   sucesso ou se a pessoa descartar manualmente. */
+const AUTOSAVE_KEY = 'bz_np_autosave';
+function _collectAutosaveFields() {
+  return {
+    name: document.getElementById('pm-name')?.value || '',
+    price: document.getElementById('pm-price')?.value || '',
+    stock: document.getElementById('pm-stock')?.value || '',
+    cat: document.getElementById('pm-cat')?.value || '',
+    subcat: document.getElementById('pm-subcat')?.value || '',
+    loc: document.getElementById('pm-loc')?.value || '',
+    del: document.getElementById('pm-del')?.value || '',
+    cond: document.getElementById('pm-cond')?.value || '',
+    color: document.getElementById('pm-color')?.value || '',
+    size: document.getElementById('pm-size')?.value || '',
+    desc: document.getElementById('pm-desc')?.value || '',
+    kw: document.getElementById('pm-ai-keywords')?.value || ''
+  };
+}
+function _isAutosaveEmpty(d) { return !d.name && !d.price && !d.desc; }
+
+function initAutosave() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || 'null'); } catch { saved = null; }
+  if (saved && !_isAutosaveEmpty(saved)) {
+    document.getElementById('pm-name').value = saved.name || '';
+    document.getElementById('pm-price').value = saved.price || '';
+    document.getElementById('pm-stock').value = saved.stock || '1';
+    if (saved.cat) _onPmCatPicked(saved.cat, saved.subcat || '');
+    document.getElementById('pm-loc').value = saved.loc || '';
+    if (saved.del) document.getElementById('pm-del').value = saved.del;
+    if (saved.cond) document.getElementById('pm-cond').value = saved.cond;
+    document.getElementById('pm-color').value = saved.color || '';
+    document.getElementById('pm-size').value = saved.size || '';
+    document.getElementById('pm-desc').value = saved.desc || '';
+    document.getElementById('pm-ai-keywords').value = saved.kw || '';
+    document.getElementById('pm-desc').dispatchEvent(new Event('input'));
+    const note = document.getElementById('pm-autosave-note');
+    if (note) note.style.display = '';
+  }
+
+  const debouncedSave = Bazares.Utils.debounce(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(_collectAutosaveFields())); } catch {}
+  }, 600);
+  document.getElementById('view')?.addEventListener('input', debouncedSave);
+  document.getElementById('view')?.addEventListener('change', debouncedSave);
+}
+
+function discardAutosave() {
+  try { localStorage.removeItem(AUTOSAVE_KEY); } catch {}
+  const note = document.getElementById('pm-autosave-note');
+  if (note) note.style.display = 'none';
+}
+function clearAutosave() { try { localStorage.removeItem(AUTOSAVE_KEY); } catch {} }
+
+/* ── Pré-visualização ─────────────────────────────────────────
+   Mostra o produto como vai aparecer, com os dados já preenchidos e
+   a primeira foto como capa, antes de publicar de facto. Não faz
+   nenhum pedido à rede — é só o que já está no formulário. */
+function previewProduct() {
+  const name = document.getElementById('pm-name').value.trim() || 'Nome do produto';
+  const price = parseFloat(document.getElementById('pm-price').value) || 0;
+  const cat = document.getElementById('pm-cat').value || '—';
+  const loc = document.getElementById('pm-loc').value.trim();
+  const cond = document.getElementById('pm-cond').value;
+  const desc = document.getElementById('pm-desc').value.trim() || 'Sem descrição.';
+  const cover = _imgState[0]?.previewUrl;
+  openModal(`
+    <div class="modal-hd"><h3>Pré-visualização</h3><button class="modal-x" onclick="closeModal()" aria-label="Fechar">${icon('close',18,2)}</button></div>
+    <p style="font-size:12px;color:var(--t4);margin-bottom:12px">É assim que o produto vai aparecer aos compradores — ainda não foi publicado.</p>
+    <div style="border:1px solid var(--brd);border-radius:var(--r);overflow:hidden">
+      <div style="width:100%;aspect-ratio:1;background:var(--surf3);display:flex;align-items:center;justify-content:center">
+        ${cover ? `<img src="${esc(cover)}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<span style="color:var(--t4);font-size:12px">Sem foto ainda</span>`}
+      </div>
+      <div style="padding:12px">
+        <div style="font-weight:700;font-size:14.5px;margin-bottom:4px">${esc(name)}</div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;color:var(--grn);font-size:17px;margin-bottom:6px">${fmtMT(price)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--t3);margin-bottom:8px">
+          <span>${esc(cat)}</span>${cond?`<span>· ${esc(cond)}</span>`:''}${loc?`<span>· ${esc(loc)}</span>`:''}
+        </div>
+        <p style="font-size:12.5px;color:var(--t2);white-space:pre-wrap">${esc(desc)}</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="closeModal();saveProduct()">${icon('check',15,2.4)} Tudo certo — publicar agora</button>
+  `, true);
+}
+
+/* ── Guardar ──────────────────────────────────────────────── */
+// ── Selector de categoria (bottom sheet 2 níveis) ────────────────
+// Actualiza os inputs escondidos + o texto do botão; dispara 'input'
+// para o autosave delegado em #view apanhar a mudança (o autosave
+// ouve eventos a borbulhar do container, não faria sentido chamá-lo
+// directamente aqui e duplicar a lógica de debounce).
+function _onPmCatPicked(cat, subcat) {
+  const catEl = document.getElementById('pm-cat');
+  const subEl = document.getElementById('pm-subcat');
+  const display = document.getElementById('pm-cat-display');
+  catEl.value = cat;
+  subEl.value = subcat || '';
+  display.textContent = subcat ? `${cat} · ${subcat}` : cat;
+  display.style.color = 'var(--text)';
+  catEl.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+async function saveProduct(){
+  const name=document.getElementById('pm-name').value.trim();
+  const description=document.getElementById('pm-desc').value.trim();
+  const price=parseFloat(document.getElementById('pm-price').value);
+  const stock=parseInt(document.getElementById('pm-stock').value)||0;
+  const category=document.getElementById('pm-cat').value;
+  const subcategory=document.getElementById('pm-subcat').value;
+  const location=document.getElementById('pm-loc').value.trim();
+  const condition=document.getElementById('pm-cond').value;
+  const color=document.getElementById('pm-color').value.trim();
+  const size=document.getElementById('pm-size').value.trim();
+  const deliveryMethod=document.getElementById('pm-del').value;
+
+  if(!validateAllFields()){ toast('Verifica os campos assinalados a vermelho.','warn'); return; }
+  if(_imgState.length===0){toast('Adicione pelo menos uma imagem do produto.','warn');return;}
+
+  const btn=document.getElementById('pm-submit');
+  const progWrap=document.getElementById('pm-progress-wrap');
+  const progFill=document.getElementById('pm-progress-fill');
+  const progTxt=document.getElementById('pm-progress-txt');
+  setLoading(btn,true);
+  if(progWrap) progWrap.style.display='';
+  if(progFill) progFill.style.width='4%';
+  try{
+    const fd=new FormData();
+    fd.append('name',name); fd.append('description',description); fd.append('price',price);
+    fd.append('stock',stock); fd.append('category',category); fd.append('location',location);
+    // Só envia subcategory quando escolhida — o backend ainda não tem
+    // este campo (ver nota no PLANO-100.md); enviar sempre uma string
+    // vazia arriscava criar um valor "" gravado em vez de undefined.
+    if(subcategory) fd.append('subcategory',subcategory);
+    fd.append('condition',condition); fd.append('color',color); fd.append('size',size);
+    fd.append('deliveryMethod',deliveryMethod);
+
+    if(progTxt) progTxt.textContent=`A preparar ${_imgState.length} imagem${_imgState.length>1?'ns':''}…`;
+    let done=0;
+    for(const it of _imgState){
+      const compressed = await compressImage(it.file);
+      fd.append('images', compressed);
+      done++;
+      // Compressão é ~40% do progresso mostrado; o resto (envio real)
+      // é preenchido pelo XHR a seguir — assim a barra nunca fica
+      // parada a 0% enquanto imagens grandes ainda estão a comprimir.
+      if(progFill) progFill.style.width = `${4 + Math.round((done/_imgState.length)*36)}%`;
+    }
+    if(progTxt) progTxt.textContent='A enviar…';
+
+    const res = await (window.api?.postFormProgress
+      ? api.postFormProgress('/products', fd, (frac) => {
+          if(progFill) progFill.style.width = `${40 + Math.round(frac*60)}%`;
+        })
+      : api.postForm('/products', fd));
+    if(progFill) progFill.style.width='100%';
+    const imagesFailed=res?.data?.imagesFailed||0, serverMsg=res?.message;
+    Bazares.Analytics?.trackProductPublished(res?.data?.product||{name,description,price,stock,category});
+    clearAutosave();
+
+    if(imagesFailed>0){
+      toast(serverMsg||'Produto guardado, mas algumas fotos falharam — tente adicioná-las novamente em Editar.','warn');
+    } else {
+      toast('Produto publicado! <svg class="ico-inline ico-fill" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M4 21l3-9 6 6z"/><circle cx="18" cy="6" r="1.5"/><circle cx="14" cy="4" r="1"/><circle cx="20" cy="11" r="1"/><path d="M13 2l1.5 1.5L13 5l-1.5-1.5z"/></svg>');
+    }
+    go('my-products.html');
+  }catch(e){
+    setLoading(btn,false);
+    if(progWrap) progWrap.style.display='none';
+    toast(apiErrorMessage(e),'err');
+  }
+}
+
+function saveNpDraft(){
+  const draft = {
+    id: Date.now(),
+    name: document.getElementById('pm-name')?.value||'',
+    price: document.getElementById('pm-price')?.value||'',
+    stock: document.getElementById('pm-stock')?.value||'',
+    cat: document.getElementById('pm-cat')?.value||'',
+    loc: document.getElementById('pm-loc')?.value||'',
+    del: document.getElementById('pm-del')?.value||'',
+    cond: document.getElementById('pm-cond')?.value||'',
+    color: document.getElementById('pm-color')?.value||'',
+    size: document.getElementById('pm-size')?.value||'',
+    desc: document.getElementById('pm-desc')?.value||'',
+    savedAt: new Date().toISOString(),
+  };
+  if(!draft.name && !draft.desc){ toast('Preenche pelo menos o nome ou a descrição antes de guardar.','warn'); return; }
+  let drafts = [];
+  try{ drafts = JSON.parse(localStorage.getItem('bz_np_drafts')||'[]'); }catch{ drafts = []; }
+  drafts.unshift(draft);
+  drafts = drafts.slice(0,5);
+  localStorage.setItem('bz_np_drafts', JSON.stringify(drafts));
+  toast('Rascunho guardado.','ok');
+}
+function openPmDrafts(){
+  let drafts = [];
+  try{ drafts = JSON.parse(localStorage.getItem('bz_np_drafts')||'[]'); }catch{ drafts = []; }
+  const list = drafts.length ? drafts.map(d=>`
+    <div class="hs-tpl-card" style="cursor:default">
+      <b>${esc(d.name || 'Sem nome')}</b>
+      <span>${d.price ? fmtMT(Number(d.price))+' · ' : ''}${new Date(d.savedAt).toLocaleDateString('pt-PT')}</span>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button type="button" class="btn btn-primary btn-sm" style="flex:1" onclick="restoreNpDraft(${d.id})">Restaurar</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="deleteNpDraft(${d.id})" aria-label="Eliminar rascunho">${icon('trash',14,2)}</button>
+      </div>
+    </div>`).join('')
+    : `<p style="font-size:12.5px;color:var(--t4);text-align:center;padding:20px 0">Ainda não tens rascunhos guardados.</p>`;
+  const html = `<div class="card" style="max-width:420px">
+    <h3 style="margin-bottom:4px">Rascunhos</h3>
+    <p style="font-size:12.5px;color:var(--t3);margin-bottom:16px">Nota: as fotos não são guardadas — volta a adicioná-las ao restaurar.</p>
+    <div style="display:flex;flex-direction:column;gap:8px">${list}</div>
+    <button type="button" class="btn btn-ghost btn-block" style="margin-top:16px" onclick="saveNpDraft();closeModal();openPmDrafts()">${icon('folder',15,2)} Guardar rascunho atual</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="closeModal()">Fechar</button>
+  </div>`;
+  openModal(html);
+}
+function restoreNpDraft(id){
+  const drafts = JSON.parse(localStorage.getItem('bz_np_drafts')||'[]');
+  const d = drafts.find(x=>x.id===id);
+  if(!d) return;
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el && v!==undefined && v!=='') el.value=v; };
+  set('pm-name', d.name); set('pm-price', d.price); set('pm-stock', d.stock);
+  set('pm-cat', d.cat); set('pm-loc', d.loc); set('pm-del', d.del);
+  set('pm-cond', d.cond); set('pm-color', d.color); set('pm-size', d.size);
+  set('pm-desc', d.desc);
+  const descEl = document.getElementById('pm-desc'), descCount = document.getElementById('pm-desc-count');
+  if(descEl && descCount){
+    const len = descEl.value.length;
+    descCount.textContent = `${len}/1000`;
+    descCount.classList.toggle('field-counter--near', len>=850 && len<1000);
+    descCount.classList.toggle('field-counter--full', len>=1000);
+  }
+  closeModal();
+  toast('Rascunho restaurado.','ok');
+}
+function deleteNpDraft(id){
+  let drafts = JSON.parse(localStorage.getItem('bz_np_drafts')||'[]');
+  drafts = drafts.filter(x=>x.id!==id);
+  localStorage.setItem('bz_np_drafts', JSON.stringify(drafts));
+  openPmDrafts();
+}
+</script></body></html>
