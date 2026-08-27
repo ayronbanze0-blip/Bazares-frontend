@@ -968,7 +968,17 @@ function brandGlyph(size = 24, color = '#fff') {
 // suave), ou logo ao tocar no X / arrastar na horizontal.
 function toast(msg, type = 'ok', dur = 3800) {
   let root = document.getElementById('toast-root');
-  if (!root) { root = document.createElement('div'); root.id = 'toast-root'; document.body.appendChild(root); }
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'toast-root';
+    // aria-live: leitores de ecrã anunciam cada toast como uma região
+    // que muda (erros interrompem menos que 'assertive' seria ideal para
+    // 'err', mas 'polite' evita cortar o que o utilizador já estava a
+    // ouvir — suficiente para mensagens informativas/confirmação).
+    root.setAttribute('aria-live', 'polite');
+    root.setAttribute('role', 'status');
+    document.body.appendChild(root);
+  }
   const icons = {
     ok:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
     err:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
@@ -1043,6 +1053,43 @@ function toast(msg, type = 'ok', dur = 3800) {
 // mais explícitos para o mesmo motor.
 Bazares.Modal = (() => {
   const stack = []; // camadas empilhadas (stack:true) — modal-root não entra aqui
+  const PANEL_SEL = '.modal, .drawer-panel, .sheet-panel';
+  const FOCUSABLE_SEL = 'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+  // ── Gestão de foco (teclado) ──────────────────────────────────
+  // Sem isto, quem navega só por teclado (ou VoiceOver/TalkBack) abre
+  // um modal e o foco fica preso na página por trás — invisível e
+  // inacessível. Guarda quem tinha o foco antes de abrir (para o
+  // devolver ao fechar) e prende o Tab dentro do painel enquanto
+  // estiver aberto (padrão "focus trap" de qualquer diálogo modal).
+  function _focusables(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SEL)).filter(el => el.offsetParent !== null);
+  }
+
+  function _focusPanel(container) {
+    const panel = container.querySelector(PANEL_SEL);
+    if (!panel) return;
+    const first = _focusables(panel)[0];
+    if (first) { first.focus(); return; }
+    // Sem nada focável dentro (raro) — o próprio painel recebe o foco,
+    // para o leitor de ecrã pelo menos anunciar que entrou num diálogo.
+    panel.setAttribute('tabindex', '-1');
+    panel.focus();
+  }
+
+  function _onTrapKeydown(e) {
+    if (e.key !== 'Tab') return;
+    const top = stack.length ? stack[stack.length - 1] : document.getElementById('modal-root');
+    if (!top) return;
+    const panel = top.querySelector(PANEL_SEL);
+    if (!panel) return;
+    const items = _focusables(panel);
+    if (!items.length) { e.preventDefault(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  document.addEventListener('keydown', _onTrapKeydown);
 
   const VARIANTS = {
     dialog: (html, large) => `<div class="modal-bd"><div class="modal${large ? ' modal-lg' : ''}" role="dialog" aria-modal="true">${html}</div></div>`,
@@ -1087,38 +1134,55 @@ Bazares.Modal = (() => {
   // "closer" registado no History Manager (chamado depois do browser
   // já ter consumido a entrada de histórico sozinho, ao voltar atrás).
   function _removeTopLayer() {
-    if (stack.length) { stack.pop().remove(); return true; }
-    const r = document.getElementById('modal-root');
-    if (r && r.innerHTML.trim()) { r.innerHTML = ''; return true; }
-    return false;
+    let layer, isRoot = false;
+    if (stack.length) { layer = stack.pop(); }
+    else {
+      const r = document.getElementById('modal-root');
+      if (r && r.innerHTML.trim()) { layer = r; isRoot = true; }
+    }
+    if (!layer) return false;
+    const prevFocus = layer._bzPrevFocus;
+    if (isRoot) layer.innerHTML = ''; else layer.remove();
+    // Devolve o foco a quem o tinha antes de abrir — só se o elemento
+    // ainda existir na página (pode ter desaparecido entretanto, ex.
+    // o produto que se acabou de apagar); nesse caso o foco fica onde
+    // o browser o puser, em vez de apontar para o nada.
+    if (prevFocus && document.contains(prevFocus)) prevFocus.focus();
+    return true;
   }
 
   function open(html, opts = {}) {
     const { large = false, stack: doStack = false, variant = 'dialog' } = opts;
     const build = VARIANTS[variant] || VARIANTS.dialog;
+    const previousFocus = document.activeElement; // para devolver o foco ao fechar
     if (doStack) {
       const layer = document.createElement('div');
       layer.className = 'modal-root-layer';
       layer.innerHTML = build(html, large);
+      layer._bzPrevFocus = previousFocus;
       const bd = layer.querySelector(BACKDROP_SEL);
       bd.addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
       if (variant === 'sheet') _attachSheetDrag(layer.querySelector('.sheet-panel'), close);
       document.body.appendChild(layer);
       stack.push(layer);
       Bazares.History.openOverlay();
+      _focusPanel(layer);
       return;
     }
     let root = document.getElementById('modal-root');
     if (!root) { root = document.createElement('div'); root.id = 'modal-root'; document.body.appendChild(root); }
     const wasEmpty = !root.innerHTML.trim(); // troca de conteúdo com o modal já aberto não deve empilhar outra entrada de histórico
+    if (wasEmpty) root._bzPrevFocus = previousFocus; // só guarda no 1º open; substituir conteúdo não deve perder o alvo original
     root.innerHTML = build(html, large);
     root.querySelector(BACKDROP_SEL).addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
     if (variant === 'sheet') _attachSheetDrag(root.querySelector('.sheet-panel'), close);
     if (wasEmpty) Bazares.History.openOverlay();
+    _focusPanel(root);
   }
 
   // Fecho explícito (botão, ESC, toque fora) — consome a entrada de
-  // histórico que a abertura tinha armado.
+  // histórico que a abertura tinha armado. A restauração do foco fica
+  // a cargo de _removeTopLayer (ponto único de remoção do DOM).
   function close() {
     if (_removeTopLayer()) Bazares.History.consumeOverlayGuard();
   }
@@ -1666,8 +1730,12 @@ function buildTopbar(activePage = '') {
     const debouncedSearch = Bazares.Utils.debounce((q) => doGlobalSearch(q, dd), 350);
     si.addEventListener('input', () => {
       const q = si.value.trim();
-      if (q.length < 2) { debouncedSearch.cancel(); dd.style.display = 'none'; return; }
+      if (q.length < 2) { debouncedSearch.cancel(); q.length === 0 ? renderRecentSearchesDD(dd) : (dd.style.display = 'none'); return; }
       debouncedSearch(q);
+    });
+    si.addEventListener('focus', () => { if (!si.value.trim()) renderRecentSearchesDD(dd); });
+    si.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && si.value.trim()) { Bazares.RecentSearches.add(si.value.trim()); go('search.html', { q: si.value.trim() }); dd.style.display = 'none'; }
     });
     document.addEventListener('click', e => {
       if (!e.target.closest('#tb-search-wrap')) dd.style.display = 'none';
@@ -1678,14 +1746,33 @@ function buildTopbar(activePage = '') {
   if (user) { refreshNotifDot(); refreshChatBadge(); }
 }
 
+// Mostra as últimas pesquisas quando o campo está vazio (foco sem
+// texto) — cada chip repete a pesquisa; "x" remove só essa; um botão
+// no fundo limpa tudo. Nada aparece se ainda não há histórico.
+function renderRecentSearchesDD(dd) {
+  const recent = Bazares.RecentSearches.get();
+  if (!recent.length) { dd.style.display = 'none'; return; }
+  dd.innerHTML = `<div style="padding:7px 12px 3px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);display:flex;justify-content:space-between;align-items:center">
+      <span>Pesquisas recentes</span>
+      <button type="button" onclick="event.stopPropagation();Bazares.RecentSearches.clear();document.getElementById('search-dd').style.display='none'" style="background:none;border:none;color:var(--t4);font-size:10px;font-weight:600;cursor:pointer;text-transform:none">Limpar</button>
+    </div>
+    ${recent.map(term => `<div class="sdd-item" style="justify-content:space-between" onclick="go('search.html',{q:'${escJsAttr(term)}'})">
+      <span style="display:flex;align-items:center;gap:9px;font-size:13px">${icon('clock', 14)}${esc(term)}</span>
+      <button type="button" onclick="event.stopPropagation();Bazares.RecentSearches.remove('${escJsAttr(term)}');renderRecentSearchesDD(document.getElementById('search-dd'))" aria-label="Remover" style="background:none;border:none;color:var(--t4);cursor:pointer;padding:4px">${icon('close', 12)}</button>
+    </div>`).join('')}`;
+  dd.style.display = 'block';
+}
+
 async function doGlobalSearch(q, dd) {
   try {
     // Usa o endpoint dedicado de pesquisa com sugestões rápidas
     const res = await api.get('/search/suggestions', { q });
     const suggestions = res?.data?.suggestions || [];
     if (!suggestions.length) {
-      dd.innerHTML = `<div style="padding:12px;color:var(--t4);font-size:13px">Sem resultados para "${esc(q)}" — <a href="search.html?q=${encodeURIComponent(q)}" style="color:var(--b-500);font-weight:600">ver todos</a></div>`;
+      const guess = Bazares.Utils.closestMatch(q, CATS.map(c => c.l).concat(Bazares.RecentSearches.get()));
+      dd.innerHTML = `<div style="padding:12px;color:var(--t4);font-size:13px">Sem resultados para "${esc(q)}"${guess ? ` — quis dizer <a href="search.html?q=${encodeURIComponent(guess)}" onclick="Bazares.RecentSearches.add('${escJsAttr(guess)}')" style="color:var(--b-500);font-weight:700">${esc(guess)}</a>?` : ''} — <a href="search.html?q=${encodeURIComponent(q)}" style="color:var(--b-500);font-weight:600">ver todos</a></div>`;
     } else {
+      Bazares.RecentSearches.add(q);
       const bazars = suggestions.filter(s => s.type === 'bazar');
       const products = suggestions.filter(s => s.type === 'product');
       dd.innerHTML =
@@ -1698,7 +1785,7 @@ async function doGlobalSearch(q, dd) {
             <div><div style="font-size:13px;font-weight:600">${esc(p.label)}</div><div style="font-size:11px;color:var(--t4)">${esc(p.sub||'')}</div></div>
           </div>`).join('')}` : '') +
         `<div style="padding:8px 12px;border-top:1px solid var(--brd);text-align:center">
-          <a href="search.html?q=${encodeURIComponent(q)}" style="font-size:12px;color:var(--b-500);font-weight:600">Ver todos os resultados para "${esc(q)}" <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <a href="search.html?q=${encodeURIComponent(q)}" onclick="Bazares.RecentSearches.add('${escJsAttr(q)}')" style="font-size:12px;color:var(--b-500);font-weight:600">Ver todos os resultados para "${esc(q)}" <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
         </div>`;
     }
     dd.style.display = 'block';
@@ -2040,7 +2127,16 @@ function toggleDark() {
 }
 (function initTheme() {
   const saved = localStorage.getItem('bz_theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    return;
+  }
+  // Sem escolha guardada: respeita a preferência do sistema em vez de
+  // assumir sempre claro. Não grava em localStorage — só grava quando o
+  // utilizador escolhe explicitamente (toggleDark), para continuar a
+  // seguir o SO se ele mudar de tema mais tarde.
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (prefersDark) document.documentElement.setAttribute('data-theme', 'dark');
 })();
 
 // ─── BFCACHE GUARD ────────────────────────────────────────────────

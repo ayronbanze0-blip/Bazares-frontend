@@ -267,7 +267,43 @@ const api = {
   put: (path, body) => apiRequest('PUT', path, { body }),
   putForm: (path, formData) => apiRequest('PUT', path, { body: formData, isForm: true }),
   patch: (path, body) => apiRequest('PATCH', path, { body }),
-  delete: (path, body) => apiRequest('DELETE', path, { body })
+  delete: (path, body) => apiRequest('DELETE', path, { body }),
+  /**
+   * Envio de FormData com progresso real (XMLHttpRequest, não fetch —
+   * fetch não expõe progresso de upload). Complementa postForm/putForm,
+   * não os substitui: usa-se só onde mostrar uma barra de progresso
+   * importa mesmo (publicar produto com várias fotos). Não tem o
+   * retry automático nem o refresh de sessão em fila do apiRequest —
+   * um único pedido, com timeout calculado da mesma forma. Em caso de
+   * 401, quem chamou trata o erro como qualquer outro (a pessoa tenta
+   * de novo, o fluxo normal de login trata a sessão expirada).
+   *
+   * onProgress(fraction 0..1) é chamado repetidamente durante o envio.
+   */
+  postFormProgress: (path, formData, onProgress) => new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', API_BASE + path);
+    xhr.withCredentials = true;
+    if (_accessToken) xhr.setRequestHeader('Authorization', 'Bearer ' + _accessToken);
+    xhr.timeout = uploadTimeoutFor(formData);
+    if (xhr.upload && onProgress) {
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+    }
+    xhr.onload = () => {
+      let data = null;
+      try { data = JSON.parse(xhr.responseText); } catch {}
+      if (xhr.status >= 200 && xhr.status < 300) {
+        if (data?.data?.refreshToken) setRefreshToken(data.data.refreshToken);
+        resolve(data);
+      } else {
+        const message = data?.message || data?.errors?.[0]?.message || `Erro ${xhr.status}`;
+        reject({ ok: false, status: xhr.status, code: data?.code, message, errors: data?.errors });
+      }
+    };
+    xhr.onerror = () => reject({ ok: false, networkError: true, message: 'Não foi possível concluir o envio. Verifique a sua ligação à internet e tente novamente.' });
+    xhr.ontimeout = () => reject({ ok: false, networkError: true, message: 'O envio demorou demasiado tempo. Verifique a sua ligação e tente novamente.' });
+    xhr.send(formData);
+  })
 };
 
 // Lista curada de GETs "lentos a mudar" — cada entrada nova aqui é uma
