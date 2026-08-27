@@ -274,6 +274,20 @@ textarea{resize:vertical;min-height:80px}
 input:disabled,select:disabled,textarea:disabled{
   opacity:.55;cursor:not-allowed;background:var(--surf3);color:var(--t3);
 }
+/* Botão que substitui o <select> nativo de categoria — mesma pele
+   visual dos inputs de texto, para não parecer um botão qualquer no
+   meio de um formulário. */
+.cat-picker-btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 15px;border:1.5px solid var(--brd);border-radius:var(--r);
+  background:var(--surf);color:var(--text);font-size:14px;text-align:left;cursor:pointer;
+  transition:border-color var(--ease),box-shadow var(--ease);
+}
+.cat-picker-btn:hover{border-color:var(--brd2)}
+.cat-picker-btn:focus-visible{border-color:var(--b-400);box-shadow:0 0 0 3px rgba(0,224,67,.14);outline:none}
+.cat-picker-btn svg{color:var(--t4);flex-shrink:0}
+#pm-cat-display{color:var(--t3)}
+.fg--err .cat-picker-btn{border-color:var(--r-500)}
 
 /* Alguns navegadores (Edge, e certos teclados Android/Samsung) desenham o
    seu próprio ícone de "mostrar senha" dentro do campo, sobrepondo-se ao
@@ -1347,6 +1361,10 @@ tbody tr:hover td{background:var(--b-50)}
 .sheet-item svg{color:var(--t3);flex-shrink:0}
 .sheet-item--danger{color:var(--red)}
 .sheet-item--danger svg{color:var(--red)}
+.sheet-item-ico{display:flex;flex-shrink:0}
+.sheet-item-ico svg{width:20px;height:20px}
+.sheet-item-label{flex:1;min-width:0}
+.sheet-item.on{background:var(--surf3);font-weight:800}
 .sheet-divider{height:1px;background:var(--brd);margin:6px 0}
 
 .cs-item{
