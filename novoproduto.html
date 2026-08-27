@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bazares">
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="preconnect" href="https://bazare-s.onrender.com">
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="dns-prefetch" href="https://res.cloudinary.com">
@@ -30,16 +30,16 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788750000">
+<link rel="stylesheet" href="/css/style.css?v=1788950000">
 </head>
 <body data-require-auth="1" data-roles="SELLER">
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
 <main id="main"><div id="view" class="pg-body"></div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
-  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788780000"></script><script src="/js/api.js?v=1788790000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788790000"></script><script src="/js/runtime.js?v=1788960000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/media-compress.js?v=1788700000"></script><script src="/js/app.js?v=1788970000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/image-editor.js?v=1788710001"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onReady: async()=>{
   const view=document.getElementById('view');
@@ -68,15 +68,17 @@ initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onRead
 
       <div class="form-sec-label"><b>2</b> Informações principais</div>
       <p class="form-sec-hint">O nome e a categoria certos ajudam os compradores a encontrar o teu produto</p>
-      <div class="fg"><label>Nome do produto *</label><input id="pm-name" placeholder="Nome do produto"></div>
+      <div class="fg" id="pm-name-grp"><label>Nome do produto *</label><input id="pm-name" placeholder="Nome do produto"><div class="field-err-msg" id="pm-name-err">Escreve o nome do produto.</div></div>
       <div class="row2">
-        <div class="fg"><label>Preço (MT) *</label><input type="number" id="pm-price" min="0" step="0.01" placeholder="0">
+        <div class="fg" id="pm-price-grp"><label>Preço (MT) *</label><input type="number" id="pm-price" min="0" step="0.01" placeholder="0">
           <button type="button" onclick="suggestPrice()" style="background:none;border:none;color:var(--grn);font-size:11px;font-weight:600;padding:4px 0;cursor:pointer">${icon('star',11,2.5)} Sugerir preço com IA</button>
+          <div class="field-err-msg" id="pm-price-err">Indica um preço válido, maior que 0.</div>
         </div>
         <div class="fg"><label>Stock</label><input type="number" id="pm-stock" value="1" min="0" placeholder="0"></div>
       </div>
-      <div class="fg"><label>Categoria *</label>
-        <select id="pm-cat">${CATS.map(c=>`<option value="${esc(c.l)}">${esc(c.l)}</option>`).join('')}</select>
+      <div class="fg" id="pm-cat-grp"><label>Categoria *</label>
+        <select id="pm-cat"><option value="">Escolhe uma categoria</option>${CATS.map(c=>`<option value="${esc(c.l)}">${esc(c.l)}</option>`).join('')}</select>
+        <div class="field-err-msg" id="pm-cat-err">Escolhe uma categoria.</div>
       </div>
 
       <div class="form-sec-label"><b>3</b> Venda</div>
@@ -100,7 +102,7 @@ initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onRead
 
       <div class="form-sec-label"><b>5</b> Descrição</div>
       <p class="form-sec-hint">Escreve uma descrição clara e honesta do produto</p>
-      <div class="fg"><label>Descrição *</label><textarea id="pm-desc" rows="3" maxlength="1000" placeholder="Descreva o produto..."></textarea><div class="field-counter" id="pm-desc-count">0/1000</div></div>
+      <div class="fg" id="pm-desc-grp"><label>Descrição *</label><textarea id="pm-desc" rows="3" maxlength="1000" placeholder="Descreva o produto..."></textarea><div class="field-counter" id="pm-desc-count">0/1000</div><div class="field-err-msg" id="pm-desc-err">Escreve uma descrição com pelo menos 20 caracteres.</div></div>
       <div class="fg">
         <label>Palavras-chave para a IA (opcional)</label>
         <input id="pm-ai-keywords" placeholder="Ex: novo, cor preta, entrega rápida">
@@ -110,10 +112,17 @@ initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onRead
         </button>
       </div>
 
+      <div id="pm-progress-wrap" style="display:none">
+        <div class="ve-progress-bar"><div class="ve-progress-fill" id="pm-progress-fill"></div></div>
+        <p id="pm-progress-txt" style="text-align:center;font-size:12px;color:var(--t3);margin-top:8px">A preparar imagens…</p>
+      </div>
+
       <div style="display:flex;gap:9px;padding-top:4px" id="pm-actions">
+        <button class="btn btn-soft" onclick="previewProduct()" title="Pré-visualizar">${icon('eye',15,2.4)}</button>
         <button class="btn btn-primary" style="flex:1" id="pm-submit" onclick="saveProduct()">${icon('check',15,2.4)} Publicar produto</button>
         <button class="btn btn-ghost" onclick="go('my-products.html')">Cancelar</button>
       </div>
+      <p id="pm-autosave-note" style="display:none;text-align:center;font-size:11.5px;color:var(--t4);margin-top:8px">${icon('folder',12,2)} Rascunho recuperado automaticamente — <button type="button" onclick="discardAutosave()" style="background:none;border:none;color:var(--t4);text-decoration:underline;font-size:11.5px;cursor:pointer;padding:0">descartar</button></p>
     </div>`;
   initImageUploader();
   const descEl = document.getElementById('pm-desc');
@@ -126,6 +135,9 @@ initPage({ active:'novoproduto.html', requireAuth:true, roles:['SELLER'], onRead
       descCount.classList.toggle('field-counter--full', len>=1000);
     });
   }
+
+  initFormValidation();
+  initAutosave();
 
   // Barra de acção fixa em mobile — o botão "Publicar" fica sempre visível
   // sem exigir scroll até ao fim do formulário (mesmo padrão do checkout).
@@ -287,6 +299,142 @@ async function suggestPrice(){
   }
 }
 
+/* ── Validação em tempo real ─────────────────────────────────
+   Cada campo obrigatório valida-se sozinho ao sair (blur) e, uma vez
+   marcado com erro, também a cada input seguinte (para o erro
+   desaparecer assim que a pessoa corrige, sem esperar por outro
+   blur). O toast genérico do submit deixa de ser a única pista —
+   agora há uma mensagem junto ao campo certo, e o primeiro campo
+   inválido recebe o foco automaticamente.
+   Devolve true se válido. */
+function _validateField(id) {
+  const el = document.getElementById(id);
+  const grp = document.getElementById(id + '-grp');
+  if (!el || !grp) return true;
+  let ok = true;
+  if (id === 'pm-name') ok = el.value.trim().length > 0;
+  else if (id === 'pm-price') ok = parseFloat(el.value) > 0;
+  else if (id === 'pm-cat') ok = !!el.value;
+  else if (id === 'pm-desc') ok = el.value.trim().length >= 20;
+  grp.classList.toggle('fg--err', !ok);
+  return ok;
+}
+
+function initFormValidation() {
+  ['pm-name', 'pm-price', 'pm-cat', 'pm-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('blur', () => _validateField(id));
+    el.addEventListener('input', () => {
+      // só revalida em cada tecla depois de já ter sido marcado com
+      // erro — antes disso não interrompe quem ainda está a escrever
+      if (document.getElementById(id + '-grp')?.classList.contains('fg--err')) _validateField(id);
+    });
+  });
+}
+
+function validateAllFields() {
+  const ids = ['pm-name', 'pm-price', 'pm-cat', 'pm-desc'];
+  let firstInvalid = null;
+  ids.forEach(id => { if (!_validateField(id) && !firstInvalid) firstInvalid = id; });
+  if (firstInvalid) {
+    document.getElementById(firstInvalid).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById(firstInvalid).focus();
+    return false;
+  }
+  return true;
+}
+
+/* ── Autosave silencioso ──────────────────────────────────────
+   Guarda os campos de texto (não as imagens — Files não persistem
+   em localStorage) a cada alteração, com debounce, sem qualquer
+   toast ou indicação visível — só a mensagem de recuperação ao
+   reabrir a página é que se nota. Limpo sozinho ao publicar com
+   sucesso ou se a pessoa descartar manualmente. */
+const AUTOSAVE_KEY = 'bz_np_autosave';
+function _collectAutosaveFields() {
+  return {
+    name: document.getElementById('pm-name')?.value || '',
+    price: document.getElementById('pm-price')?.value || '',
+    stock: document.getElementById('pm-stock')?.value || '',
+    cat: document.getElementById('pm-cat')?.value || '',
+    loc: document.getElementById('pm-loc')?.value || '',
+    del: document.getElementById('pm-del')?.value || '',
+    cond: document.getElementById('pm-cond')?.value || '',
+    color: document.getElementById('pm-color')?.value || '',
+    size: document.getElementById('pm-size')?.value || '',
+    desc: document.getElementById('pm-desc')?.value || '',
+    kw: document.getElementById('pm-ai-keywords')?.value || ''
+  };
+}
+function _isAutosaveEmpty(d) { return !d.name && !d.price && !d.desc; }
+
+function initAutosave() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || 'null'); } catch { saved = null; }
+  if (saved && !_isAutosaveEmpty(saved)) {
+    document.getElementById('pm-name').value = saved.name || '';
+    document.getElementById('pm-price').value = saved.price || '';
+    document.getElementById('pm-stock').value = saved.stock || '1';
+    if (saved.cat) document.getElementById('pm-cat').value = saved.cat;
+    document.getElementById('pm-loc').value = saved.loc || '';
+    if (saved.del) document.getElementById('pm-del').value = saved.del;
+    if (saved.cond) document.getElementById('pm-cond').value = saved.cond;
+    document.getElementById('pm-color').value = saved.color || '';
+    document.getElementById('pm-size').value = saved.size || '';
+    document.getElementById('pm-desc').value = saved.desc || '';
+    document.getElementById('pm-ai-keywords').value = saved.kw || '';
+    document.getElementById('pm-desc').dispatchEvent(new Event('input'));
+    const note = document.getElementById('pm-autosave-note');
+    if (note) note.style.display = '';
+  }
+
+  const debouncedSave = Bazares.Utils.debounce(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(_collectAutosaveFields())); } catch {}
+  }, 600);
+  document.getElementById('view')?.addEventListener('input', debouncedSave);
+  document.getElementById('view')?.addEventListener('change', debouncedSave);
+}
+
+function discardAutosave() {
+  try { localStorage.removeItem(AUTOSAVE_KEY); } catch {}
+  const note = document.getElementById('pm-autosave-note');
+  if (note) note.style.display = 'none';
+}
+function clearAutosave() { try { localStorage.removeItem(AUTOSAVE_KEY); } catch {} }
+
+/* ── Pré-visualização ─────────────────────────────────────────
+   Mostra o produto como vai aparecer, com os dados já preenchidos e
+   a primeira foto como capa, antes de publicar de facto. Não faz
+   nenhum pedido à rede — é só o que já está no formulário. */
+function previewProduct() {
+  const name = document.getElementById('pm-name').value.trim() || 'Nome do produto';
+  const price = parseFloat(document.getElementById('pm-price').value) || 0;
+  const cat = document.getElementById('pm-cat').value || '—';
+  const loc = document.getElementById('pm-loc').value.trim();
+  const cond = document.getElementById('pm-cond').value;
+  const desc = document.getElementById('pm-desc').value.trim() || 'Sem descrição.';
+  const cover = _imgState[0]?.previewUrl;
+  openModal(`
+    <div class="modal-hd"><h3>Pré-visualização</h3><button class="modal-x" onclick="closeModal()" aria-label="Fechar">${icon('close',18,2)}</button></div>
+    <p style="font-size:12px;color:var(--t4);margin-bottom:12px">É assim que o produto vai aparecer aos compradores — ainda não foi publicado.</p>
+    <div style="border:1px solid var(--brd);border-radius:var(--r);overflow:hidden">
+      <div style="width:100%;aspect-ratio:1;background:var(--surf3);display:flex;align-items:center;justify-content:center">
+        ${cover ? `<img src="${esc(cover)}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<span style="color:var(--t4);font-size:12px">Sem foto ainda</span>`}
+      </div>
+      <div style="padding:12px">
+        <div style="font-weight:700;font-size:14.5px;margin-bottom:4px">${esc(name)}</div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;color:var(--grn);font-size:17px;margin-bottom:6px">${fmtMT(price)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--t3);margin-bottom:8px">
+          <span>${esc(cat)}</span>${cond?`<span>· ${esc(cond)}</span>`:''}${loc?`<span>· ${esc(loc)}</span>`:''}
+        </div>
+        <p style="font-size:12.5px;color:var(--t2);white-space:pre-wrap">${esc(desc)}</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="closeModal();saveProduct()">${icon('check',15,2.4)} Tudo certo — publicar agora</button>
+  `, true);
+}
+
 /* ── Guardar ──────────────────────────────────────────────── */
 async function saveProduct(){
   const name=document.getElementById('pm-name').value.trim();
@@ -300,11 +448,16 @@ async function saveProduct(){
   const size=document.getElementById('pm-size').value.trim();
   const deliveryMethod=document.getElementById('pm-del').value;
 
-  if(!name||!description||!price||!category){toast('Preencha os campos obrigatórios (*).','warn');return;}
+  if(!validateAllFields()){ toast('Verifica os campos assinalados a vermelho.','warn'); return; }
   if(_imgState.length===0){toast('Adicione pelo menos uma imagem do produto.','warn');return;}
 
   const btn=document.getElementById('pm-submit');
+  const progWrap=document.getElementById('pm-progress-wrap');
+  const progFill=document.getElementById('pm-progress-fill');
+  const progTxt=document.getElementById('pm-progress-txt');
   setLoading(btn,true);
+  if(progWrap) progWrap.style.display='';
+  if(progFill) progFill.style.width='4%';
   try{
     const fd=new FormData();
     fd.append('name',name); fd.append('description',description); fd.append('price',price);
@@ -312,15 +465,28 @@ async function saveProduct(){
     fd.append('condition',condition); fd.append('color',color); fd.append('size',size);
     fd.append('deliveryMethod',deliveryMethod);
 
-    toast(`A preparar ${_imgState.length} imagem${_imgState.length>1?'ns':''} para envio…`,'info');
+    if(progTxt) progTxt.textContent=`A preparar ${_imgState.length} imagem${_imgState.length>1?'ns':''}…`;
+    let done=0;
     for(const it of _imgState){
       const compressed = await compressImage(it.file);
       fd.append('images', compressed);
+      done++;
+      // Compressão é ~40% do progresso mostrado; o resto (envio real)
+      // é preenchido pelo XHR a seguir — assim a barra nunca fica
+      // parada a 0% enquanto imagens grandes ainda estão a comprimir.
+      if(progFill) progFill.style.width = `${4 + Math.round((done/_imgState.length)*36)}%`;
     }
+    if(progTxt) progTxt.textContent='A enviar…';
 
-    const res=await api.postForm('/products',fd);
+    const res = await (window.api?.postFormProgress
+      ? api.postFormProgress('/products', fd, (frac) => {
+          if(progFill) progFill.style.width = `${40 + Math.round(frac*60)}%`;
+        })
+      : api.postForm('/products', fd));
+    if(progFill) progFill.style.width='100%';
     const imagesFailed=res?.data?.imagesFailed||0, serverMsg=res?.message;
     Bazares.Analytics?.trackProductPublished(res?.data?.product||{name,description,price,stock,category});
+    clearAutosave();
 
     if(imagesFailed>0){
       toast(serverMsg||'Produto guardado, mas algumas fotos falharam — tente adicioná-las novamente em Editar.','warn');
@@ -328,7 +494,11 @@ async function saveProduct(){
       toast('Produto publicado! <svg class="ico-inline ico-fill" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M4 21l3-9 6 6z"/><circle cx="18" cy="6" r="1.5"/><circle cx="14" cy="4" r="1"/><circle cx="20" cy="11" r="1"/><path d="M13 2l1.5 1.5L13 5l-1.5-1.5z"/></svg>');
     }
     go('my-products.html');
-  }catch(e){setLoading(btn,false);toast(apiErrorMessage(e),'err');}
+  }catch(e){
+    setLoading(btn,false);
+    if(progWrap) progWrap.style.display='none';
+    toast(apiErrorMessage(e),'err');
+  }
 }
 
 function saveNpDraft(){

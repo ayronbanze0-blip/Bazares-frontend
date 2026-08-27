@@ -26,7 +26,7 @@
 <link rel="apple-touch-startup-image" href="/icons/splash/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <link rel="apple-touch-startup-image" href="/icons/splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="preconnect" href="https://bazare-s.onrender.com">
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="dns-prefetch" href="https://res.cloudinary.com">
@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://bazares.pages.dev/icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1788750000">
+<link rel="stylesheet" href="/css/style.css?v=1788950000">
 <style>
 .srch-input-wrap{position:relative;margin-bottom:16px}
 .srch-input-wrap .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t4)}
@@ -66,10 +66,10 @@
 <header id="topbar"></header><div class="overlay" id="overlay"></div><aside id="sidebar" class="closed"></aside>
 <main id="main"><div id="view" class="pg-body"></div></main>
 <div id="modal-root"></div><div id="toast-root"></div>
-<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788700000"></script><script src="/js/api.js?v=1788740000"></script><script src="/js/analytics.js?v=1788730000"></script>
-  <script src="/js/core.js?v=1788740000"></script><script src="/js/runtime.js?v=1788700000"></script>
+<script src="/js/config.js?v=1788740000"></script><script src="/js/seo.js?v=1788700000"></script><script src="/js/action-queue.js?v=1788780000"></script><script src="/js/api.js?v=1788790000"></script><script src="/js/analytics.js?v=1788730000"></script>
+  <script src="/js/core.js?v=1788790000"></script><script src="/js/runtime.js?v=1788960000"></script>
   <script src="/js/offline-store.js?v=1788700000"></script>
-  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788700000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
+  <script src="/js/virtual-feed.js?v=1788700000"></script><script src="/js/spa-router.js?v=1788720000"></script><script>BazaresRouter.register(["admin-broadcast.html","admin-denuncias.html","admin-finance.html","admin-logs.html","admin-monitoring.html","admin-orders.html","admin-premium.html","admin-products.html","admin-reports.html","admin-users.html","admin-wallet.html","admin.html","anuncio.html","anuncios.html","bazar.html","bazars.html","cart.html","category.html","chat.html","checkout.html","dashboard.html","explorar.html","favorites.html","finance.html","forgot-password.html","historia.html","home.html","index.html","login.html","meufeed.html","my-bazar.html","my-orders.html","my-products.html","newreels.html","notifications.html","novoproduto.html","order-detail.html","premium.html","privacy.html","product.html","products.html","profile.html","ranking.html","reels.html","referrals.html","refund-policy.html","register.html","search.html","seller-guidelines.html","settings.html","support.html","terms.html","verify-email.html","wallet-history.html","wallet.html"]);</script><script src="/js/app.js?v=1788970000"></script><script src="/js/mentions.js?v=1788700000"></script><script src="/js/install-prompt.js?v=1788700000"></script><script src="/js/push-notifications.js?v=1788700000"></script>
 <script>
 let _srchTab = 'tudo';
 let _srchTimer = null;
@@ -144,8 +144,27 @@ initPage({ active: '', onReady: () => {
   if (q0) {
     runSearch(q0).then(() => { if (savedSrch) restoreScrollY(savedSrch.scrollY); });
   }
-  else document.getElementById('srch-results').innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Comece a escrever para pesquisar</h3><p>Produtos, bazares e pessoas — tudo num só lugar.</p></div>`;
+  else renderSrchIdleState();
 }});
+
+// ─── Estado ocioso: pesquisas recentes em vez do empty state genérico
+// quando já existe histórico local ─────────────────────────────────
+function renderSrchIdleState() {
+  const recent = Bazares.RecentSearches.get();
+  const results = document.getElementById('srch-results');
+  if (!recent.length) {
+    results.innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Comece a escrever para pesquisar</h3><p>Produtos, bazares e pessoas — tudo num só lugar.</p></div>`;
+    return;
+  }
+  results.innerHTML = `<div class="srch-sec-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Pesquisas recentes</span>
+      <button type="button" onclick="Bazares.RecentSearches.clear();renderSrchIdleState()" style="background:none;border:none;color:var(--t4);font-size:11px;font-weight:600;cursor:pointer;text-transform:none">Limpar</button>
+    </div>
+    ${recent.map(term => `<div class="person-row" style="justify-content:space-between" onclick="document.getElementById('srch-input').value='${escJsAttr(term)}';runSearch('${escJsAttr(term)}')">
+      <span style="display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:500">${icon('clock',15)}${esc(term)}</span>
+      <button type="button" onclick="event.stopPropagation();Bazares.RecentSearches.remove('${escJsAttr(term)}');renderSrchIdleState()" aria-label="Remover pesquisa" style="background:none;border:none;color:var(--t4);cursor:pointer;padding:4px">${icon('close',13)}</button>
+    </div>`).join('')}`;
+}
 
 // ─── Memória de listagem (voltar sem perder separador/scroll) ──────
 function _saveSrchState(){
@@ -162,7 +181,7 @@ function switchSrchTab(tab) {
 
 async function runSearch(q) {
   const results = document.getElementById('srch-results');
-  if (!q) { results.innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Comece a escrever para pesquisar</h3><p>Produtos, bazares e pessoas — tudo num só lugar.</p></div>`; return; }
+  if (!q) { renderSrchIdleState(); return; }
   results.innerHTML = `<div style="text-align:center;padding:40px"><span class="spinner spinner-dark"></span></div>`;
   history.replaceState(null, '', `search.html?q=${encodeURIComponent(q)}`);
 
@@ -183,9 +202,11 @@ async function runSearch(q) {
     const people = peopleRes.status==='fulfilled' ? (peopleRes.value?.data?.users||[]) : [];
 
     if (!products.length && !bazars.length && !people.length) {
-      results.innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Sem resultados para "${esc(q)}"</h3><p>Tente outros termos de pesquisa.</p></div>`;
+      const guess = Bazares.Utils.closestMatch(q, (window.CATS||[]).map(c=>c.l).concat(Bazares.RecentSearches.get()));
+      results.innerHTML = `<div class="empty"><div class="empty-ico"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3>Sem resultados para "${esc(q)}"</h3><p>${guess ? `Quis dizer <a href="#" onclick="event.preventDefault();document.getElementById('srch-input').value='${escJsAttr(guess)}';runSearch('${escJsAttr(guess)}')" style="color:var(--b-500);font-weight:700">${esc(guess)}</a>? Ou tente outros termos.` : 'Tente outros termos de pesquisa.'}</p></div>`;
       return;
     }
+    Bazares.RecentSearches.add(q);
 
     let html = '';
     if (products.length) {
