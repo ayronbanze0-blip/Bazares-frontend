@@ -666,11 +666,11 @@ async function saveProduct(id){
     let savedId=id, imagesFailed=0, serverMsg=null;
     if(id){
       const res=await api.putForm(`/products/${id}`,fd);
-      imagesFailed=res?.data?.imagesFailed||0; serverMsg=res?.message;
+      imagesFailed=res?.data?.imageUploadErrors?.length||0; serverMsg=res?.message;
     } else {
       const res=await api.postForm('/products',fd);
       savedId=res?.data?.product?.id;
-      imagesFailed=res?.data?.imagesFailed||0; serverMsg=res?.message;
+      imagesFailed=res?.data?.imageUploadErrors?.length||0; serverMsg=res?.message;
       Bazares.Analytics?.trackProductPublished(res?.data?.product||{name,category,price,stock});
     }
 

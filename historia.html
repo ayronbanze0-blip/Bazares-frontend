@@ -167,7 +167,7 @@ initPage({ active:'historia.html', requireAuth:true, roles:['SELLER'], onReady: 
   let editData = null;
   if(_editStoryId){
     try{
-      const r = await api.get(`/bazars/${_myBazar.id}/stories/${_editStoryId}`);
+      const r = await api.get(`/stories/${_editStoryId}`);
       editData = r?.data?.story || null;
     }catch(e){ toast(apiErrorMessage(e),'err'); }
     if(!editData){ go('home.html'); return; }

@@ -512,7 +512,7 @@ async function saveProduct(){
         })
       : api.postForm('/products', fd));
     if(progFill) progFill.style.width='100%';
-    const imagesFailed=res?.data?.imagesFailed||0, serverMsg=res?.message;
+    const imagesFailed=res?.data?.imageUploadErrors?.length||0, serverMsg=res?.message;
     Bazares.Analytics?.trackProductPublished(res?.data?.product||{name,description,price,stock,category});
     clearAutosave();
 
