@@ -712,3 +712,313 @@ Bazares.Utils.closestMatch = function closestMatch(term, candidates) {
   }
   return best;
 };
+
+// ── VALIDAÇÃO INLINE (genérica) ──────────────────────────────
+// Generaliza o padrão já usado em novoproduto.html (grupo com id
+// `<campo>-grp`, classe `.fg--err`/`.field-err-msg`) para qualquer
+// formulário: cada campo valida-se ao sair (blur) e, uma vez marcado
+// com erro, também a cada tecla seguinte — para o erro desaparecer
+// assim que a pessoa corrige, sem esperar por outro blur.
+//
+// Uso típico:
+//   const v = Bazares.InlineValidate.attach({
+//     rname: { rule: (val) => val.trim().length >= 2 || 'Escreve o teu nome.' },
+//     remail:{ rule: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Email inválido.' },
+//     rpw2:  { rule: (val) => val === document.getElementById('rpw').value || 'As senhas não coincidem.' }
+//   });
+//   form.addEventListener('submit', e => { if (!v.validateAll()) e.preventDefault(); });
+//
+// A `rule` devolve `true` (válido), `false` (inválido, sem mensagem
+// própria) ou uma string (inválido, com essa mensagem).
+Bazares.InlineValidate = (() => {
+  function paint(el, grp, rule) {
+    const result = rule(el.value, el);
+    const ok = result === true;
+    const msg = typeof result === 'string' ? result : null;
+    grp.classList.toggle('fg--err', !ok);
+    grp.classList.toggle('af-field--err', !ok);
+    grp.classList.toggle('fg--ok', ok && el.value.trim() !== '');
+    grp.classList.toggle('af-field--ok', ok && el.value.trim() !== '');
+    if (msg) {
+      const errEl = grp.querySelector('.field-err-msg');
+      if (errEl) errEl.textContent = msg;
+    }
+    return ok;
+  }
+
+  // fields: { inputId: { rule: fn, groupId?: string } } — groupId por
+  // omissão é `<inputId>-grp`.
+  function attach(fields) {
+    const entries = {};
+    Object.entries(fields).forEach(([id, cfg]) => {
+      const el = document.getElementById(id);
+      const grp = document.getElementById(cfg.groupId || (id + '-grp'));
+      if (!el || !grp) return;
+      entries[id] = { el, grp, rule: cfg.rule };
+      el.addEventListener('blur', () => paint(el, grp, cfg.rule));
+      el.addEventListener('input', () => {
+        if (grp.classList.contains('fg--err') || grp.classList.contains('af-field--err')) paint(el, grp, cfg.rule);
+      });
+    });
+    function validateField(id) {
+      const e = entries[id];
+      return e ? paint(e.el, e.grp, e.rule) : true;
+    }
+    function validateAll() {
+      let firstInvalid = null;
+      for (const id in entries) {
+        if (!validateField(id) && !firstInvalid) firstInvalid = id;
+      }
+      if (firstInvalid) {
+        const { el } = entries[firstInvalid];
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+        return false;
+      }
+      return true;
+    }
+    return { validateField, validateAll };
+  }
+
+  return { attach };
+})();
+
+// ── MÁSCARAS DE INPUT ────────────────────────────────────────
+// Formata o valor de um campo enquanto a pessoa escreve — evita ter
+// de explicar o formato esperado (telefone, preço) num placeholder
+// que desaparece assim que se começa a escrever.
+Bazares.InputMask = (() => {
+  // Telefone moçambicano: +258 8X XXX XXXX
+  function phoneMZ(el) {
+    el.addEventListener('input', () => {
+      let d = el.value.replace(/\D/g, '');
+      if (d.startsWith('258')) d = d.slice(3);
+      d = d.slice(0, 9);
+      if (!d) { el.value = ''; return; }
+      let out = '+258 ' + d.slice(0, 2);
+      if (d.length > 2) out += ' ' + d.slice(2, 5);
+      if (d.length > 5) out += ' ' + d.slice(5, 9);
+      el.value = out;
+    });
+  }
+  // Preço/valor monetário: separador de milhares enquanto escreve
+  function currency(el) {
+    el.addEventListener('input', () => {
+      const d = el.value.replace(/\D/g, '');
+      el.value = d ? Number(d).toLocaleString('pt-PT') : '';
+    });
+  }
+  return { phoneMZ, currency };
+})();
+
+// ── FILTER CHIPS ──────────────────────────────────────────────
+// Resumo visual dos filtros activos numa listagem (categoria, preço,
+// ordenação, etc.), cada um removível individualmente, mais um chip
+// "Limpar tudo". Renderiza-se de novo sempre que os filtros mudam —
+// não guarda estado próprio, só pinta o que lhe é passado.
+Bazares.FilterChips = (() => {
+  function render(container, chips, onClearAll) {
+    if (!container) return;
+    if (!chips || !chips.length) { container.innerHTML = ''; container.style.display = 'none'; return; }
+    container.style.display = 'flex';
+    container.innerHTML = chips.map((c, i) =>
+      `<button type="button" class="filter-chip" data-i="${i}">${esc(c.label)}<span aria-hidden="true">×</span></button>`
+    ).join('') + `<button type="button" class="filter-chip filter-chip--clear" id="fc-clear-all">Limpar tudo</button>`;
+    container.querySelectorAll('.filter-chip[data-i]').forEach(btn => {
+      btn.onclick = () => chips[+btn.dataset.i]?.onRemove?.();
+    });
+    const clearBtn = container.querySelector('#fc-clear-all');
+    if (clearBtn) clearBtn.onclick = () => onClearAll?.();
+  }
+  return { render };
+})();
+
+// ── FILTER BOTTOM SHEET (mobile) ─────────────────────────────
+// Um painel de filtros já existente (ex.: .pfilt-panel) passa a
+// comportar-se como bottom sheet em ecrãs pequenos — fica fixo ao
+// fundo, com fundo escurecido por trás e fecha com Esc/toque fora —
+// sem tocar em como se comporta em ecrãs largos (continua um painel
+// inline normal lá).
+Bazares.BottomSheet = (() => {
+  function enable(panel) {
+    if (!panel) return { open() {}, close() {}, toggle() {} };
+    const mq = window.matchMedia('(max-width:680px)');
+    let backdrop = null;
+
+    function open() {
+      panel.classList.add('open');
+      if (mq.matches) {
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.className = 'bz-sheet-backdrop';
+          backdrop.onclick = close;
+          document.body.appendChild(backdrop);
+        }
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function close() {
+      panel.classList.remove('open');
+      if (backdrop) { backdrop.remove(); backdrop = null; }
+      document.body.style.overflow = '';
+    }
+    function toggle() { panel.classList.contains('open') ? close() : open(); }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && panel.classList.contains('open')) close();
+    });
+    return { open, close, toggle };
+  }
+  return { enable };
+})();
+
+// ── STEPPER ───────────────────────────────────────────────────
+// Indicador horizontal de progresso para processos com várias
+// etapas (registo de vendedor, publicação de anúncio em passos).
+Bazares.Stepper = (() => {
+  function render(container, steps, currentIndex) {
+    if (!container) return;
+    container.className = (container.className + ' bz-stepper').trim();
+    container.innerHTML = steps.map((label, i) => {
+      const state = i < currentIndex ? 'done' : i === currentIndex ? 'active' : 'pending';
+      return `<div class="bz-step bz-step--${state}">
+          <div class="bz-step-dot">${i < currentIndex ? '✓' : i + 1}</div>
+          <div class="bz-step-label">${esc(label)}</div>
+        </div>${i < steps.length - 1 ? '<div class="bz-step-line' + (i < currentIndex ? ' bz-step-line--done' : '') + '"></div>' : ''}`;
+    }).join('');
+  }
+  return { render };
+})();
+
+// ── PROGRESS INDICATOR ───────────────────────────────────────
+// Barra de progresso simples para processos demorados (upload de
+// imagens/vídeo, compressão) onde uma percentagem real ajuda mais
+// que um spinner indeterminado.
+Bazares.Progress = (() => {
+  function create(container, label) {
+    if (!container) return { set() {}, done() {}, error() {} };
+    container.innerHTML = `<div class="bz-progress"><div class="bz-progress-bar" style="width:0%"></div></div>
+      <div class="bz-progress-label">${esc(label || '')}</div>`;
+    const bar = container.querySelector('.bz-progress-bar');
+    const lbl = container.querySelector('.bz-progress-label');
+    return {
+      set(pct, text) {
+        bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
+        if (text != null) lbl.textContent = text;
+      },
+      done(text) {
+        bar.style.width = '100%';
+        bar.classList.add('bz-progress-bar--done');
+        if (text) lbl.textContent = text;
+      },
+      error(text) {
+        bar.classList.add('bz-progress-bar--err');
+        if (text) lbl.textContent = text;
+      }
+    };
+  }
+  return { create };
+})();
+
+// ── AUTOSAVE DE RASCUNHOS ────────────────────────────────────
+// Guarda o estado de um formulário longo em localStorage enquanto a
+// pessoa preenche (debounced), para não perder tudo se sair sem
+// querer ou a app fechar (ex.: publicar produto/anúncio).
+Bazares.Autosave = (() => {
+  function attach(key, getState, opts = {}) {
+    const save = Bazares.Utils.debounce(() => {
+      try { localStorage.setItem(key, JSON.stringify(getState())); } catch {}
+    }, opts.wait || 800);
+    return {
+      save,
+      restore() { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } },
+      clear() { try { localStorage.removeItem(key); } catch {} }
+    };
+  }
+  return { attach };
+})();
+
+// ── BOTÃO COM ESTADO DE SUCESSO TEMPORÁRIO ───────────────────
+// Depois de uma acção terminar com sucesso (ex.: "Guardar"), mostra
+// por instantes um estado visual próprio (✓ + texto) em vez de voltar
+// logo ao rótulo normal — confirma no próprio botão que a acção
+// resultou, sem precisar de um toast à parte para algo já óbvio pelo
+// contexto (ex.: um formulário de definições).
+// Uso: Bazares.Utils.btnSuccess(btn, 'Guardado');
+Bazares.Utils.btnSuccess = function btnSuccess(btn, label, ms) {
+  if (!btn) return;
+  const orig = btn._origHtml !== undefined ? btn._origHtml : btn.innerHTML;
+  btn._origHtml = orig;
+  btn.classList.add('btn-success-flash');
+  btn.disabled = true;
+  btn.innerHTML = `<svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${esc(label || 'Feito')}`;
+  setTimeout(() => {
+    btn.classList.remove('btn-success-flash');
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    delete btn._origHtml;
+  }, ms || 1600);
+};
+
+// ── PROGRESS TOAST ────────────────────────────────────────────
+// Para tarefas demoradas que correm em segundo plano (a pessoa pode
+// continuar a navegar): um toast que fica fixo — não desaparece
+// sozinho — com uma barra de progresso lá dentro, até se chamar
+// .done()/.error(), altura em que passa a comportar-se como um toast
+// normal (desaparece ao fim de alguns segundos).
+// Uso:
+//   const p = Bazares.ProgressToast.create('A comprimir vídeo…');
+//   p.set(40); ... p.set(90); ... p.done('Vídeo publicado!');
+Bazares.ProgressToast = (() => {
+  function ensureRoot() {
+    let root = document.getElementById('toast-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'toast-root';
+      root.setAttribute('aria-live', 'polite');
+      root.setAttribute('role', 'status');
+      document.body.appendChild(root);
+    }
+    return root;
+  }
+  function create(label) {
+    const root = ensureRoot();
+    const el = document.createElement('div');
+    el.className = 'toast t-info toast-el toast-progress';
+    el.innerHTML = `<div class="toast-progress-inner">
+        <span class="t-msg tp-label">${esc(label || '')}</span>
+        <div class="bz-progress tp-bar"><div class="bz-progress-bar" style="width:2%"></div></div>
+      </div>`;
+    root.appendChild(el);
+    const bar = el.querySelector('.bz-progress-bar');
+    const lbl = el.querySelector('.tp-label');
+    let dismissed = false;
+    function dismiss(delay) {
+      if (dismissed) return;
+      dismissed = true;
+      setTimeout(() => {
+        el.classList.add('leaving');
+        el.addEventListener('animationend', () => el.remove(), { once: true });
+      }, delay || 0);
+    }
+    return {
+      set(pct, text) {
+        bar.style.width = Math.max(2, Math.min(100, pct)) + '%';
+        if (text != null) lbl.textContent = text;
+      },
+      done(text) {
+        bar.style.width = '100%';
+        el.classList.remove('t-info'); el.classList.add('t-ok');
+        if (text) lbl.textContent = text;
+        dismiss(2000);
+      },
+      error(text) {
+        el.classList.remove('t-info'); el.classList.add('t-err');
+        if (text) lbl.textContent = text;
+        dismiss(4000);
+      },
+      dismiss: () => dismiss(0)
+    };
+  }
+  return { create };
+})();

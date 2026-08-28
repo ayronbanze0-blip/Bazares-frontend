@@ -1267,7 +1267,12 @@ document.addEventListener('keydown', (e) => {
 // dos outros overlays, ver Bazares.History.registerOverlayCloser.
 Bazares.History.registerOverlayCloser('modal', () => Bazares.Modal.isOpen(), () => Bazares.Modal._removeTopLayer());
 
-function openModal(html, large = false) { Bazares.Modal.open(html, { large }); }
+// Pedido do Darwin: todos os modais devem "subir de baixo" como o menu
+// de editar/apagar post (Bazares.Sheet), não aparecer centrados no ecrã
+// (variant 'dialog' antiga). Um só sítio a mudar — os ~60 sítios que
+// chamam openModal() em toda a app ganham o novo comportamento de graça,
+// incluindo o arrastar-para-fechar pelo puxador.
+function openModal(html, large = false) { Bazares.Modal.open(html, { large, variant: 'sheet' }); }
 function closeModal() { Bazares.Modal.close(); }
 
 // ─── DIALOGS / DRAWERS / BOTTOM SHEETS ──────────────────────────
@@ -2213,6 +2218,26 @@ function pulseSuccess(el) {
   el.addEventListener('animationend', () => el.classList.remove('pulse-success'), { once: true });
 }
 
+// ─── Confirmação de sucesso (✓) — complementa pulseSuccess() (que só
+// faz o próprio botão saltar) com um selo visual claro por cima do
+// elemento, para acções que só se consideram "concluídas" depois do
+// servidor confirmar (ex.: adicionar ao carrinho). Curta (~0.6s no
+// total, incluindo o desenhar do traço) — confirma e desaparece,
+// nunca fica a decorar o ecrã.
+// Uso: successCheck(event.currentTarget) DEPOIS do pedido à API ter
+// sucesso — não no toque optimista (esse é o pulseSuccess).
+function successCheck(el) {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const badge = document.createElement('div');
+  badge.className = 'success-check-badge';
+  badge.style.left = (rect.left + rect.width / 2) + 'px';
+  badge.style.top = (rect.top + rect.height / 2) + 'px';
+  badge.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="var(--b-500)"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="success-check-path"/></svg>`;
+  document.body.appendChild(badge);
+  badge.addEventListener('animationend', (e) => { if (e.target === badge) badge.remove(); });
+}
+
 function toggleDark() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
@@ -3079,8 +3104,14 @@ function openFeedKebab(targetType, targetId, bazarId){
   const editAction = isProduct ? `go('my-products.html',{edit:'${targetId}'})`
     : isReel ? `go('newreels.html',{edit:'${targetId}',bazar:'${bazarId}'})`
     : `go('anuncio.html',{edit:'${targetId}'})`;
+  const viewHref = isProduct ? buildShareUrl('product.html',{id:targetId})
+    : isReel ? buildShareUrl('bazar.html',{id:bazarId})
+    : buildShareUrl('home.html',{announcement:targetId});
   Bazares.Sheet.open(`<div class="sheet-list">
+      <button type="button" class="sheet-item" onclick="closeModal();location.href='${viewHref}'">${icon('eye',19,1.8)} Ver publicação</button>
+      <button type="button" class="sheet-item" onclick="copyToClipboard('${viewHref}');closeModal()">${icon('link',19,1.8)} Partilhar</button>
       <button type="button" class="sheet-item" onclick="closeModal();${editAction}">${icon('settings',19,1.8)} Editar</button>
+      <div class="sheet-divider"></div>
       <button type="button" class="sheet-item sheet-item--danger" onclick="feedDeleteItem('${targetType}','${targetId}','${bazarId}')">${icon('close',19,2)} Apagar</button>
     </div>`);
 }
@@ -3328,9 +3359,26 @@ function computeOptimisticReaction(cardId, value) {
   return { current, currentCount, newReaction, newCount: Math.max(0, currentCount + delta) };
 }
 
+// Anima a troca do número (curtidas, reacções, etc.) com um pequeno
+// "pop" — sobe ao aumentar, desce ao diminuir — em vez do número só
+// trocar a seco. Não faz nada se o valor não mudou (evita animação a
+// disparar sem necessidade em cada re-render). Pedido: microinteracções
+// subtis, nada de longo/decorativo — por isso 0.28s (--dur-base).
+function animateNumberChange(el, newValue) {
+  if (!el) return;
+  const oldText = el.textContent;
+  const newText = String(newValue ?? '');
+  if (oldText === newText) return;
+  el.textContent = newText;
+  const increased = (parseInt(newText, 10) || 0) >= (parseInt(oldText, 10) || 0);
+  el.classList.remove('num-pop-up', 'num-pop-down');
+  void el.offsetWidth; // reinicia a animação mesmo que a classe já lá estivesse
+  el.classList.add(increased ? 'num-pop-up' : 'num-pop-down');
+}
+
 function applyReactionUI(cardId, myReaction, likeCount) {
   const rMeta = reactionMeta(myReaction);
-  document.querySelectorAll(`[data-like-count="${cardId}"]`).forEach(el => el.textContent = likeCount || '');
+  document.querySelectorAll(`[data-like-count="${cardId}"]`).forEach(el => animateNumberChange(el, likeCount || ''));
   document.querySelectorAll(`[data-like-label="${cardId}"]`).forEach(el => el.textContent = rMeta ? rMeta.label : '');
   document.querySelectorAll(`[data-like-ico="${cardId}"]`).forEach(el => el.innerHTML = reactionIconSvg(myReaction, 20, true));
   document.querySelectorAll(`[data-like-btn="${cardId}"]`).forEach(btn => {

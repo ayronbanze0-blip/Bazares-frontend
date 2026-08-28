@@ -208,6 +208,7 @@ window.BazaresRouter = (function () {
   async function navigate(url, opts) {
     opts = opts || {};
     const replace = !!opts.replace;
+    const isBack = opts.direction === 'back';
     const path = url.split('?')[0];
     const targetFile = resolveFile(path);
 
@@ -261,27 +262,45 @@ window.BazaresRouter = (function () {
       // vez e fazem a sua própria limpeza (clearInterval/disconnect).
       document.dispatchEvent(new CustomEvent('bz:spa-leave', { detail: { from: currentFile(), to: targetFile } }));
 
+      // Ronda 41 — View Transitions API (progressiva): as telas dão a
+      // sensação de estarem ligadas (crossfade + leve slide com direcção)
+      // em vez de trocar de conteúdo a seco. Só corre em browsers com
+      // suporte (Chromium/Safari recentes) — nos restantes, cai direto
+      // para applySwap() sem qualquer diferença de comportamento. Curta
+      // de propósito (usa --dur-base, 0.28s) para não parecer lenta.
+      const applySwap = () => {
+        main.innerHTML = mainHTML;
+        document.title = title;
 
-      main.innerHTML = mainHTML;
-      document.title = title;
+        // SEO — aplica os meta tags estáticos da página de destino.
+        SEO_TAGS.forEach(([sel, attr]) => {
+          const val = seo[sel];
+          if (val == null) return;
+          const el = document.querySelector(sel);
+          if (el) el.setAttribute(attr, val);
+        });
+        // Remove todo o JSON-LD do head (dinâmico de produto/loja da
+        // página anterior incluído — nunca deve sobreviver à troca) e
+        // troca pelo estático da página de destino, se tiver.
+        document.querySelectorAll('head script[type="application/ld+json"]').forEach((s) => s.remove());
+        jsonLdBlocks.forEach((code) => {
+          const s = document.createElement('script');
+          s.type = 'application/ld+json';
+          s.textContent = code;
+          document.head.appendChild(s);
+        });
+      };
 
-      // SEO — aplica os meta tags estáticos da página de destino.
-      SEO_TAGS.forEach(([sel, attr]) => {
-        const val = seo[sel];
-        if (val == null) return;
-        const el = document.querySelector(sel);
-        if (el) el.setAttribute(attr, val);
-      });
-      // Remove todo o JSON-LD do head (dinâmico de produto/loja da
-      // página anterior incluído — nunca deve sobreviver à troca) e
-      // troca pelo estático da página de destino, se tiver.
-      document.querySelectorAll('head script[type="application/ld+json"]').forEach((s) => s.remove());
-      jsonLdBlocks.forEach((code) => {
-        const s = document.createElement('script');
-        s.type = 'application/ld+json';
-        s.textContent = code;
-        document.head.appendChild(s);
-      });
+      if (document.startViewTransition) {
+        document.documentElement.classList.add(isBack ? 'vt-back' : 'vt-forward');
+        const transition = document.startViewTransition(applySwap);
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove('vt-back', 'vt-forward');
+        });
+        await transition.ready.catch(() => {});
+      } else {
+        applySwap();
+      }
 
       if (replace) history.replaceState({ spa: true, url }, '', url);
       else history.pushState({ spa: true, url }, '', url);
@@ -354,7 +373,7 @@ window.BazaresRouter = (function () {
       const targetFile = currentFile();
       if (targetFile === displayedFile) return; // mesmo ficheiro — deixa para app.js
       e.stopImmediatePropagation();
-      navigate(location.pathname + location.search, { replace: true });
+      navigate(location.pathname + location.search, { replace: true, direction: 'back' });
     },
     true
   );
