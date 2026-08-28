@@ -85,7 +85,7 @@
       <option value="sales">Mais vendidos</option>
       <option value="distance">Perto de mim</option>
     </select>
-    <button type="button" id="pfilt-btn" class="btn btn-soft btn-sm pf-filtbtn" onclick="document.getElementById('pfilt-panel').classList.toggle('open')"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="pf-filtbtn-lbl">Filtros</span></button>
+    <button type="button" id="pfilt-btn" class="btn btn-soft btn-sm pf-filtbtn" onclick="toggleFiltPanel()"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="pf-filtbtn-lbl">Filtros</span></button>
   </div>
   <div id="pfilt-panel" class="pfilt-panel">
     <div class="pfilt-row">
@@ -106,10 +106,11 @@
       </select>
     </div>
     <div class="pfilt-row" style="justify-content:flex-end;align-items:flex-end">
-      <button type="button" class="btn btn-primary btn-sm" onclick="loadProducts(1)">Aplicar</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="loadProducts(1);_filtSheet?.close()">Aplicar</button>
       <button type="button" class="btn btn-soft btn-sm" onclick="resetFilters()">Limpar</button>
     </div>
   </div>
+  <div id="pf-chips" class="filter-chips"></div>
   <div class="cat-strip reveal" id="cat-strip" style="margin-bottom:18px"></div>
   <div id="pp-total" style="font-size:13.5px;color:var(--t2);margin-bottom:14px;font-weight:500"></div>
   <div id="pp-grid" class="p-grid">
@@ -133,7 +134,34 @@ function _totalLabel(meta,filtered){
     : `<strong style="color:var(--b-600)">+${meta.total}</strong> produto${meta.total===1?'':'s'} disponíve${meta.total===1?'l':'is'} em Moçambique inteiro`;
 }
 
-let _curPage=1,_curCat='',_lastMeta=null,_loadingMore=false,_reachedEnd=false,_io=null,_myLoc=null;
+let _curPage=1,_curCat='',_lastMeta=null,_loadingMore=false,_reachedEnd=false,_io=null,_myLoc=null,_filtSheet=null;
+
+function toggleFiltPanel(){
+  _filtSheet ? _filtSheet.toggle() : document.getElementById('pfilt-panel').classList.toggle('open');
+}
+
+// ─── Filter Chips: resumo dos filtros activos, cada um removível ───
+const _SORT_LABELS={'price-asc':'Menor preço','price-desc':'Maior preço','rating':'Mais avaliados','sales':'Mais vendidos','distance':'Perto de mim'};
+function clearAllFilters(){
+  _curCat='';
+  document.getElementById('pcat').value='';
+  document.getElementById('psort').value='new';
+  document.getElementById('pmin').value='';
+  document.getElementById('pmax').value='';
+  document.getElementById('pcond').value='';
+  loadProducts(1);
+}
+function renderFilterChips(){
+  const chips=[];
+  if(_curCat) chips.push({label:`Categoria: ${_curCat}`, onRemove:()=>{_curCat='';document.getElementById('pcat').value='';loadProducts(1);}});
+  const sortVal=document.getElementById('psort').value;
+  if(sortVal!=='new' && _SORT_LABELS[sortVal]) chips.push({label:_SORT_LABELS[sortVal], onRemove:()=>{document.getElementById('psort').value='new';loadProducts(1);}});
+  const pmin=document.getElementById('pmin').value, pmax=document.getElementById('pmax').value;
+  if(pmin||pmax) chips.push({label:`Preço: ${pmin||'0'} – ${pmax||'∞'} MT`, onRemove:()=>{document.getElementById('pmin').value='';document.getElementById('pmax').value='';loadProducts(1);}});
+  const cond=document.getElementById('pcond').value;
+  if(cond) chips.push({label:cond, onRemove:()=>{document.getElementById('pcond').value='';loadProducts(1);}});
+  Bazares.FilterChips.render(document.getElementById('pf-chips'), chips, clearAllFilters);
+}
 
 let _smartSearchOn = false;
 
@@ -197,6 +225,7 @@ async function loadProducts(page=1,append=false){
     _lastMeta=meta;
     const filtered=!!(q||_curCat||sort!=='new'||priceMin||priceMax||condition);
     document.getElementById('pp-total').innerHTML = _totalLabel(meta,filtered);
+    if(!append) renderFilterChips();
     if(append){
       if(products.length) grid.insertAdjacentHTML('beforeend',products.map(productCard).join(''));
     } else {
@@ -257,6 +286,7 @@ initPage({ active:'products.html', onReady: async()=>{
     const qFromUrl=getParam('q');
     if(qFromUrl) document.getElementById('psrch').value=qFromUrl;
   }
+  _filtSheet=Bazares.BottomSheet.enable(document.getElementById('pfilt-panel'));
   renderCatStrip('cat-strip',_curCat,cat=>{_curCat=cat;document.getElementById('pcat').value=cat;loadProducts(1);});
   document.getElementById('pp-grid').addEventListener('click',_savePP,true);
   document.getElementById('psrch').addEventListener('input', Bazares.Utils.debounce(() => loadProducts(1), 350));
@@ -290,6 +320,7 @@ initPage({ active:'products.html', onReady: async()=>{
     document.getElementById('pp-grid').innerHTML=cache.html;
     _lastMeta=cache.meta;
     document.getElementById('pp-total').innerHTML = _totalLabel(cache.meta, !!(saved.q||saved.cat||saved.sort!=='new'||saved.min||saved.max||saved.cond));
+    renderFilterChips();
     _reachedEnd = !cache.meta?.pages || cache.meta.page>=cache.meta.pages;
     _sentinelIdle();
     _setupInfiniteScroll();

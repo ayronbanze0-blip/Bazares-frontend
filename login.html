@@ -323,14 +323,15 @@
 
       <div id="login-alert"></div>
 
-      <div class="af-field">
+      <div class="af-field" id="lem-grp">
         <div class="af-inp">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
           <input type="email" id="lem" placeholder="Email" autocomplete="username" required>
         </div>
+        <div class="field-err-msg" id="lem-err">Insere um email válido.</div>
       </div>
 
-      <div class="af-field">
+      <div class="af-field" id="lpw-grp">
         <div class="af-inp">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <input type="password" id="lpw" placeholder="Senha" autocomplete="current-password" required>
@@ -338,6 +339,7 @@
             <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
           </button>
         </div>
+        <div class="field-err-msg" id="lpw-err">Escreve a tua senha.</div>
       </div>
 
       <div class="af-row">
@@ -435,6 +437,13 @@ initPage({ active:'login.html', guestOnly:true, onReady: (user) => {
     toast('Por agora só está disponível em Português.', 'info');
   });
 
+  // Validação inline — email/senha assinalados individualmente em vez
+  // de um único alerta genérico a bloquear o submit.
+  const loginValidate = Bazares.InlineValidate.attach({
+    lem: { rule: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) || 'Insere um email válido.' },
+    lpw: { rule: v => v.length>0 || 'Escreve a tua senha.' }
+  });
+
   // Login handler
   const doLogin = async () => {
     const email    = document.getElementById('lem').value.trim();
@@ -442,16 +451,14 @@ initPage({ active:'login.html', guestOnly:true, onReady: (user) => {
     const alertBox = document.getElementById('login-alert');
     alertBox.innerHTML = '';
 
-    if (!email || !password) {
-      alertBox.innerHTML = '<div class="af-alert af-alert-err"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Preencha o email e a senha.</div>';
-      return;
-    }
+    if (!loginValidate.validateAll()) return;
 
     const btn = document.getElementById('login-btn');
     setLoading(btn, true);
     try {
       await Session.login(email, password);
       alertBox.innerHTML = '<div class="af-alert af-alert-ok"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bem-vindo de volta! A redirecionar…</div>';
+      Bazares.Utils.btnSuccess(btn, 'Sessão iniciada!', 900);
       const next = getParam('next');
       setTimeout(() => _goVeiled(next || 'home.html'), 700);
     } catch (err) {

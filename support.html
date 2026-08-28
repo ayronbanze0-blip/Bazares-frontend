@@ -136,13 +136,15 @@ const LEGAL_CARDS=[
 initPage({ active:'support.html', onReady:()=>{
   const faqEl=document.getElementById('faq');
   faqEl.innerHTML=FAQS.map(([q,a],i)=>`
-    <div class="card" style="padding:0;cursor:pointer" onclick="toggleFaq(${i})">
+    <div class="card" style="padding:0;cursor:pointer;overflow:hidden" onclick="toggleFaq(${i})">
       <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
         <h4 style="font-size:14px;font-weight:600;margin:0">${q}</h4>
-        <span id="faq-ico-${i}" style="color:var(--t4);font-size:18px;flex-shrink:0;transition:.2s">+</span>
+        <span id="faq-ico-${i}" class="faq-ico" style="color:var(--t4);font-size:18px;flex-shrink:0">+</span>
       </div>
-      <div id="faq-body-${i}" style="display:none;padding:0 20px 16px;border-top:1px solid var(--brd)">
-        <p style="font-size:13px;margin-top:12px;color:var(--t2)">${a}</p>
+      <div id="faq-body-${i}" class="faq-body">
+        <div class="faq-body-inner">
+          <p style="font-size:13px;padding:12px 20px 16px;margin:0;color:var(--t2);border-top:1px solid var(--brd)">${a}</p>
+        </div>
       </div>
     </div>`).join('');
 
@@ -155,9 +157,8 @@ initPage({ active:'support.html', onReady:()=>{
 function toggleFaq(i){
   const body=document.getElementById(`faq-body-${i}`);
   const ico=document.getElementById(`faq-ico-${i}`);
-  const open=body.style.display==='block';
-  body.style.display=open?'none':'block';
-  ico.textContent=open?'+':'−';
-  ico.style.color=open?'var(--t4)':'var(--b-500)';
+  const open=body.classList.toggle('open');
+  ico.textContent=open?'−':'+';
+  ico.style.color=open?'var(--b-500)':'var(--t4)';
 }
 </script></body></html>

@@ -358,13 +358,15 @@ initPage({ active:'home.html', requireAuth:true, onReady: async(user) => {
     </div>
 
     <div class="home-section" style="margin-bottom:12px">
-      <div class="chip-strip" style="display:flex;gap:22px;overflow-x:auto;border-bottom:1px solid var(--brd);-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent 100%)">
-        <button class="feed-tab-btn active" id="tab-foryou" onclick="switchFeedTab('foryou')">Para si</button>
-        <button class="feed-tab-btn" id="tab-following" onclick="switchFeedTab('following')">Seguindo</button>
-        <button class="feed-tab-btn" id="tab-friends" onclick="switchFeedTab('friends')">Amigos</button>
-        <button class="feed-tab-btn" id="tab-stores" onclick="go('bazars.html')">Lojas</button>
-        <button class="feed-tab-btn" id="tab-reels" onclick="go('reels.html')" style="display:flex;align-items:center;gap:4px">${icon('video',13)}Reels</button>
-        <button class="feed-tab-btn" id="tab-news" onclick="go('notifications.html')">Novidades<span id="news-dot" class="tab-dot" style="display:none"></span></button>
+      <div class="card" style="padding:4px 12px">
+        <div class="chip-strip" style="display:flex;gap:22px;overflow-x:auto;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent 100%)">
+          <button class="feed-tab-btn active" id="tab-foryou" onclick="switchFeedTab('foryou')">Para si</button>
+          <button class="feed-tab-btn" id="tab-following" onclick="switchFeedTab('following')">Seguindo</button>
+          <button class="feed-tab-btn" id="tab-friends" onclick="switchFeedTab('friends')">Amigos</button>
+          <button class="feed-tab-btn" id="tab-stores" onclick="go('bazars.html')">Lojas</button>
+          <button class="feed-tab-btn" id="tab-reels" onclick="go('reels.html')" style="display:flex;align-items:center;gap:4px">${icon('video',13)}Reels</button>
+          <button class="feed-tab-btn" id="tab-news" onclick="go('notifications.html')">Novidades<span id="news-dot" class="tab-dot" style="display:none"></span></button>
+        </div>
       </div>
     </div>
 

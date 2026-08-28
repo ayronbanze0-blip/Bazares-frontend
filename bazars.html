@@ -67,7 +67,7 @@
           <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t4)"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
           <input id="bsrch" placeholder="Pesquisar bazares..." style="padding-left:40px;border-radius:var(--pill);background:var(--surf2);border:1.5px solid var(--brd);color:var(--text);width:100%">
         </div>
-        <button type="button" id="bfilt-btn" class="btn btn-ghost btn-sm pf-filtbtn" onclick="document.getElementById('bfilt-panel').classList.toggle('open')">
+        <button type="button" id="bfilt-btn" class="btn btn-ghost btn-sm pf-filtbtn" onclick="toggleBazFiltPanel()">
           <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span class="pf-filtbtn-lbl">Filtros</span>
         </button>
@@ -94,10 +94,11 @@
           </label>
         </div>
         <div class="pfilt-row" style="justify-content:flex-end;align-items:flex-end">
-          <button type="button" class="btn btn-primary btn-sm" onclick="loadBazars()">Aplicar</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="loadBazars();_bazFiltSheet?.close()">Aplicar</button>
           <button type="button" class="btn btn-soft btn-sm" onclick="resetBazFilters()">Limpar</button>
         </div>
       </div>
+      <div id="bf-chips" class="filter-chips"></div>
     </div>
   </div>
   <div class="cat-strip reveal" id="baz-cat-strip" style="margin-bottom:16px"></div>
@@ -132,6 +133,17 @@ function bazCard(b){
 }
 
 let _bazCat='';
+let _bazFiltSheet=null;
+function toggleBazFiltPanel(){ _bazFiltSheet ? _bazFiltSheet.toggle() : document.getElementById('bfilt-panel').classList.toggle('open'); }
+const _BAZ_SORT_LABELS={rating:'Melhor avaliados',products:'Mais produtos',sales:'Mais vendas',name:'Nome (A-Z)'};
+function renderBazFilterChips(){
+  const chips=[];
+  if(_bazCat) chips.push({label:`Categoria: ${_bazCat}`, onRemove:()=>{_bazCat='';document.getElementById('bcat').value='';loadBazars();}});
+  const sortVal=document.getElementById('bsort').value;
+  if(sortVal!=='relevance' && _BAZ_SORT_LABELS[sortVal]) chips.push({label:_BAZ_SORT_LABELS[sortVal], onRemove:()=>{document.getElementById('bsort').value='relevance';loadBazars();}});
+  if(document.getElementById('bverif').checked) chips.push({label:'Verificados', onRemove:()=>{document.getElementById('bverif').checked=false;loadBazars();}});
+  Bazares.FilterChips.render(document.getElementById('bf-chips'), chips, resetBazFilters);
+}
 let _bazAll=[];
 let _bazShown=0;
 const BAZ_PAGE_SIZE=6;
@@ -162,6 +174,7 @@ async function loadBazars(){
           ? `${total} resultado${total===1?'':'s'} para a tua pesquisa`
           : `<strong style="color:var(--b-600)">+${total}</strong> vendedor(es) activo(s) — Moçambique inteiro conectado`)
       : '';
+    renderBazFilterChips();
     _bazAll=bazars;
     _bazShown=0;
     if(!bazars.length){
@@ -218,6 +231,7 @@ function resetBazFilters(){
 }
 
 initPage({ active:'bazars.html', onReady:()=>{
+  _bazFiltSheet=Bazares.BottomSheet.enable(document.getElementById('bfilt-panel'));
   const sel=document.getElementById('bcat');
   CATS.forEach(c=>sel.insertAdjacentHTML('beforeend',`<option value="${esc(c.l)}">${esc(c.l)}</option>`));
   const savedBaz=getListState('bazars');

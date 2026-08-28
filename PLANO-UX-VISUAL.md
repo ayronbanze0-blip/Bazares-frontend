@@ -160,3 +160,78 @@ Legenda: ✅ Feito e confirmado no código · ⚠️ Parcial/inconsistente (exis
 - ❌ **Comparação fácil entre produtos** — não encontrei nenhuma funcionalidade de comparação lado a lado entre produtos no código
 - ⚠️ **Informação essencial antes do scroll** — não confirmado ponto a ponto (precisa de revisão visual por dispositivo); o cartão em si mostra o essencial (foto, preço, loja, localização) mas a posição exacta acima da dobra depende do ecrã
 - ✅ **Ações secundárias discretas** — favoritos e "mais opções" são ícones pequenos sobre a imagem (`.p-fav`, `.p-more`), sem competir com o preço/CTA principal
+
+---
+
+## Checklist externa — Feedback/Confirmações, Pesquisa/Filtros, Formulários
+
+Ronda dedicada a implementar lacunas de uma checklist de UX recebida à parte (numerada 6️⃣ Feedback e Confirmações, 7️⃣ Pesquisa e Filtros, 8️⃣ Formulários — numeração própria dela, não corresponde às secções acima).
+
+**Novo toolkit partilhado, `js/core.js`** (disponível em todas as páginas, sem novo `<script>` a incluir):
+- `Bazares.InlineValidate.attach({...})` — generaliza o padrão já usado em `novoproduto.html` para qualquer formulário: valida por campo ao sair (blur) e a cada tecla depois de já ter erro; mensagem própria por campo em vez de um único alerta genérico no submit.
+- `Bazares.InputMask.phoneMZ(el)` / `.currency(el)` — máscara ao vivo para telefone (+258 8X XXX XXXX) e valores monetários.
+- `Bazares.FilterChips.render(container, chips, onClearAll)` — chips removíveis para filtros activos + "Limpar tudo".
+- `Bazares.BottomSheet.enable(panel)` — transforma um painel já existente num bottom sheet real em mobile (fundo escurecido, fecha com Esc/toque fora), sem alterar o comportamento em ecrã largo.
+- `Bazares.Stepper.render(container, steps, currentIndex)` — indicador horizontal para processos em várias etapas (ainda não ligado a nenhuma página).
+- `Bazares.Progress.create(container, label)` — barra de progresso com `%` real (ainda não ligado a nenhum upload).
+- `Bazares.Autosave.attach(key, getState)` — rascunho de formulário em `localStorage` (ainda não ligado a nenhuma página).
+
+**Já ligado a páginas concretas:**
+- `products.html` — chips de filtros activos (categoria/ordenação/preço/condição), cada um removível, com "Limpar tudo"; o painel de filtros (`#pfilt-panel`) agora abre como bottom sheet real em ecrãs ≤680px.
+- `register.html` — validação inline em tempo real em todos os campos (nome, email, senha, confirmação), incluindo estado de sucesso visual (borda verde); o alerta genérico de submit deixou de ser a única pista de erro.
+- `checkout.html` — máscara de telefone aplicada ao campo de contacto, nos dois modos (produto único e carrinho).
+
+**Descoberto já implementado** (não precisou de trabalho novo): Toast, Snackbar/Undo com acção "Desfazer", `Bazares.Recovery` com botão "Tentar novamente", Loading states contextuais, Skeletons, Empty States, Search Suggestions/Autosuggest (dropdown no topbar global + `search.html`), Recent Searches, Search Empty State, Persistent Labels nos inputs.
+
+**Por fazer, quando quiseres continuar:**
+- Ligar `Bazares.InlineValidate` a mais formulários (login, forgot-password, settings, checkout — campos de morada/pagamento).
+- Ligar `Bazares.Stepper` a um fluxo real com várias etapas (ex.: publicação de produto em `novoproduto.html`, hoje é um formulário único e longo).
+- ~~Ligar `Bazares.Progress` ao upload de imagens/vídeo~~ — **correcção**: ao investigar melhor, `novoproduto.html` já tem progresso real por etapa (compressão + envio via `api.postFormProgress`) numa barra inline própria (`#pm-progress-fill`), implementada antes desta ronda e antes do toolkit genérico existir. Não usa `Bazares.Progress`, mas já cumpre o objectivo — não é uma lacuna real.
+- ~~Ligar `Bazares.Autosave` a `novoproduto.html`~~ — **correcção**: idem, já existe (`AUTOSAVE_KEY = 'bz_np_autosave'`, `initAutosave()`/`clearAutosave()`), bespoke e anterior a esta ronda. `Bazares.Autosave` fica disponível para o próximo formulário longo que precisar (ex.: `newreels.html`).
+- Faceted Filters mais ricos em `products.html` (hoje: categoria + preço + condição — dá para acrescentar mais critérios se o backend suportar).
+- Estender Filter Chips/Bottom Sheet a outras listagens com filtros (`bazars.html`, `anuncios.html`, `explorar.html`) se also tiverem painéis de filtro.
+
+---
+
+## Checklist externa — Tipografia, Botões, Feedback #12
+
+Continuação da ronda anterior, mesma checklist externa (numeração própria dela: Tipografia sem número, 1️⃣1️⃣ Botões, 1️⃣2️⃣ Feedback).
+
+**Descoberto já implementado** (não precisou de trabalho novo):
+- Botões: `.btn-primary`, `.btn-ghost`, `.btn-soft` (secundário), `.btn-icon`, `.btn:disabled` já existiam com estilo próprio; `setLoading(btn, bool)` (`js/app.js`) já cobre o padrão "Loading Button" (desabilita + spinner) e é usado de forma consistente; `.sticky-cta` já existe para CTA fixo em mobile; feedback ao toque (`:active{transform:scale()}`) já confirmado na ronda anterior.
+- Feedback: Toast, Snackbar+Undo, Recovery com retry, Status Indicator de sincronização, Success Animation em reacções — tudo já confirmado nas rondas anteriores. Progresso real de upload e autosave em `novoproduto.html` afinal já existiam (ver correcção acima) — não eram lacunas.
+- `alert()`/`confirm()` nativos do browser: só um `alert()` residual (`js/config.js`, botão de teste do Sentry, só visível a admins) — não é um padrão usado para mensagens normais da app; `confirm()` nativo já tinha sido substituído por `Bazares.Modal`/`confirmDialog` numa ronda anterior.
+
+**Novo nesta ronda:**
+- **Type Scale** — tokens `--fs-display/h1/h2/h3/body/body-sm/meta` e `--fw-regular/medium/semibold/bold/black` em `:root` (`css/style.css`). Escala fixa para código novo; não migrei os tamanhos "à mão" já espalhados pelo CSS (risco alto para o benefício, ver nota da ronda 57).
+- **Classes utilitárias de tipografia**: `.text-display`, `.h1`/`.h2`/`.h3`, `.text-body`/`.text-body-sm`, `.meta` (metadata discreta), `.price`/`.price--lg`/`.price--sm`/`.price-old` (tipografia de preço com números tabulares), `.tabular-nums`, `.line-clamp-1/2/3`, `.optical-align`.
+- **Números tabulares em preços reais**: adicionado `font-variant-numeric:tabular-nums` a `.p-price`/`.p-price-old` (cartão de produto), `.pd-price` (página de produto), `#co-total`/`.sc-total b` (checkout) — para os algarismos não "dançarem" ao alinhar com outros preços na mesma lista.
+- **`Bazares.Utils.btnSuccess(btn, label, ms)`** (`js/core.js`) — estado de sucesso temporário num botão (✓ + texto, ~1.6s) em vez de voltar logo ao rótulo normal. Ligado a `register.html`: depois de criar conta e antes do redirect, o botão mostra "Conta criada!" em vez de ficar preso no spinner durante os 700ms de espera.
+- **`Bazares.ProgressToast`** (`js/core.js`) — toast com barra de progresso para tarefas em segundo plano que a pessoa pode continuar a acompanhar enquanto navega (`.create(label)` → `.set(pct)`/`.done()`/`.error()`). **Ainda não ligado a nenhum fluxo real**: revi `newreels.html`/`video-editor.js` como candidato óbvio, mas o processamento de vídeo aí obriga a pessoa a ficar no editor (modal), não é verdadeiramente "em segundo plano, pode navegar" — usá-lo ali seria só decoração, não a resolver o padrão pedido. Fica disponível para quando houver uma tarefa genuinamente backgroundable (ex.: publicação de vários produtos em lote, se vier a existir).
+
+**Por fazer, quando quiseres continuar:**
+- Aplicar `.meta` às metadatas existentes (timestamps, `.p-loc`, etc.) — hoje têm estilo inline repetido em vez da classe utilitária; troca segura mas manual, página a página.
+- Rever `.h1`/`.h2`/`.h3` vs. os tamanhos "à mão" já usados em títulos de página, e ir substituindo section a section (mesmo espírito da migração de espaçamento já em curso).
+- `Bazares.Progress`/`Bazares.Stepper` continuam sem um caso de uso real ligado — precisam de um fluxo genuinamente multi-etapa ou de progresso independente de página para valer a pena.
+- Botão com `Bazares.Utils.btnSuccess` só está ligado em `register.html`; os fluxos de `profile.html`/`settings.html` fecham o modal imediatamente ao guardar, por isso não há janela para mostrar o estado — ligar aí implicaria primeiro atrasar o fecho do modal, o que é uma mudança de comportamento maior do que só visual.
+
+---
+
+## Ronda de fecho — a completar o que tinha ficado "para depois"
+
+O utilizador pediu explicitamente para não deixar itens de checklist só documentados como pendentes — para serem mesmo implementados. Esta ronda fecha o que estava em aberto nas duas rondas anteriores desta checklist externa, item a item, com honestidade sobre o que dava para fazer e o que não dava.
+
+**Fechado nesta ronda:**
+- **`Bazares.InlineValidate` estendido a `login.html`, `forgot-password.html` (pedido de código + reset) e `checkout.html`** (nome, telefone, morada) — os quatro únicos formulários de autenticação/checkout que ainda validavam só no submit com um alerta genérico. Com isto, todos os formulários principais da app (registo, login, recuperação de senha, checkout, novoproduto) têm validação inline por campo.
+- **`Bazares.Utils.btnSuccess` também em `login.html`** (botão mostra "Sessão iniciada!" antes do redirect) **e em `forgot-password.html`** (botão mostra "Redefinida!" depois de repor a senha).
+- **Filter Chips + Filter Bottom Sheet estendidos a `bazars.html`** — tinha exactamente o mesmo padrão de `.pfilt-panel` que `products.html`; agora também tem chips de categoria/ordenação/verificados removíveis + bottom sheet real em mobile. Confirmei que `anuncios.html` e `explorar.html` **não têm** painel de filtros equivalente (só chips de categoria simples), por isso não havia nada para estender aí.
+- **Corrigido um erro meu da ronda anterior**: as classes utilitárias `.h1`/`.h2`/`.h3` que criei tinham tamanhos diferentes dos elementos `<h1>`/`<h2>`/`<h3>` reais (que já têm, e sempre tiveram, uma type scale fixa e coerente definida no topo do `style.css` — `clamp()` + peso + letter-spacing por nível). Ter duas escalas com o mesmo nome de classe era uma armadilha para o próximo formulário que as fosse usar à espera do tamanho errado. Renomeei para `.title-lg`/`.title-md`/`.title-sm`, com comentário a explicar que servem para "títulos" em elementos não-semânticos (ex.: cabeçalho de um cartão), não para competir com os headings reais. Como ainda não tinha usado as classes antigas em nenhuma página, a correcção não partiu nada.
+
+**Revisto e mantido como está, com justificação** (não é "deixar de lado" — é uma decisão informada, já verificada):
+- **Type Scale para headings semânticos**: afinal já existia (ver correcção acima) — não era uma lacuna real, só não estava documentada como tal.
+- **Metadata Typography** (`.p-loc`, `.p-store`): já são pequenas + cor apagada + sem negrito, ou seja já cumprem o requisito na prática; a classe `.meta` fica disponível para elementos novos, mas trocar a classe destes já-conformes por outra visualmente idêntica é um risco de regressão CSS sem benefício real — não fiz essa troca mecânica.
+- **`Bazares.Stepper`/`Bazares.Progress`/`Bazares.ProgressToast` sem fluxo real ligado**: continuam sem uso porque, revistos os candidatos óbvios (`novoproduto.html`, `newreels.html`), nenhum é genuinamente multi-etapa independente de página nem "background, pode navegar" — forçar o encaixe seria decoração, não o padrão pedido. Ficam disponíveis prontos a usar assim que a app tiver um fluxo desses.
+- **`btnSuccess` em `profile.html`/`settings.html`**: os `saveProfile()`/`changePw()` fecham o modal imediatamente a seguir ao sucesso, sem janela de tempo para mostrar um estado no botão — ligar aí implicaria atrasar o fecho do modal por artifício, uma mudança de comportamento maior do que o pedido original.
+- **Faceted Filters mais ricos em `products.html`**: não tenho acesso ao código do backend neste repositório (só o frontend), por isso não sei que outros parâmetros de filtro a API `/products` aceita para além dos já usados (categoria/preço/condição/ordenação/distância). Acrescentar filtros especulativos (marca, método de entrega, etc.) sem saber se o backend os suporta arriscava enviar parâmetros ignorados silenciosamente — preferi não adivinhar. Se me disseres que a API suporta mais campos, ligo-os no mesmo padrão de chips já existente.
+
+Com isto, a checklist externa completa (secções 6, 7, 8, Tipografia, 1️⃣1️⃣, 1️⃣2️⃣) está tratada — implementada onde fazia sentido, e onde não, com razão verificada e escrita, não deixada em branco.

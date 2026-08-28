@@ -107,7 +107,7 @@ function renderSingleCheckout(user, p, qty) {
       <div style="display:flex;gap:12px;align-items:center">
         ${p.images?.[0]?.url ? `<img loading="lazy" decoding="async" src="${esc(p.images[0].url)}" alt="${esc(p.name)}" style="width:60px;height:60px;border-radius:var(--r);object-fit:cover">` : ''}
         <div style="flex:1"><div style="font-weight:600">${esc(p.name)}</div><div style="font-size:12px;color:var(--t4)">${esc(p.bazar?.name||'')}</div></div>
-        <div id="co-total" style="font-size:17px;font-weight:800;color:var(--n-900)">${fmtMT(p.price * qty)}</div>
+        <div id="co-total" class="tabular-nums" style="font-size:17px;font-weight:800;color:var(--n-900)">${fmtMT(p.price * qty)}</div>
       </div>
       <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
         <label style="text-transform:none;font-weight:400">Quantidade:</label>
@@ -132,6 +132,7 @@ function renderSingleCheckout(user, p, qty) {
     document.getElementById('sc-co-total').textContent = fmtMT(p.price * q);
   });
   initCheckoutMap();
+  attachCheckoutValidation();
 
   document.getElementById('co-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -182,6 +183,7 @@ function renderCartCheckout(user, items) {
     <button class="btn btn-primary" id="sc-submit" onclick="document.getElementById('co-submit').click()"><svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmar</button>
   </div>`);
   initCheckoutMap();
+  attachCheckoutValidation();
 
   document.getElementById('co-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -203,12 +205,12 @@ function checkoutFormHtml(user, p) {
       </div>
       <div class="form-sec-label"><b>1</b> Dados de entrega</div>
       <p class="form-sec-hint">Estes dados vão diretamente para o vendedor combinar a entrega contigo</p>
-      <div class="fg"><label>Nome completo</label><input id="co-nm" value="${esc(user.name)}" required></div>
+      <div class="fg" id="co-nm-grp"><label>Nome completo</label><input id="co-nm" value="${esc(user.name)}" required><div class="field-err-msg" id="co-nm-err">Escreve o teu nome.</div></div>
       <div class="row2">
-        <div class="fg"><label>Contacto / Telefone</label><input id="co-ph" placeholder="+258 8X XXX XXXX" value="${esc(user.phone||'')}" required></div>
+        <div class="fg" id="co-ph-grp"><label>Contacto / Telefone</label><input id="co-ph" placeholder="+258 8X XXX XXXX" value="${esc(user.phone||'')}" required><div class="field-err-msg" id="co-ph-err">Insere um número moçambicano válido.</div></div>
         <div class="fg"><label>Localização / Cidade</label><input id="co-loc" placeholder="Maputo, Beira..."></div>
       </div>
-      <div class="fg"><label>Morada detalhada</label><textarea id="co-addr" rows="2" placeholder="Bairro, rua, número..." required></textarea></div>
+      <div class="fg" id="co-addr-grp"><label>Morada detalhada</label><textarea id="co-addr" rows="2" placeholder="Bairro, rua, número..." required></textarea><div class="field-err-msg" id="co-addr-err">Escreve a morada de entrega.</div></div>
       <div class="fg">
         <label>Marcar no mapa <span style="text-transform:none;font-weight:400;color:var(--t4)">(opcional, ajuda o vendedor a encontrar-te)</span></label>
         <div style="display:flex;gap:8px;margin-bottom:4px">
@@ -231,10 +233,20 @@ function checkoutFormHtml(user, p) {
     </form>`;
 }
 
+function attachCheckoutValidation() {
+  Bazares.InputMask.phoneMZ(document.getElementById('co-ph'));
+  _coValidate = Bazares.InlineValidate.attach({
+    'co-nm':   { rule: v => v.trim().length>=2 || 'Escreve o teu nome.' },
+    'co-ph':   { rule: v => v.replace(/\D/g,'').length>=11 || 'Insere um número moçambicano válido.' },
+    'co-addr': { rule: v => v.trim().length>=5 || 'Escreve a morada de entrega.' }
+  });
+}
+let _coValidate = null;
+
 function readSharedFields() {
   const buyerPhone = document.getElementById('co-ph').value.trim();
   const address = document.getElementById('co-addr').value.trim();
-  if (!buyerPhone || !address) { toast('Preencha contacto e morada.', 'warn'); return null; }
+  if (!_coValidate?.validateAll()) return null;
   const loc = document.getElementById('co-loc').value.trim();
   const fullAddress = loc ? `${address}, ${loc}` : address;
   const lat = document.getElementById('co-lat')?.value;

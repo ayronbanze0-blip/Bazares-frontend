@@ -356,11 +356,12 @@ function setMainImg(i){
 function addToCartFromProduct(){
   if(!Session.isLoggedIn()){go('login.html');return;}
   const qty=Math.max(1,parseInt(document.getElementById('qty-i').value)||1);
-  if(event?.currentTarget) pulseSuccess(event.currentTarget);
-  addToCart(_product.id,qty);
+  const btn=event?.currentTarget;
+  if(btn) pulseSuccess(btn);
+  addToCart(_product.id,qty,btn);
 }
-async function addToCart(productId,qty){
-  try{await api.post('/cart/items',{productId,qty});await refreshCartCount();toast('Adicionado ao carrinho! <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>');buildTopbar('products.html');}
+async function addToCart(productId,qty,btn){
+  try{await api.post('/cart/items',{productId,qty});await refreshCartCount();if(btn) successCheck(btn);toast('Adicionado ao carrinho! <svg class="ico-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>');buildTopbar('products.html');}
   catch(e){toast(apiErrorMessage(e),'err');}
 }
 function goCheckout(){
