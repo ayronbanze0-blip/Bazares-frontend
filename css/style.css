@@ -69,7 +69,10 @@ html,body{touch-action:manipulation}
      texto — ilegível ao sol. #58697D dá ~5:1 (WCAG AA) em qualquer
      fundo do site, sem escurecer bordas que reaproveitam --g-300. */
   --bg:#EDF3E9; --surf:#FFFFFF; --surf2:#E4EDE0; --surf3:#E4EDE0;
-  --text:#1F2937; --t2:var(--g-600); --t3:var(--g-400); --t4:#58697D;
+  /* --text/--t4 escurecidos ligeiramente (pedido: mais destaque na
+     letra) — sobe o contraste face ao fundo, ficando ainda mais
+     confortável de ler ao sol. */
+  --text:#161F2B; --t2:var(--g-600); --t3:var(--g-400); --t4:#4C5C70;
   --brd:#DCE6D8; --brd2:var(--g-300);
 
   /* Estados */
@@ -81,6 +84,17 @@ html,body{touch-action:manipulation}
   /* Tipografia */
   --f-display:'Sora',system-ui,sans-serif;
   --f-body:'Inter',system-ui,sans-serif;
+
+  /* Type Scale — escala fixa para "títulos" que não são headings
+     semânticos (.title-lg/md/sm mais abaixo — ex.: cabeçalho dentro
+     de um cartão). Os elementos <h1>/<h2>/<h3> reais já tinham a
+     própria escala fixa definida no ficheiro (clamp, maior) desde
+     antes — não mexi nessa para não arriscar o layout de todas as
+     páginas; esta aqui é complementar, não substitui aquela. */
+  --fs-display: clamp(28px,5vw,40px);
+  --fs-h1: 22px; --fs-h2: 18px; --fs-h3: 15.5px;
+  --fs-body: 14px; --fs-body-sm: 13px; --fs-meta: 11.5px;
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700; --fw-black:800;
 
   /* Radii — levemente mais "squircle", menos genérico */
   --r:11px; --rl:17px; --rxl:21px; --rxxl:28px; --pill:999px;
@@ -181,7 +195,16 @@ html,body{touch-action:manipulation}
 
 /* ── Base ── */
 html{scroll-behavior:smooth;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;-webkit-text-size-adjust:100%;max-width:100vw}
-body{font-family:var(--f-body);background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;min-height:100vh;overflow-x:hidden;max-width:100vw;font-kerning:normal;font-feature-settings:"kern" 1,"liga" 1}
+body{font-family:var(--f-body);background:var(--bg);color:var(--text);font-size:16px;font-weight:500;line-height:1.65;min-height:100vh;overflow-x:hidden;max-width:100vw;font-kerning:normal;font-feature-settings:"kern" 1,"liga" 1}
+
+/* Nitidez e vivacidade — pedido do Darwin: +5% de contraste, brilho e
+   saturação em toda a app. Aplicado às imagens/vídeos (fotos de
+   produto, feed, reels — o conteúdo visual que domina o ecrã), NÃO ao
+   body/html: um filter no body cria um "containing block" novo para
+   todos os elementos position:fixed lá dentro (barra inferior, topbar,
+   modais) e parte o layout inteiro. Este é o mesmo truque que apps
+   tipo Instagram/VSCO usam para dar "pop" às fotos sem tocar na UI. */
+img,video{filter:contrast(1.05) brightness(1.05) saturate(1.05)}
 
 /* App é maioritariamente usada em mobile (Android/iOS) — sem isto, cada
    toque num botão/cartão/link desenha um retângulo cinzento nativo do
@@ -445,6 +468,10 @@ label{font-size:12px;color:var(--t3);display:block;margin-bottom:6px;font-weight
 .card-hover:hover::before{transform:scaleX(1)}
 .card-hover:active{transform:translateY(-1px) scale(.99)}
 .card-hover:focus-visible{outline:2.5px solid var(--a-500);outline-offset:2px}
+/* Cartões tocáveis que não usam .card-hover (ex.: FAQ, cartões
+   legais/documentos) — press scale subtil na mesma, sem precisar de
+   mudar a classe em cada sítio que já tem onclick no HTML. */
+.card[onclick]:active{transform:scale(.985)}
 
 /* ══════════════════════════════════════
    TOPBAR
@@ -1028,13 +1055,13 @@ body.pg-landing .hero-content{padding-top:calc(var(--tb-h) + 26px)}
 .p-badge-feat{background:var(--a-500)}
 .p-verified{display:inline-flex;color:var(--b-600);font-weight:800;flex-shrink:0}
 .p-loc{font-size:10.5px;color:var(--t4);display:flex;align-items:center;gap:3px;margin-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.p-price-old{font-size:11.5px;color:var(--t4);text-decoration:line-through;margin-right:6px;font-weight:600}
+.p-price-old{font-size:11.5px;color:var(--t4);text-decoration:line-through;margin-right:6px;font-weight:600;font-variant-numeric:tabular-nums}
 .p-body{padding:10px;display:flex;flex-direction:column;flex:1}
 .p-store{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px;display:flex;align-items:center;gap:5px}
 .p-store-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px}
 .p-name{font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:0;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .p-card .p-price-row{margin-top:6px;padding-top:2px}
-.p-price{font-size:17.5px;font-weight:900;color:var(--b-600);font-family:var(--f-body);letter-spacing:-.02em}
+.p-price{font-size:17.5px;font-weight:900;color:var(--b-600);font-family:var(--f-body);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 [data-theme=dark] .p-price{color:var(--b-400)}
 .p-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 
@@ -1801,7 +1828,7 @@ html.bz-splash-revealing .hero-loading{opacity:1}
 .pd-thumb{width:60px;height:60px;border-radius:10px;cursor:pointer;border:2px solid var(--brd);overflow:hidden;flex-shrink:0;transition:var(--ease)}
 .pd-thumb:hover,.pd-thumb.on{border-color:var(--b-400)}
 .pd-thumb img{width:100%;height:100%;object-fit:cover}
-.pd-price{font-family:var(--f-body);letter-spacing:-.02em;font-size:32px;font-weight:900;color:var(--b-600)}
+.pd-price{font-family:var(--f-body);letter-spacing:-.02em;font-size:32px;font-weight:900;color:var(--b-600);font-variant-numeric:tabular-nums}
 [data-theme=dark] .pd-price{color:var(--b-400)}
 .pd-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
 .pd-info-item{background:var(--surf3);border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:6px}
@@ -1958,7 +1985,7 @@ html.bz-splash-revealing .hero-loading{opacity:1}
     background:var(--surf);border-top:1px solid var(--brd);box-shadow:0 -10px 26px rgba(15,23,42,.10);
   }
   .sticky-cta .sc-total{flex-shrink:0;line-height:1.15}
-  .sticky-cta .sc-total b{display:block;font-family:var(--f-display);font-size:16px;color:var(--b-600)}
+  .sticky-cta .sc-total b{display:block;font-family:var(--f-display);font-size:16px;color:var(--b-600);font-variant-numeric:tabular-nums}
   .sticky-cta .sc-total span{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.05em}
   .sticky-cta .btn{flex:1}
   body.has-sticky-cta{padding-bottom:76px}
@@ -2870,6 +2897,129 @@ body.reels-fullscreen .bn-item-main-ico{border-color:rgba(0,0,0,.32)}
 .fg--err input, .fg--err select, .fg--err textarea{border-color:var(--red)!important}
 .field-err-msg{display:none;color:var(--red);font-size:11.5px;margin-top:4px;font-weight:500}
 .fg--err .field-err-msg{display:block}
+/* Success state do campo — confirma visualmente que um valor já
+   escrito é válido, sem esperar pelo submit do formulário. */
+.fg--ok input, .fg--ok select, .fg--ok textarea{border-color:var(--b-500)!important}
+/* Mesmo padrão para formulários que usam .af-field (auth pages) em
+   vez de .fg (novoproduto). */
+.af-field--err .af-inp input{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(220,38,38,.08)!important}
+.af-field--ok .af-inp input{border-color:var(--b-500)!important}
+.af-field .field-err-msg{margin-left:2px}
+.af-field--err .field-err-msg{display:block}
+
+/* ── Filter Chips — resumo dos filtros activos numa listagem ──── */
+.filter-chips{display:none;flex-wrap:wrap;gap:8px;margin:-6px 0 14px}
+.filter-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--pill);
+  border:1px solid var(--b-300,var(--brd));background:var(--b-50,var(--surf3));color:var(--b-700,var(--t2));
+  font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.filter-chip:hover{border-color:var(--b-500);background:var(--surf3)}
+.filter-chip span{font-size:14px;line-height:1;opacity:.7}
+.filter-chip--clear{background:none;border-style:dashed;color:var(--t4)}
+.filter-chip--clear:hover{color:var(--red);border-color:var(--red)}
+
+/* ── Filter Bottom Sheet — em mobile o .pfilt-panel (ou qualquer
+   painel usado com Bazares.BottomSheet) sobe do fundo do ecrã em vez
+   de empurrar o conteúdo por baixo do botão "Filtros" ────────── */
+.bz-sheet-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1200;
+  animation:bzSheetFade .15s ease;
+}
+@keyframes bzSheetFade{from{opacity:0}to{opacity:1}}
+@media (max-width:680px){
+  .pfilt-panel.open{
+    position:fixed;left:0;right:0;bottom:0;top:auto;z-index:1201;
+    margin:0;border-radius:18px 18px 0 0;max-height:80vh;overflow-y:auto;
+    box-shadow:0 -8px 30px rgba(0,0,0,.18);
+    padding-bottom:calc(16px + env(safe-area-inset-bottom));
+    animation:bzSheetUp .2s cubic-bezier(.2,.8,.2,1);
+  }
+  .pfilt-panel.open::before{
+    content:'';display:block;width:36px;height:4px;border-radius:2px;
+    background:var(--brd2,var(--brd));margin:0 auto 12px;
+  }
+  .pfilt-panel.open .pfilt-row{min-width:100%;width:100%}
+  .pfilt-panel.open .pfilt-row input,.pfilt-panel.open .pfilt-row select{min-width:100%;width:100%}
+}
+@keyframes bzSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ── Stepper — processos com várias etapas ─────────────────────── */
+.bz-stepper{display:flex;align-items:flex-start;margin-bottom:20px}
+.bz-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto}
+.bz-step-dot{
+  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700;border:2px solid var(--brd2,var(--brd));color:var(--t4);background:var(--surf);
+}
+.bz-step-label{font-size:11px;font-weight:600;color:var(--t4);white-space:nowrap;text-align:center}
+.bz-step--active .bz-step-dot{border-color:var(--b-500);color:var(--b-500);background:var(--b-50,var(--surf3))}
+.bz-step--active .bz-step-label{color:var(--t2)}
+.bz-step--done .bz-step-dot{border-color:var(--b-500);background:var(--b-500);color:#fff}
+.bz-step--done .bz-step-label{color:var(--t3)}
+.bz-step-line{flex:1;height:2px;background:var(--brd2,var(--brd));margin:13px 6px 0}
+.bz-step-line--done{background:var(--b-500)}
+
+/* ── Progress Indicator — processos demorados com % real ───────── */
+.bz-progress{width:100%;height:6px;border-radius:3px;background:var(--surf3);overflow:hidden}
+.bz-progress-bar{height:100%;width:0%;background:var(--b-500);border-radius:3px;transition:width .2s ease}
+.bz-progress-bar--done{background:var(--b-500)}
+.bz-progress-bar--err{background:var(--red)}
+.bz-progress-label{font-size:12px;color:var(--t4);margin-top:6px;font-weight:500}
+
+/* ── TYPOGRAPHY — hierarquia por peso/tamanho antes de cor ─────── */
+/* Nota: os elementos <h1>/<h2>/<h3> já têm uma Type Scale fixa e
+   coerente definida mais acima no ficheiro (clamp + peso + letter-
+   spacing por nível) — isso já cumpre o requisito "type scale fixa"
+   para títulos semânticos reais. As classes abaixo (.title-lg/md/sm)
+   são para quando se precisa do MESMO nível de hierarquia visual num
+   elemento que não deve ser um heading semântico (ex.: um <div> de
+   cabeçalho dentro de um cartão, por razões de acessibilidade/
+   estrutura de documento) — por isso têm nomes diferentes de
+   .h1/.h2/.h3, para não se confundirem com os headings reais nem
+   competirem com a escala deles. */
+.title-lg{font-family:var(--f-display);font-size:var(--fs-h1);font-weight:var(--fw-bold);line-height:1.25;color:var(--text)}
+.title-md{font-family:var(--f-display);font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.3;color:var(--text)}
+.title-sm{font-size:var(--fs-h3);font-weight:var(--fw-semibold);line-height:1.35;color:var(--text)}
+/* Display: só para títulos importantes (heros, ecrãs de sucesso) —
+   não para títulos de secção normais, que usam <h1>/<h2> ou
+   .title-lg/.title-md. */
+.text-display{font-family:var(--f-display);font-size:var(--fs-display);font-weight:var(--fw-bold);line-height:1.15;letter-spacing:-.01em}
+.text-body{font-size:var(--fs-body);font-weight:var(--fw-regular);color:var(--text);line-height:1.5}
+.text-body-sm{font-size:var(--fs-body-sm);font-weight:var(--fw-regular);color:var(--t2);line-height:1.45}
+/* Metadata: discreta por natureza — tamanho pequeno + cor apagada,
+   nunca negrito (isso é para hierarquia de conteúdo, não de contexto). */
+.meta{font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--t4);line-height:1.3}
+/* Price Typography: tipografia própria para preços — números
+   tabulares (não "dançam" ao alinhar listas) + peso alto para se
+   distinguir de qualquer outro texto no mesmo cartão sem precisar de
+   uma cor diferente. */
+.price{font-variant-numeric:tabular-nums;font-weight:var(--fw-black);letter-spacing:-.01em;color:var(--text)}
+.price--lg{font-size:22px}
+.price--sm{font-size:13.5px}
+.price-old{font-variant-numeric:tabular-nums;font-size:.78em;font-weight:var(--fw-medium);color:var(--t4);text-decoration:line-through}
+/* Números tabulares — usar em qualquer lista/tabela de preços ou
+   quantidades onde os algarismos têm de alinhar verticalmente. */
+.tabular-nums{font-variant-numeric:tabular-nums}
+/* Line Clamp reutilizável — evita ter de repetir as 3 propriedades
+   -webkit- em cada componente novo com título/legenda de tamanho
+   variável. */
+.line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.line-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* Optical alignment — títulos/números com maiúsculas ou algarismos
+   ficam visualmente mais altos que minúsculas; um pequeno ajuste ao
+   line-height/posição evita o "flutua a mais por cima" em contextos
+   apertados como badges e preços ao lado de ícones. */
+.optical-align{display:inline-flex;align-items:baseline}
+
+/* ── Botão: estado de sucesso temporário após uma acção ────────── */
+.btn-success-flash{background:var(--g-green)!important;color:#fff!important;opacity:1!important;cursor:default!important}
+.btn-success-flash svg{stroke:#fff}
+
+/* ── Progress Toast — tarefa em segundo plano dentro do toast ───── */
+.toast-progress{flex-direction:column;align-items:stretch;gap:0}
+.toast-progress-inner{display:flex;flex-direction:column;gap:8px;width:100%}
+.toast-progress .tp-bar{width:100%}
 
 /* Nota informativa com ícone — substitui um parágrafo cinzento solto
    por uma linha com um (i) alinhado ao texto. */
@@ -2952,6 +3102,54 @@ body.reels-fullscreen .bn-item-main-ico{border-color:rgba(0,0,0,.32)}
 .bz-tooltip{position:absolute;z-index:100060;background:var(--n-800,#27272A);color:#fff;font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:var(--r);pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.25);max-width:220px;line-height:1.35;animation:ttIn .12s ease both}
 @keyframes ttIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
 
+/* ── ACCORDION — padrão de altura animada (CSS grid-rows trick, sem
+   JS a medir scrollHeight). Reutilizável em qualquer FAQ/secção
+   expansível — ver toggleFaq() em support.html para o uso de
+   referência. .faq-ico roda ligeiramente ao abrir, em vez de só
+   trocar de carácter a seco. */
+.faq-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s cubic-bezier(.25,.46,.45,.94)}
+.faq-body.open{grid-template-rows:1fr}
+.faq-body-inner{overflow:hidden;min-height:0}
+.faq-ico{display:inline-block;transition:transform .28s cubic-bezier(.34,1.56,.64,1),color .18s ease}
+.card:has(.faq-body.open) .faq-ico{transform:rotate(180deg)}
+
+/* NUMBER TRANSITION — ver animateNumberChange() em app.js (curtidas,
+   reacções). Sobe/desce consoante o valor aumenta ou diminui. */
+@keyframes numPopUp{0%{opacity:.4;transform:translateY(5px) scale(.9)}55%{transform:translateY(-1.5px) scale(1.1)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes numPopDown{0%{opacity:.4;transform:translateY(-5px) scale(.9)}55%{transform:translateY(1.5px) scale(1.06)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.num-pop-up{display:inline-block;animation:numPopUp .28s cubic-bezier(.34,1.56,.64,1) both}
+.num-pop-down{display:inline-block;animation:numPopDown .28s cubic-bezier(.34,1.56,.64,1) both}
+
+/* SUCCESS CHECK — ver successCheck() em app.js. */
+.success-check-badge{position:fixed;z-index:100200;width:46px;height:46px;transform:translate(-50%,-50%);pointer-events:none;animation:successCheckPop .55s cubic-bezier(.34,1.56,.64,1) both}
+.success-check-badge svg{width:100%;height:100%;filter:drop-shadow(0 6px 16px rgba(0,224,67,.4))}
+.success-check-path{stroke-dasharray:18;stroke-dashoffset:18;animation:successCheckDraw .22s ease .14s both}
+@keyframes successCheckPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}30%{transform:translate(-50%,-50%) scale(1)}78%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes successCheckDraw{to{stroke-dashoffset:0}}
+
 @media (prefers-reduced-motion: reduce){
   .drawer-bd,.drawer-panel,.sheet-bd,.sheet-panel,.dropdown-panel,.bz-tooltip{animation:none !important}
+  ::view-transition-old(root),::view-transition-new(root){animation:none !important}
+  .faq-body{transition:none !important}
+  .num-pop-up,.num-pop-down{animation:none !important}
+  .success-check-badge,.success-check-path{animation:none !important;display:none}
 }
+
+/* ── VIEW TRANSITIONS (navegação SPA) — ver spa-router.js ────────────
+   Por omissão, a View Transitions API já faz crossfade sozinha; aqui
+   só acrescentamos uma leve direcção (avançar desliza da direita,
+   voltar desliza da esquerda) para a navegação parecer ter sentido de
+   percurso, não só "conteúdo novo apareceu". Curta (--dur-base, .28s)
+   e sem decoração a mais — pedido explícito do Darwin. */
+::view-transition-group(root){animation-duration:.28s;animation-timing-function:cubic-bezier(.25,.46,.45,.94)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.28s;mix-blend-mode:normal}
+
+html.vt-forward::view-transition-old(root){animation-name:vt-slide-out-left}
+html.vt-forward::view-transition-new(root){animation-name:vt-slide-in-right}
+html.vt-back::view-transition-old(root){animation-name:vt-slide-out-right}
+html.vt-back::view-transition-new(root){animation-name:vt-slide-in-left}
+
+@keyframes vt-slide-out-left{to{opacity:0;transform:translateX(-3%)}}
+@keyframes vt-slide-in-right{from{opacity:0;transform:translateX(3%)}}
+@keyframes vt-slide-out-right{to{opacity:0;transform:translateX(3%)}}
+@keyframes vt-slide-in-left{from{opacity:0;transform:translateX(-3%)}}
